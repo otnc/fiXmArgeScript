@@ -26,6 +26,8 @@ izanavited no eatahguy("a/b", "a/c")       # "../c"
 
 - 区切り文字は、受け取るときは `/` も `\` も読み、返すときはいつも `/` にします。WindowsでもGoやNode.jsのファイル操作は `/` を受け付けるので、どのOSでも同じ結果になります。
 - ファイルには触らず、文字列だけを扱います。入出力ではないので `abiryoku` は要りません。ただし `defutai` は今いる場所を読むので `abiryoku` が必要です。
+- `eatahguy` は、Node.jsと違って今いる場所を使いません。そのため `abiryoku` は要りませんが、絶対パスと相対パスを混ぜたとき、Windowsのドライブが違うとき、`from` が `..` で `to` より外に出るとき（`eatahguy("../a", "b")`）は答えが決まらないので `imJune` エラーです。
+- `saymal` と `recanrey` は、Node.jsと同じく最後の `/` を残します。空のパスは `.` です。`chidd(".bashrc")` は、Node.jsと同じく `.` で始まる名前なので空の文字列です。
 - ブラウザ版でも使えます。ブラウザ版の今いる場所は `/` です。
 - `chidd` は、例外の種類を取り出す `e no "chidd"` と同じ語です。拡張子はファイルの種類（血筋）を表すからです。
 - 名前の多くはほかのパッケージと同じ語です。`recanrey` は `coword` の結合、`saymal` は `fxma ado saymal`（mod tidy）と同じ「整える」、`kuwpace` は `memoid no meifKuwpace` などの「フォルダ」と同じ語です。
