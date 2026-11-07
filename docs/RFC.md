@@ -656,7 +656,20 @@ test("fizzbuzz", () => {
 });
 ```
 
-結果の表示は、判決（`hung gement`）に続けて、無罪なら `Nii Guil-me`、有罪なら `Guil-me` を出します。
+結果の表示は、判決（`hung gement`）に続けて、無罪なら `Nii Guil-me`、有罪なら `Guil-me` を出します。有罪のときは、次の行に字下げして落ちた場所を出します。
+
+```
+hung gement double: Nii Guil-me
+hung gement fizzbuzz: Guil-me
+  ShouBeK util_coatain.fxma:4:28
+hung gement parse: Guil-me
+  imJune util.fxma:2:5 +
+```
+
+- `shoubek` が1つ落ちたら、JestやPythonの `assert` と同じく、その `sentky` はそこで止めて有罪にし、次の `sentky` に進みます。
+- テストとして扱う `shoubek` は、`sentky` の本体に直接書いたものだけです。本体から呼んだ関数の中の `shoubek` は、いつもどおり巻き戻しに使います。
+- 落ちた `shoubek` は `youlugive` では捕まえられません。例外や実行時エラーが捕まらずに `sentky` の外に出たときも有罪で、そのエラーを出します。
+- 有罪が1つでもあれば、`fxma coatain` は終了コード1で終わります。
 
 テストは、名前が `_coatain.fxma` で終わるファイルに書きます。Goの `_test.go` と同じです。`Coa Tain`（法廷）は裁き（`sentky`）を開く場所なので、この名前にしました。テストするファイルは `werer` で読み込みます。`sentky` を書けるのはこのファイルだけで、`fxma keeon` はこのファイルを読み込みません。
 
@@ -974,7 +987,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `fxma keeon main.fxmac` | 続ける | `run` | 清書をそのまま実行する | ビルド済みのファイルを実行 |
 | `fxma sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き（`./` か `../` で始まるもの）も、たどってまとめて清書する | `go build`、`tsc` |
 | `fxma sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する | `deno compile`、`bun build --compile` |
-| `fxma coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す | `go test` |
+| `fxma coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す。ファイルやフォルダを渡せて、省くと今いる場所より下のフォルダまで全部探す（隠しフォルダと `node_modules` は飛ばす） | `go test`、vitest |
 | `fxma beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形する | `go fmt` |
 | `fxma beaukshi --curoi main.fxma` | 呪い | `--expand` | 呪い（マクロ）を展開した結果を表示する | `cargo expand` |
 | `fxma hak` | 話す | `repl` | 対話モード。1行ずつ打って実行する | 引数なしの `python` |
