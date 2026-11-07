@@ -58,6 +58,9 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 // app はコマンドの一覧。名前は辞書の語で、英語の別名も使える (RFC の実装方針)。
 // 短いオプションは辞書の語と英語の両方の頭文字で、ぶつかったら辞書の語の側に付けない。
+// firstArg は、ファイルより後ろをオプションとして読まず、そのままプログラムに渡すための指定。
+var firstArg = 1
+
 func (s streams) app() *cli.Command {
 	app := &cli.Command{
 		Name:            "fxma",
@@ -73,9 +76,10 @@ func (s streams) app() *cli.Command {
 			&cli.BoolFlag{Name: "neyar", Aliases: []string{"version", "v"}},
 			&cli.BoolFlag{Name: "nai", Aliases: []string{"help", "n", "h"}},
 		},
-		Action: s.root,
+		Action:       s.root,
+		StopOnNthArg: &firstArg,
 		Commands: []*cli.Command{
-			{Name: "keeon", Aliases: []string{"run"}, Action: s.keeon},
+			{Name: "keeon", Aliases: []string{"run"}, Action: s.keeon, StopOnNthArg: &firstArg},
 			{
 				Name:    "sinruits",
 				Aliases: []string{"build"},
@@ -133,7 +137,7 @@ func (s streams) printWarnings(warnings []diag.Warning) {
 }
 
 func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
-	if cmd.Args().Len() != 1 || !isSource(cmd.Args().First()) {
+	if cmd.Args().Len() == 0 || !isSource(cmd.Args().First()) {
 		s.usage(s.stderr)
 		return exitCode(2)
 	}
@@ -149,7 +153,10 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 	}
 	if err == nil {
 		wd, _ := os.Getwd()
-		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs()})
+		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(), Process: osProcess(cmd.Args().Tail())})
+	}
+	if exit, ok := errors.AsType[*interp.Exit](err); ok {
+		return exitCode(exit.Code)
 	}
 	if err != nil {
 		fmt.Fprintln(s.stderr, err)
@@ -211,7 +218,7 @@ func (s streams) nai(_ context.Context, cmd *cli.Command) error {
 func (s streams) usage(w io.Writer) {
 	fmt.Fprint(w, `fiXmArge Script (fxma) の使い方
 
-  fxma keeon <ファイル>      実行する (run)。コマンドを省いてファイルだけ渡しても同じ
+  fxma keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
   fxma sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
   fxma nai <エラー名>        エラーや警告の意味を説明する (explain)
   fxma nai                   この使い方を出す (help)

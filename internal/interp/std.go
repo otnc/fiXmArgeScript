@@ -20,6 +20,7 @@ func init() {
 		"destimay":   destimayPackage,
 		"toim":       toimPackage,
 		"memoid":     memoidPackage,
+		"ieviljio":   ieviljioPackage,
 	}
 }
 

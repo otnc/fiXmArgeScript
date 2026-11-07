@@ -93,6 +93,7 @@ var words = []Word{
 	{"LEA", "さあ、来い", Function},
 	{"Matill", "まだ", Function},
 	{"ieyWOO", "今すぐ", Function},
+	{"Divil JIO", "大魔女", Function},
 	{"sAiMoku", "沈黙", Function | LintRule},
 	{"FinecloWt", "見つけ出す", Function | Part},
 	{"Sen-choose", "選択肢", Function},

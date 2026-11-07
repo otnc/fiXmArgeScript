@@ -188,8 +188,10 @@ func (in *Interp) execTry(s *ast.Try, env *Env) (flow, Value, error) {
 		f, v, err = in.execBlock(s.Catch, catchEnv)
 	}
 	var bt *backtrack
-	if !s.HasFinally || errors.As(err, &bt) {
-		// 巻き戻すときは変数も出力も捨てるので、ennote を実行しても意味がない
+	var exit *Exit
+	if !s.HasFinally || errors.As(err, &bt) || errors.As(err, &exit) {
+		// 巻き戻すときは変数も出力も捨てるので、ennote を実行しても意味がない。
+		// dv no "shid" で終わるときも、JavaScript の process.exit と同じく実行しない
 		return f, v, err
 	}
 	ff, fv, ferr := in.execBlock(s.Finally, newEnv(env, false))

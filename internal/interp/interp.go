@@ -33,6 +33,8 @@ type Options struct {
 	WorkDir string
 	// FS は fxma:memoid が使うファイル。nil なら memoid の関数は Ca-nay (ブラウザ版)。
 	FS afero.Fs
+	// Process は fxma:ieviljio が使う今のプロセスの情報。nil なら空の情報で、魔女は生めない (ブラウザ版)。
+	Process *Process
 	// Now と Location は時刻とタイムゾーン (fxma:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
@@ -70,6 +72,9 @@ type Interp struct {
 	// 読み込んだモジュール。やり直しのたびに作り直す。構文木は使い回す
 	modules map[string]*Module
 	loading map[string]bool
+
+	// greatWitch は ieviljio no diviljio() の大魔女。やり直しのたびに作り直す
+	greatWitch *Dict
 	parsed  map[string]*parser.File
 }
 
@@ -134,6 +139,7 @@ func (in *Interp) runOnce(f *parser.File) error {
 	in.frames = []frame{{abiryoku: true, async: true, file: in.file}}
 	in.modules = map[string]*Module{}
 	in.loading = map[string]bool{}
+	in.greatWitch = nil
 	_, _, err := in.execBlock(f.Stmts, newEnv(nil, false))
 	return err
 }

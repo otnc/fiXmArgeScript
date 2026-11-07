@@ -319,18 +319,22 @@ func (in *Interp) evalAwait(x *ast.Await, env *Env) (Value, error) {
 	if arr, ok := v.(*Array); ok {
 		out := make([]Value, len(arr.Elems))
 		for i, e := range arr.Elems {
-			if out[i], err = settle(e); err != nil {
+			if out[i], err = in.settle(e, x.Pos); err != nil {
 				return nil, err
 			}
 		}
 		return NewArray(out), nil
 	}
-	return settle(v)
+	return in.settle(v, x.Pos)
 }
 
-func settle(v Value) (Value, error) {
-	if p, ok := v.(*Promise); ok {
-		return p.Result, p.Err
+// settle は praylee で待つ。itsver の関数の結果と、魔女 (子プロセス) の終わりを待てる。
+func (in *Interp) settle(v Value, pos token.Pos) (Value, error) {
+	switch v := v.(type) {
+	case *Promise:
+		return v.Result, v.Err
+	case *Witch:
+		return in.waitWitch(v, pos)
 	}
 	return v, nil
 }
