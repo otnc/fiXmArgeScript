@@ -21,4 +21,6 @@
 - 符号化した文字列からバイト列に戻すのは組み込みの `sanand` です。`sanand(s, "hex")`、`sanand(s, "base64")`、`sanand(s, "base64url")` と書きます。
 - `foreSenaji` は、パスワードや署名を比べるときに使います。`senaji` は違う文字が見つかった時点で止まるので、かかった時間から中身を推測されるおそれがあります。長さが違うときはすぐに `ulieso` を返します。
 - `destimay` と同じ名前にしているので、読み込むパッケージを `keyga` に変えるだけで安全な乱数に切り替えられます。JavaScriptの `Math.random()` と `crypto.getRandomValues()` の関係です。`keyga` の乱数には種（`gomi`）を決められません。
+- `hmac` の3つ目の引数は `"sha256"` か `"sha512"`、`base64` の2つ目の引数は `"url"` だけです。それ以外や、`madrazySanand` に負の数を渡すと `imJune` エラーです。
+- ハッシュや符号化は入出力ではないので `abiryoku` は要りません。乱数（`madrazySanand`・`senchoose`・`commity`）だけ `abiryoku` が要ります。
 - 暗号の処理は自分で書かず、Goの `crypto` の各パッケージを呼びます。
