@@ -437,7 +437,12 @@ func (p *parser) parseString(t token.Token) (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		sub := &parser{src: p.src, file: p.file, mode: p.mode, tokens: tokens}
+		if p.macros != nil {
+			if tokens, err = p.macros.expand(tokens, 0); err != nil {
+				return nil, err
+			}
+		}
+		sub := &parser{src: p.src, file: p.file, mode: p.mode, tokens: tokens, macros: p.macros}
 		sub.skipNewlines()
 		x, err := sub.parseExprWithEnd()
 		if err != nil {

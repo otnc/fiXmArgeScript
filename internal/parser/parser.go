@@ -23,6 +23,9 @@ func Parse(src, file string) (*File, error) {
 		return nil, err
 	}
 	p := &parser{src: src, file: file, mode: mode, tokens: tokens}
+	if err := p.expandMacros(); err != nil {
+		return nil, err
+	}
 	stmts, err := p.parseStmts()
 	if err != nil {
 		return nil, err
@@ -39,6 +42,8 @@ type parser struct {
 	mode   lexer.Mode
 	tokens []token.Token
 	i      int
+	// macros はこのファイルの呪い。#{} の中を読むときにも展開に使う
+	macros *expander
 }
 
 func (p *parser) peek() token.Token { return p.tokens[p.i] }

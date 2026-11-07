@@ -77,8 +77,6 @@ func (p *parser) parseStmt() (ast.Stmt, error) {
 		case "itswa":
 			p.next()
 			return &ast.Return{At: at}, nil
-		case "curoi":
-			return nil, diag.New(diag.CaNay, p.file, t.Pos, p.text(t))
 		}
 	}
 	if t.Kind == token.String && p.lineEndsWith("werer") {
