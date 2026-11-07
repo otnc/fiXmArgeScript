@@ -2,6 +2,8 @@ package runner
 
 import (
 	"errors"
+	"io/fs"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -14,13 +16,22 @@ type testCase struct {
 	src    string
 	stdin  string
 	stdout string
-	err    diag.Kind // 空ならエラーなし
+	err    diag.Kind         // 空ならエラーなし
+	files  map[string]string // werer で読み込めるファイル
 }
 
 func runCase(t *testing.T, c testCase) {
 	t.Helper()
 	var stdout, stderr strings.Builder
-	_, err := Run(c.src, "main.fxma", interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr})
+	readFile := func(name string) ([]byte, error) {
+		src, ok := c.files[filepath.ToSlash(name)]
+		if !ok {
+			return nil, fs.ErrNotExist
+		}
+		return []byte(src), nil
+	}
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile)}
+	_, err := Run(c.src, "main.fxma", opts)
 	var de *diag.Error
 	switch {
 	case c.err == "" && err != nil:

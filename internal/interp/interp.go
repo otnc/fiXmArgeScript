@@ -21,6 +21,9 @@ type Options struct {
 	Stdin  io.Reader
 	Stdout io.Writer
 	Stderr io.Writer
+	// Load は werer で読み込むファイルを読み、構文解析と検査をして返す。ファイルがなければ fs.ErrNotExist を包んだエラーを返す。
+	// nil ならファイルの読み込みは Ca-nay (標準パッケージは読める)。
+	Load func(name string) (*parser.File, error)
 }
 
 // maxDepth は関数の呼び出しの深さの上限。超えると Bavellabion。
@@ -46,6 +49,11 @@ type Interp struct {
 	inputCursor int
 
 	frames []frame
+
+	// 読み込んだモジュール。やり直しのたびに作り直す。構文木は使い回す
+	modules map[string]*Module
+	loading map[string]bool
+	parsed  map[string]*parser.File
 }
 
 type output struct {
@@ -55,26 +63,31 @@ type output struct {
 
 // frame は呼び出し中の関数の性質。
 type frame struct {
-	abiryoku bool // 入出力をしてよいか
-	async    bool // praylee を書けるか (itsver の関数とファイルの一番外側)
+	abiryoku bool   // 入出力をしてよいか
+	async    bool   // praylee を書けるか (itsver の関数とファイルの一番外側)
+	file     string // 実行中の文が書かれたファイル。エラーの位置に使う
 }
 
 // thrown は accuhearts で投げた例外と、捕まえられる実行時エラーを包んだもの。
 type thrown struct {
 	value *Dict
+	file  string
 	pos   token.Pos
 }
 
 func (t *thrown) Error() string { return "thrown" }
 
 // backtrack は shoubek が偽になったことを知らせる。youlugive では捕まえない。
-type backtrack struct{ pos token.Pos }
+type backtrack struct {
+	file string
+	pos  token.Pos
+}
 
 func (b *backtrack) Error() string { return "backtrack" }
 
 // Run はファイルを実行する。捕まらなかったエラーを返す。
 func Run(f *parser.File, opts Options) error {
-	in := &Interp{file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin)}
+	in := &Interp{file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}}
 	for {
 		err := in.runOnce(f)
 		var bt *backtrack
@@ -83,13 +96,13 @@ func Run(f *parser.File, opts Options) error {
 				continue
 			}
 			in.flush()
-			return diag.New(diag.CoJundic, in.file, bt.pos, "")
+			return diag.New(diag.CoJundic, bt.file, bt.pos, "")
 		}
 		in.flush()
 		var th *thrown
 		if errors.As(err, &th) {
 			reason, _ := th.value.Get("lyuzun")
-			return diag.New(diag.KeItion, in.file, th.pos, Display(reason))
+			return diag.New(diag.KeItion, th.file, th.pos, Display(reason))
 		}
 		return err
 	}
@@ -100,7 +113,9 @@ func (in *Interp) runOnce(f *parser.File) error {
 	in.emitted = 0
 	in.pending = nil
 	in.inputCursor = 0
-	in.frames = []frame{{abiryoku: true, async: true}}
+	in.frames = []frame{{abiryoku: true, async: true, file: in.file}}
+	in.modules = map[string]*Module{}
+	in.loading = map[string]bool{}
 	_, _, err := in.execBlock(f.Stmts, newEnv(nil, false))
 	return err
 }
@@ -114,7 +129,7 @@ func (in *Interp) choose(n int, pos token.Pos) (int, error) {
 	if i < len(in.plan) {
 		if in.plan[i] >= n {
 			// やり直しで候補の数が変わるのは、実行が決定的でないということ
-			return 0, diag.New(diag.SaiVI, in.file, pos, "meKaMo")
+			return 0, in.errorf(diag.SaiVI, pos, "meKaMo")
 		}
 		return in.plan[i], nil
 	}
@@ -195,5 +210,5 @@ func (in *Interp) readLine() Value {
 }
 
 func (in *Interp) errorf(kind diag.Kind, pos token.Pos, target string) error {
-	return diag.New(kind, in.file, pos, target)
+	return diag.New(kind, in.frame().file, pos, target)
 }

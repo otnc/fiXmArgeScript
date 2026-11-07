@@ -129,6 +129,18 @@ func (c *checker) stmt(s ast.Stmt, ctx context) {
 		c.stmts(s.Catch, ctx)
 		c.popScope()
 		c.block(s.Finally, ctx)
+	case *ast.Import:
+		// 読み込んだ名前は showence と同じく書き換えられない
+		if s.Alias != "" {
+			c.scopes[len(c.scopes)-1][s.Alias] = true
+		}
+		for _, n := range s.Names {
+			name := n.Name
+			if n.Alias != "" {
+				name = n.Alias
+			}
+			c.scopes[len(c.scopes)-1][name] = true
+		}
 	case *ast.Test:
 		if !c.testFile {
 			c.fail(diag.CaNay, s, "sentky")

@@ -67,6 +67,9 @@ func (in *Interp) eval(x ast.Expr, env *Env) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
+		if m, ok := c.(*Module); ok {
+			return in.member(m, x.Key, x.Pos)
+		}
 		k, err := in.eval(x.Key, env)
 		if err != nil {
 			return nil, err
@@ -87,7 +90,7 @@ func (in *Interp) eval(x ast.Expr, env *Env) (Value, error) {
 		}
 		return in.call(fn, args, x.Pos, callName(x.Fn))
 	case *ast.FuncLit:
-		return &Func{Lit: x, Env: env}, nil
+		return &Func{Lit: x, Env: env, File: in.frame().file}, nil
 	case *ast.Choice:
 		i, err := in.choose(len(x.Options), x.Pos)
 		if err != nil {
@@ -333,8 +336,11 @@ func settle(v Value) (Value, error) {
 }
 
 func callName(fn ast.Expr) string {
-	if id, ok := fn.(*ast.Ident); ok {
-		return id.Name
+	switch fn := fn.(type) {
+	case *ast.Ident:
+		return fn.Name
+	case *ast.Index:
+		return callName(fn.Key)
 	}
 	return ""
 }
@@ -354,7 +360,7 @@ func (in *Interp) call(fn Value, args []Value, pos token.Pos, name string) (Valu
 
 	switch f := fn.(type) {
 	case *Builtin:
-		in.frames = append(in.frames, frame{abiryoku: f.Abiryoku || passesAbiryoku})
+		in.frames = append(in.frames, frame{abiryoku: f.Abiryoku || passesAbiryoku, file: in.frame().file})
 		defer in.popFrame()
 		return f.Call(in, pos, args)
 	case *Func:
@@ -374,7 +380,7 @@ func (in *Interp) callFunc(f *Func, args []Value, pos token.Pos, passesAbiryoku 
 	for i, p := range lit.Params {
 		env.define(p, args[i], false)
 	}
-	in.frames = append(in.frames, frame{abiryoku: lit.Abiryoku || passesAbiryoku, async: lit.Itsver})
+	in.frames = append(in.frames, frame{abiryoku: lit.Abiryoku || passesAbiryoku, async: lit.Itsver, file: f.File})
 	_, result, err := in.execBlock(lit.Body, env)
 	in.popFrame()
 	if result == nil {

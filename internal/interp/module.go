@@ -1,0 +1,169 @@
+package interp
+
+import (
+	"errors"
+	"io/fs"
+	"strings"
+
+	"github.com/otnc/fiXmArgeScript/internal/ast"
+	"github.com/otnc/fiXmArgeScript/internal/diag"
+	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/modpath"
+	"github.com/otnc/fiXmArgeScript/internal/parser"
+	"github.com/otnc/fiXmArgeScript/internal/token"
+)
+
+// Module は werer で読み込んだファイル1つ、または標準パッケージ1つ。
+type Module struct {
+	Path     string // werer に書いた読み込み先
+	members  map[string]Value
+	exported map[string]bool
+}
+
+// execImport は werer の文を実行する。読み込んだ名前は showence と同じく書き換えられない (JavaScript の import と同じ)。
+func (in *Interp) execImport(s *ast.Import, env *Env) error {
+	m, err := in.loadModule(s.Path, s.Pos)
+	if err != nil {
+		return err
+	}
+	if s.Alias != "" {
+		return in.bindImport(env, s.Alias, m, s.Pos)
+	}
+	for _, n := range s.Names {
+		v, err := in.memberNamed(m, n.Name, s.Pos)
+		if err != nil {
+			return err
+		}
+		name := n.Name
+		if n.Alias != "" {
+			name = n.Alias
+		}
+		if err := in.bindImport(env, name, v, s.Pos); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// bindImport は読み込んだ名前を定義する。同じ名前がもうあれば、aste で別名を付けるよう Su·Ready で知らせる。
+func (in *Interp) bindImport(env *Env, name string, v Value, pos token.Pos) error {
+	if _, dup := env.vars[name]; dup {
+		return in.errorf(diag.SuReady, pos, name)
+	}
+	env.define(name, v, true)
+	return nil
+}
+
+// member は A no B の A がモジュールのとき。右の識別子は変数ではなく、モジュールの中の名前として読む。
+func (in *Interp) member(m *Module, key ast.Expr, pos token.Pos) (Value, error) {
+	id, ok := key.(*ast.Ident)
+	if !ok {
+		return nil, in.errorf(diag.ImJune, pos, lexicon.Spell("no"))
+	}
+	return in.memberNamed(m, id.Name, pos)
+}
+
+func (in *Interp) memberNamed(m *Module, name string, pos token.Pos) (Value, error) {
+	v, ok := m.members[name]
+	switch {
+	case !ok:
+		return nil, in.errorf(diag.NiiExi, pos, name)
+	case !m.exported[name]:
+		return nil, in.errorf(diag.CaNay, pos, name)
+	}
+	return v, nil
+}
+
+// loadModule は読み込み先のモジュールを返す。同じ実行の中では一度だけ読む。
+func (in *Interp) loadModule(path string, pos token.Pos) (*Module, error) {
+	if pkg, ok := strings.CutPrefix(path, modpath.StdPrefix); ok {
+		return in.loadStd(path, pkg, pos)
+	}
+	name, ok := modpath.Local(in.frame().file, path)
+	if !ok {
+		// 外部パッケージは fxma werer で取ってくる仕組みと一緒に作る
+		return nil, in.errorf(diag.CaNay, pos, path)
+	}
+	if m, ok := in.modules[name]; ok {
+		return m, nil
+	}
+	if in.loading[name] {
+		return nil, in.errorf(diag.SuReady, pos, path)
+	}
+	f, err := in.parseModule(name)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, in.errorf(diag.NiiExi, pos, path)
+	}
+	if err != nil {
+		return nil, err
+	}
+	in.loading[name] = true
+	defer delete(in.loading, name)
+	m, err := in.runModule(path, f)
+	if err != nil {
+		return nil, err
+	}
+	in.modules[name] = m
+	return m, nil
+}
+
+func (in *Interp) loadStd(path, pkg string, pos token.Pos) (*Module, error) {
+	if m, ok := in.modules[path]; ok {
+		return m, nil
+	}
+	newPkg, ok := stdPackages[pkg]
+	if !ok {
+		return nil, in.errorf(diag.NiiExi, pos, path)
+	}
+	m := newPkg()
+	m.Path = path
+	in.modules[path] = m
+	return m, nil
+}
+
+// parseModule はファイルを読む。やり直しのたびに読み直さないよう、構文木は覚えておく。
+func (in *Interp) parseModule(name string) (*parser.File, error) {
+	if f, ok := in.parsed[name]; ok {
+		return f, nil
+	}
+	if in.opts.Load == nil {
+		return nil, in.errorf(diag.CaNay, token.Pos{}, name)
+	}
+	f, err := in.opts.Load(name)
+	if err != nil {
+		return nil, err
+	}
+	in.parsed[name] = f
+	return f, nil
+}
+
+// runModule は読み込んだファイルの定義を実行する。読み込まれるファイルに書けるのは定義と werer だけ。
+func (in *Interp) runModule(path string, f *parser.File) (*Module, error) {
+	m := &Module{Path: path, members: map[string]Value{}, exported: map[string]bool{}}
+	for _, s := range f.Stmts {
+		switch s := s.(type) {
+		case *ast.FuncDecl:
+			m.exported[s.Fn.Name] = s.Export
+			continue
+		case *ast.Assign:
+			if id, ok := s.Target.(*ast.Ident); ok && s.Const {
+				m.exported[id.Name] = s.Export
+				continue
+			}
+		case *ast.Import:
+			continue
+		}
+		return nil, diag.New(diag.CaNay, f.Name, s.Position(), "")
+	}
+	env := newEnv(nil, false)
+	in.frames = append(in.frames, frame{file: f.Name})
+	_, _, err := in.execBlock(f.Stmts, env)
+	in.popFrame()
+	if err != nil {
+		return nil, err
+	}
+	for name, v := range env.vars {
+		m.members[name] = v.value
+	}
+	return m, nil
+}

@@ -30,8 +30,9 @@ type (
 		Inclusive    bool
 	}
 	Func struct {
-		Lit *ast.FuncLit
-		Env *Env
+		Lit  *ast.FuncLit
+		Env  *Env
+		File string // 定義したファイル
 	}
 	Builtin struct {
 		Name     string
@@ -57,6 +58,7 @@ func (*Range) value()   {}
 func (*Func) value()    {}
 func (*Builtin) value() {}
 func (*Promise) value() {}
+func (*Module) value()  {}
 
 var null = Null{}
 

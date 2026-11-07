@@ -28,7 +28,7 @@ func (in *Interp) execBlock(stmts []ast.Stmt, env *Env) (flow, Value, error) {
 		if _, dup := env.vars[d.Fn.Name]; dup {
 			return flowNormal, nil, in.errorf(diag.SuReady, d.Pos, d.Fn.Name)
 		}
-		env.define(d.Fn.Name, &Func{Lit: d.Fn, Env: env}, false)
+		env.define(d.Fn.Name, &Func{Lit: d.Fn, Env: env, File: in.frame().file}, false)
 	}
 	for _, s := range stmts {
 		f, v, err := in.exec(s, env)
@@ -67,7 +67,7 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 	case *ast.Assert:
 		ok, err := in.evalBool(s.X, env, s.Pos, "shoubek")
 		if err == nil && !ok {
-			err = &backtrack{pos: s.Pos}
+			err = &backtrack{file: in.frame().file, pos: s.Pos}
 		}
 		return flowNormal, nil, err
 	case *ast.If:
@@ -96,8 +96,7 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 	case *ast.Test:
 		return flowNormal, nil, in.errorf(diag.CaNay, s.Pos, "sentky")
 	case *ast.Import:
-		// 読み込みは次の版で作る
-		return flowNormal, nil, in.errorf(diag.CaNay, s.Pos, lexicon.Spell("werer"))
+		return flowNormal, nil, in.execImport(s, env)
 	}
 	return flowNormal, nil, in.errorf(diag.SaiVI, s.Position(), "")
 }
@@ -228,11 +227,11 @@ func (in *Interp) throw(s *ast.Throw, env *Env) error {
 	}
 	switch v := v.(type) {
 	case Str:
-		return &thrown{value: exception(string(v), diag.AccUhEarts.Spelling()), pos: s.Pos}
+		return &thrown{value: exception(string(v), diag.AccUhEarts.Spelling()), file: in.frame().file, pos: s.Pos}
 	case *Dict:
 		// youlugive で受け取った例外を投げ直す
 		if _, ok := v.Get("lyuzun"); ok {
-			return &thrown{value: v, pos: s.Pos}
+			return &thrown{value: v, file: in.frame().file, pos: s.Pos}
 		}
 	}
 	return in.errorf(diag.ImJune, s.Pos, lexicon.Spell("accuhearts"))
@@ -290,6 +289,10 @@ func (in *Interp) assignIndex(s *ast.Assign, t *ast.Index, value Value, env *Env
 	container, err := in.eval(t.X, env)
 	if err != nil {
 		return err
+	}
+	if _, ok := container.(*Module); ok {
+		// モジュールの中身は読み込んだ側からは書き換えられない (JavaScript の import と同じ)
+		return in.errorf(diag.BlasTOac, t.Pos, callName(t.Key))
 	}
 	key, err := in.eval(t.Key, env)
 	if err != nil {

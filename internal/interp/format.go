@@ -67,6 +67,8 @@ func inner(v Value) string {
 		return lexicon.Spell("weho") + " " + v.Name
 	case *Promise:
 		return lexicon.Spell("itsver")
+	case *Module:
+		return quote(v.Path) + " " + lexicon.Spell("werer")
 	}
 	return "?"
 }

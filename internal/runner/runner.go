@@ -18,6 +18,22 @@ func Prepare(src, file string) (*parser.File, error) {
 	return f, check.File(f)
 }
 
+// Loader は、ファイルを読む関数を werer の読み込みに使う形 (interp.Options の Load) にする。
+// 読み込まれるファイルも、実行するファイルと同じく読んで検査する。
+func Loader(readFile func(name string) ([]byte, error)) func(name string) (*parser.File, error) {
+	return func(name string) (*parser.File, error) {
+		src, err := readFile(name)
+		if err != nil {
+			return nil, err
+		}
+		f, err := Prepare(string(src), name)
+		if err != nil {
+			return nil, err
+		}
+		return f, nil
+	}
+}
+
 // Run はソースを実行する。方言の警告は、エラーがあっても返す。
 func Run(src, file string, opts interp.Options) ([]diag.Warning, error) {
 	f, err := Prepare(src, file)
