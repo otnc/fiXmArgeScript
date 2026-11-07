@@ -1,0 +1,16 @@
+weho fizzbuzz(n)
+  mof n % 15 senaji 0
+    "FizzBuzz" itswa
+  siva mof n % 3 senaji 0
+    "Fizz" itswa
+  siva mof n % 5 senaji 0
+    "Buzz" itswa
+  finend
+  n itswa
+finend
+
+x izu 1
+x <= 15 azagara
+  fizzbuzz(x) redogh
+  x +izu 1
+finend

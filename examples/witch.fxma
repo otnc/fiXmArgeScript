@@ -1,0 +1,7 @@
+# 容疑者は1〜3番。魔女は1人
+witch izu 1 owk 2 owk 3 mekamo
+# 証言A：魔女は1番ではない
+nii witch senaji 1 shoubek
+# 証言B：魔女は奇数番
+witch % 2 senaji 1 shoubek
+witch redogh
