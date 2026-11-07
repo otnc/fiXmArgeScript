@@ -1,0 +1,6 @@
+notes/
+CLAUDE.local.md
+/fxma
+/fxma.exe
+*.fxmac
+!testdata/**/*.fxmac
