@@ -1,6 +1,9 @@
 package interp
 
 import (
+	"slices"
+	"strings"
+
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
@@ -57,29 +60,40 @@ func varizamaOrei(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	less := func(x, y Value) (bool, error) { return defaultLess(a, x, y) }
+	compare := func(x, y Value) (int, error) { return defaultCompare(a, x, y) }
 	if a.has(1) {
 		f, err := a.fn(1)
 		if err != nil {
 			return nil, err
 		}
-		less = func(x, y Value) (bool, error) {
+		compare = func(x, y Value) (int, error) {
 			r, err := a.call(f, x, y)
 			if err != nil {
-				return false, err
+				return 0, err
 			}
 			c, ok := toFloat(r)
 			if !ok {
-				return false, a.fail(diag.ImJune)
+				return 0, a.fail(diag.ImJune)
 			}
-			return c < 0, nil
+			return cmpFloat(c, 0), nil
 		}
 	} else if err := checkSortable(a, xs.Elems); err != nil {
 		return nil, err
 	}
-	out, err := mergeSort(append([]Value(nil), xs.Elems...), less)
-	if err != nil {
-		return nil, err
+	// 比べる関数は fxma の関数なので、エラーや巻き戻しを返すことがある。
+	// 最初のエラーを覚えて、それより後は関数を呼ばずに並べ替えを終わらせる
+	var sortErr error
+	out := slices.Clone(xs.Elems)
+	slices.SortStableFunc(out, func(x, y Value) int {
+		if sortErr != nil {
+			return 0
+		}
+		c, err := compare(x, y)
+		sortErr = err
+		return c
+	})
+	if sortErr != nil {
+		return nil, sortErr
 	}
 	return NewArray(out), nil
 }
@@ -103,43 +117,11 @@ func checkSortable(a *argv, xs []Value) error {
 	return nil
 }
 
-func defaultLess(a *argv, x, y Value) (bool, error) {
+func defaultCompare(a *argv, x, y Value) (int, error) {
 	if xs, ok := x.(Str); ok {
-		return xs < y.(Str), nil
+		return strings.Compare(string(xs), string(y.(Str))), nil
 	}
-	c, err := cmpNumbers(a, x, y)
-	return c < 0, err
-}
-
-// mergeSort は安定な並べ替え。比べる関数が fxma の関数でエラーや巻き戻しを返すことがあるので、sort.SliceStable は使わない。
-func mergeSort(xs []Value, less func(x, y Value) (bool, error)) ([]Value, error) {
-	if len(xs) <= 1 {
-		return xs, nil
-	}
-	mid := len(xs) / 2
-	left, err := mergeSort(xs[:mid:mid], less)
-	if err != nil {
-		return nil, err
-	}
-	right, err := mergeSort(xs[mid:], less)
-	if err != nil {
-		return nil, err
-	}
-	out := make([]Value, 0, len(xs))
-	for len(left) > 0 && len(right) > 0 {
-		// 右が左より真に小さいときだけ右を先に出すと、同じものは元の順に残る
-		rightFirst, err := less(right[0], left[0])
-		if err != nil {
-			return nil, err
-		}
-		if rightFirst {
-			out, right = append(out, right[0]), right[1:]
-		} else {
-			out, left = append(out, left[0]), left[1:]
-		}
-	}
-	out = append(out, left...)
-	return append(out, right...), nil
+	return cmpNumbers(a, x, y)
 }
 
 func varizamaTarip(a *argv) (Value, error) {

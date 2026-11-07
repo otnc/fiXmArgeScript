@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/build"
@@ -50,7 +51,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return cmdKeeon(args, stdin, stdout, stderr)
 	}
 	for _, c := range commands() {
-		if args[0] == c.name || contains(c.aliases, args[0]) {
+		if args[0] == c.name || slices.Contains(c.aliases, args[0]) {
 			return c.run(args[1:], stdin, stdout, stderr)
 		}
 	}
@@ -60,15 +61,6 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 func isSource(path string) bool {
 	return strings.HasSuffix(path, ".fxma") || strings.HasSuffix(path, ".fxmac")
-}
-
-func contains(list []string, s string) bool {
-	for _, x := range list {
-		if x == s {
-			return true
-		}
-	}
-	return false
 }
 
 func readSource(path string, stderr io.Writer) (string, bool) {

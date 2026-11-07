@@ -3,7 +3,9 @@
 package lexicon
 
 import (
-	"sort"
+	"cmp"
+	"maps"
+	"slices"
 	"strings"
 	"unicode"
 )
@@ -61,15 +63,8 @@ func init() {
 		}
 		add(Entry{Name: name, Spelling: spelling.String(), Uses: Compound})
 	}
-	for _, e := range bySkeleton {
-		longestFirst = append(longestFirst, e)
-	}
-	sort.Slice(longestFirst, func(i, j int) bool {
-		a, b := longestFirst[i].Spelling, longestFirst[j].Spelling
-		if len(a) != len(b) {
-			return len(a) > len(b)
-		}
-		return a < b
+	longestFirst = slices.SortedFunc(maps.Values(bySkeleton), func(a, b Entry) int {
+		return cmp.Or(cmp.Compare(len(b.Spelling), len(a.Spelling)), strings.Compare(a.Spelling, b.Spelling))
 	})
 }
 

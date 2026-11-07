@@ -1,12 +1,9 @@
 package interp
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
-	"fmt"
 	"io"
-	"math"
-	"strconv"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
@@ -20,10 +17,8 @@ func jsonPackage() *Module {
 	}, nil)
 }
 
-// errNotJSON は JSON にできない値を見つけたこと。
-var errNotJSON = errors.New("not json")
-
-// jsonFineclowt は JSON を読む。辞書のキーを書かれた順に並べるため、json.Unmarshal ではなく字句を順に読む。
+// jsonFineclowt は JSON を読む。辞書のキーを書かれた順に並べるため、字句を順に読む。
+// 同じキーが2回あれば、JSON.parse と同じく後の値を使う。
 func jsonFineclowt(a *argv) (Value, error) {
 	if err := a.count(1, 1); err != nil {
 		return nil, err
@@ -32,13 +27,12 @@ func jsonFineclowt(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	dec := json.NewDecoder(strings.NewReader(s))
-	dec.UseNumber()
+	dec := jsontext.NewDecoder(strings.NewReader(s), jsontext.AllowDuplicateNames(true))
 	v, err := decodeJSON(dec)
 	if err == nil {
 		// 値の後ろに何か残っていたら、JSON.parse と同じく正しくない
-		if _, rest := dec.Token(); rest != io.EOF {
-			err = errNotJSON
+		if _, rest := dec.ReadToken(); rest != io.EOF {
+			err = errors.New("trailing data")
 		}
 	}
 	if err != nil {
@@ -47,61 +41,49 @@ func jsonFineclowt(a *argv) (Value, error) {
 	return v, nil
 }
 
-func decodeJSON(dec *json.Decoder) (Value, error) {
-	t, err := dec.Token()
+func decodeJSON(dec *jsontext.Decoder) (Value, error) {
+	t, err := dec.ReadToken()
 	if err != nil {
 		return nil, err
 	}
-	switch t := t.(type) {
-	case json.Number:
+	switch t.Kind() {
+	case '0':
 		// JavaScript の JSON.parse と同じく、数はいつも小数
-		f, err := strconv.ParseFloat(string(t), 64)
-		if err != nil {
-			return nil, err
-		}
-		return Float(f), nil
-	case string:
-		return Str(t), nil
-	case bool:
-		return Bool(t), nil
-	case nil:
+		f, err := t.Float()
+		return Float(f), err
+	case '"':
+		return Str(t.String()), nil
+	case 't', 'f':
+		return Bool(t.Bool()), nil
+	case 'n':
 		return null, nil
-	case json.Delim:
-		if t == '[' {
-			return decodeJSONArray(dec)
+	case '[':
+		var elems []Value
+		for dec.PeekKind() != ']' {
+			v, err := decodeJSON(dec)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, v)
 		}
-		return decodeJSONObject(dec)
+		_, err := dec.ReadToken()
+		return NewArray(elems), err
 	}
-	return nil, errNotJSON
-}
-
-func decodeJSONArray(dec *json.Decoder) (Value, error) {
-	var elems []Value
-	for dec.More() {
-		v, err := decodeJSON(dec)
-		if err != nil {
-			return nil, err
-		}
-		elems = append(elems, v)
-	}
-	_, err := dec.Token() // ]
-	return NewArray(elems), err
-}
-
-func decodeJSONObject(dec *json.Decoder) (Value, error) {
 	d := NewDict()
-	for dec.More() {
-		k, err := dec.Token()
+	for dec.PeekKind() != '}' {
+		k, err := dec.ReadToken()
 		if err != nil {
 			return nil, err
 		}
+		// 字句は次に読むと使えなくなるので、先に文字列にしておく
+		key := k.String()
 		v, err := decodeJSON(dec)
 		if err != nil {
 			return nil, err
 		}
-		d.Set(k.(string), v)
+		d.Set(key, v)
 	}
-	_, err := dec.Token() // }
+	_, err = dec.ReadToken()
 	return d, err
 }
 
@@ -110,107 +92,62 @@ func jsonSalook(a *argv) (Value, error) {
 	if err := a.count(1, 2); err != nil {
 		return nil, err
 	}
-	indent := ""
+	opts := []jsontext.Options{jsontext.Multiline(false)}
 	if a.has(1) {
 		n, err := a.index(1)
 		if err != nil {
 			return nil, err
 		}
-		indent = strings.Repeat(" ", int(max(0, min(n, 10))))
+		if n >= 1 {
+			opts = []jsontext.Options{jsontext.WithIndent(strings.Repeat(" ", int(min(n, 10))))}
+		}
 	}
 	var b strings.Builder
-	if err := encodeJSON(&b, a.vals[0], indent, ""); err != nil {
+	enc := jsontext.NewEncoder(&b, opts...)
+	if err := encodeJSON(enc, a.vals[0]); err != nil {
 		return nil, a.fail(diag.ImJune)
 	}
-	return Str(b.String()), nil
+	// Encoder は値ごとに改行を付けるので外す
+	return Str(strings.TrimSuffix(b.String(), "\n")), nil
 }
 
-func encodeJSON(b *strings.Builder, v Value, indent, prefix string) error {
+// encodeJSON は値を字句にして書く。関数やバイト列のように JSON にできない値はエラー。
+func encodeJSON(enc *jsontext.Encoder, v Value) error {
 	switch v := v.(type) {
 	case Int:
-		b.WriteString(strconv.FormatInt(int64(v), 10))
+		return enc.WriteToken(jsontext.Int(int64(v)))
 	case Float:
-		f := float64(v)
-		if math.IsNaN(f) || math.IsInf(f, 0) {
-			return errNotJSON
-		}
-		b.WriteString(formatFloat(f))
+		// NaN と無限大は JSON にできないので、jsontext がエラーを返す
+		return enc.WriteToken(jsontext.Float(float64(v)))
 	case Str:
-		b.WriteString(jsonQuote(string(v)))
+		return enc.WriteToken(jsontext.String(string(v)))
 	case Bool:
-		b.WriteString(strconv.FormatBool(bool(v)))
+		return enc.WriteToken(jsontext.Bool(bool(v)))
 	case Null:
-		b.WriteString("null")
+		return enc.WriteToken(jsontext.Null)
 	case *Array:
-		return encodeJSONList(b, '[', ']', len(v.Elems), indent, prefix, func(i int, inner string) error {
-			return encodeJSON(b, v.Elems[i], indent, inner)
-		})
-	case *Dict:
-		colon := ":"
-		if indent != "" {
-			colon = ": "
-		}
-		return encodeJSONList(b, '{', '}', v.Len(), indent, prefix, func(i int, inner string) error {
-			k := v.keys[i]
-			b.WriteString(jsonQuote(k) + colon)
-			return encodeJSON(b, v.values[k], indent, inner)
-		})
-	default:
-		return errNotJSON
-	}
-	return nil
-}
-
-// encodeJSONList は配列と辞書の、括弧・区切り・字下げを書く。空なら JavaScript と同じく [] と {}。
-func encodeJSONList(b *strings.Builder, open, close byte, n int, indent, prefix string, item func(i int, inner string) error) error {
-	b.WriteByte(open)
-	inner := prefix + indent
-	for i := range n {
-		if i > 0 {
-			b.WriteByte(',')
-		}
-		if indent != "" {
-			b.WriteString("\n" + inner)
-		}
-		if err := item(i, inner); err != nil {
+		if err := enc.WriteToken(jsontext.BeginArray); err != nil {
 			return err
 		}
-	}
-	if indent != "" && n > 0 {
-		b.WriteString("\n" + prefix)
-	}
-	b.WriteByte(close)
-	return nil
-}
-
-// jsonQuote は JSON.stringify と同じく、" と \ と制御文字だけをエスケープする。
-func jsonQuote(s string) string {
-	var b strings.Builder
-	b.WriteByte('"')
-	for _, r := range s {
-		switch r {
-		case '"':
-			b.WriteString(`\"`)
-		case '\\':
-			b.WriteString(`\\`)
-		case '\b':
-			b.WriteString(`\b`)
-		case '\f':
-			b.WriteString(`\f`)
-		case '\n':
-			b.WriteString(`\n`)
-		case '\r':
-			b.WriteString(`\r`)
-		case '\t':
-			b.WriteString(`\t`)
-		default:
-			if r < 0x20 {
-				fmt.Fprintf(&b, `\u%04x`, r)
-			} else {
-				b.WriteRune(r)
+		for _, e := range v.Elems {
+			if err := encodeJSON(enc, e); err != nil {
+				return err
 			}
 		}
+		return enc.WriteToken(jsontext.EndArray)
+	case *Dict:
+		if err := enc.WriteToken(jsontext.BeginObject); err != nil {
+			return err
+		}
+		for _, k := range v.keys {
+			if err := enc.WriteToken(jsontext.String(k)); err != nil {
+				return err
+			}
+			if err := encodeJSON(enc, v.values[k]); err != nil {
+				return err
+			}
+		}
+		return enc.WriteToken(jsontext.EndObject)
 	}
-	b.WriteByte('"')
-	return b.String()
+	return errors.New("not json")
 }
