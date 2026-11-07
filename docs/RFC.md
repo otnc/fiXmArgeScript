@@ -1084,6 +1084,18 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 版番号はセマンティックバージョニングです。`fxma neyar` は版番号と一緒に、非公式のファンメイド作品であることを表示します。
 
+### 版とリリース
+
+版の元はGitのタグ（`v0.2.0`）だけにして、版をファイルに手で書きません。
+
+- **CLI**：Go 1.24からは、ビルドのときにGitのタグとコミットから版が実行ファイルに埋め込まれます。`fxma neyar` はそれを読んで、版とコミットとその日時を出します。タグの上なら `v0.2.0`、タグより後なら `v0.2.1-0.<日時>-<コミット>`、手元の変更が残っていれば `+dirty` が付きます。`go install ...@v0.2.0` で入れた場合も同じく `v0.2.0` になります。
+- **全部同じ版**：CLI、WebAssembly版（npm）、VS Code拡張、LSP、Neovim・Vimのプラグインは、1つのタグで同じ版にそろえます。言語の仕様とLSPと拡張は一緒に変わるからです。
+- **リリースの手順**：GitHub Actionsを `workflow_dispatch` で動かし、次の版（`patch`・`minor`・`major`・`prerelease`、または版を直接書く）と、プレリリースの識別子（`rc`・`beta` など）を選びます。最新のタグから次の版を決め、テストを通してからタグを打ち、GoReleaserでReleasesを作ります。
+- **npmのパッケージ**：リポジトリの `package.json` の `version` は `0.0.0` のままにし、リリースのときだけ書き換えて公開します（コミットはしません）。dist-tagは、プレリリースなら識別子（`0.2.0-rc.1` なら `rc`）、正式版なら `latest` です。
+- **VS Code拡張**：Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。プレリリースのときは、VSIXファイルをReleasesに添付するだけにします。
+- **Neovim・Vimのプラグイン**：版のファイルは持たず、ミラーのリポジトリ（fxma.nvim）に同じタグを打ちます。lazy.nvimの `version` もNeovimの `vim.pack` も、Gitのタグで版を選びます。
+- **インストーラ**：Inno Setupには、ビルドのときに版を渡します（`iscc /DAppVersion=0.2.0`）。`install.sh` はReleasesの最新版を見るので、版を持ちません。
+
 ### WebAssembly版
 
 `GOOS=js GOARCH=wasm` で `fxma.wasm` を作り、Go付属の `wasm_exec.js` と組み合わせて配ります。
@@ -1148,7 +1160,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 - **コードのライセンス**：`MIT OR Apache-2.0` の二重ライセンスにする。Rustと同じで、使う側がどちらかを選べる。ただし、作品の権利まで許諾するものではないとREADMEに書く。
 - **Goのライセンス**：実行ファイルと `wasm_exec.js` にはGoのコード（BSD 3条項ライセンス）が含まれる。その著作権表示を `THIRD_PARTY_LICENSES` に入れて同梱する。
-- **依存ライブラリ**：増えたら、同じファイルにライセンスを追記する。
+- **依存ライブラリ**：自前で書くより保守しやすい場合は、Goのライブラリ（標準・外部とも）を使う。実行ファイルに入るもの（今は urfave/cli、MITライセンス）は、同じファイルにライセンスを追記する。
 
 ### 同梱README（README.md）に書くこと
 
