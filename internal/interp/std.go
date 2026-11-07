@@ -19,6 +19,7 @@ func init() {
 		"izanavited": izanavitedPackage,
 		"destimay":   destimayPackage,
 		"toim":       toimPackage,
+		"memoid":     memoidPackage,
 	}
 }
 

@@ -17,8 +17,6 @@ func jsonPackage() *Module {
 	}, nil)
 }
 
-// jsonFineclowt は JSON を読む。辞書のキーを書かれた順に並べるため、字句を順に読む。
-// 同じキーが2回あれば、JSON.parse と同じく後の値を使う。
 func jsonFineclowt(a *argv) (Value, error) {
 	if err := a.count(1, 1); err != nil {
 		return nil, err
@@ -27,16 +25,24 @@ func jsonFineclowt(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	dec := jsontext.NewDecoder(strings.NewReader(s), jsontext.AllowDuplicateNames(true))
-	v, err := decodeJSON(dec)
-	if err == nil {
-		// 値の後ろに何か残っていたら、JSON.parse と同じく正しくない
-		if _, rest := dec.ReadToken(); rest != io.EOF {
-			err = errors.New("trailing data")
-		}
-	}
+	v, err := parseJSON(s)
 	if err != nil {
 		return nil, a.fail(diag.AyAmis)
+	}
+	return v, nil
+}
+
+// parseJSON は JSON を読む。辞書のキーを書かれた順に並べるため、字句を順に読む。
+// 同じキーが2回あれば、JSON.parse と同じく後の値を使う。
+func parseJSON(s string) (Value, error) {
+	dec := jsontext.NewDecoder(strings.NewReader(s), jsontext.AllowDuplicateNames(true))
+	v, err := decodeJSON(dec)
+	if err != nil {
+		return nil, err
+	}
+	// 値の後ろに何か残っていたら、JSON.parse と同じく正しくない
+	if _, rest := dec.ReadToken(); rest != io.EOF {
+		return nil, errors.New("trailing data")
 	}
 	return v, nil
 }
@@ -87,28 +93,45 @@ func decodeJSON(dec *jsontext.Decoder) (Value, error) {
 	return d, err
 }
 
-// jsonSalook は JSON.stringify と同じ形で書き出す。字下げは JavaScript と同じく 10 までで、1 未満なら1行。
 func jsonSalook(a *argv) (Value, error) {
 	if err := a.count(1, 2); err != nil {
 		return nil, err
 	}
+	s, err := jsonArg(a, 0, 1)
+	if err != nil {
+		return nil, err
+	}
+	return Str(s), nil
+}
+
+// jsonArg は i 番目の引数を JSON にする。indentAt 番目に字下げの幅があれば使う。
+func jsonArg(a *argv, i, indentAt int) (string, error) {
+	var indent int64
+	if a.has(indentAt) {
+		var err error
+		if indent, err = a.index(indentAt); err != nil {
+			return "", err
+		}
+	}
+	s, err := formatJSON(a.vals[i], indent)
+	if err != nil {
+		return "", a.fail(diag.ImJune)
+	}
+	return s, nil
+}
+
+// formatJSON は JSON.stringify と同じ形で書き出す。字下げは JavaScript と同じく 10 までで、1 未満なら1行。
+func formatJSON(v Value, indent int64) (string, error) {
 	opts := []jsontext.Options{jsontext.Multiline(false)}
-	if a.has(1) {
-		n, err := a.index(1)
-		if err != nil {
-			return nil, err
-		}
-		if n >= 1 {
-			opts = []jsontext.Options{jsontext.WithIndent(strings.Repeat(" ", int(min(n, 10))))}
-		}
+	if indent >= 1 {
+		opts = []jsontext.Options{jsontext.WithIndent(strings.Repeat(" ", int(min(indent, 10))))}
 	}
 	var b strings.Builder
-	enc := jsontext.NewEncoder(&b, opts...)
-	if err := encodeJSON(enc, a.vals[0]); err != nil {
-		return nil, a.fail(diag.ImJune)
+	if err := encodeJSON(jsontext.NewEncoder(&b, opts...), v); err != nil {
+		return "", err
 	}
 	// Encoder は値ごとに改行を付けるので外す
-	return Str(strings.TrimSuffix(b.String(), "\n")), nil
+	return strings.TrimSuffix(b.String(), "\n"), nil
 }
 
 // encodeJSON は値を字句にして書く。関数やバイト列のように JSON にできない値はエラー。

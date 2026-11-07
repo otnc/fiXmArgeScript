@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/afero"
+
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/parser"
 	"github.com/otnc/fiXmArgeScript/internal/token"
@@ -27,8 +29,10 @@ type Options struct {
 	// Load は werer で読み込むファイルを読み、構文解析と検査をして返す。ファイルがなければ fs.ErrNotExist を包んだエラーを返す。
 	// nil ならファイルの読み込みは Ca-nay (標準パッケージは読める)。
 	Load func(name string) (*parser.File, error)
-	// WorkDir は今いる場所 (izanavited no defutai が使う)。空ならブラウザ版と同じく /。
+	// WorkDir は今いる場所 (izanavited no defutai、memoid の相対パス)。空ならブラウザ版と同じく /。
 	WorkDir string
+	// FS は fxma:memoid が使うファイル。nil なら memoid の関数は Ca-nay (ブラウザ版)。
+	FS afero.Fs
 	// Now と Location は時刻とタイムゾーン (fxma:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
@@ -57,7 +61,7 @@ type Interp struct {
 	inputCursor int
 
 	// 時刻と乱数の結果。入力と同じく、やり直しのときは記録を使う (std/README.md)
-	records      []Value
+	records      []outcome
 	recordCursor int
 	rng          *rand.Rand
 
@@ -230,18 +234,32 @@ func (in *Interp) readLine() Value {
 	return v
 }
 
-// recorded は時刻や乱数のように実行するたびに変わる結果を返す。やり直しのときは前の結果を使う。
-// 記録する値は数・文字列など書き換えられないものだけにする。配列を記録すると、前の実行で書き換えた中身が残ってしまうため。
-func (in *Interp) recorded(produce func() Value) Value {
+// outcome は外の世界とやり取りした結果1つ。
+type outcome struct {
+	v   any
+	err error
+}
+
+// once は外の世界とやり取りする処理 (時刻、乱数、ファイル) を1回だけ実行する。
+// やり直しのときは処理をせず、前の結果を返す。ファイルを書くなどの取り消せない処理を二度しないためと、
+// 前と同じ結果にするため。
+// 記録する値は書き換えられないものだけにする。fxma の配列や辞書を記録すると、前の実行で書き換えた中身が残ってしまう。
+func (in *Interp) once(produce func() (any, error)) (any, error) {
 	if in.recordCursor < len(in.records) {
-		v := in.records[in.recordCursor]
+		o := in.records[in.recordCursor]
 		in.recordCursor++
-		return v
+		return o.v, o.err
 	}
-	v := produce()
-	in.records = append(in.records, v)
+	v, err := produce()
+	in.records = append(in.records, outcome{v, err})
 	in.recordCursor++
-	return v
+	return v, err
+}
+
+// recorded は失敗しない once。
+func (in *Interp) recorded(produce func() Value) Value {
+	v, _ := in.once(func() (any, error) { return produce(), nil })
+	return v.(Value)
 }
 
 func (in *Interp) now() time.Time {

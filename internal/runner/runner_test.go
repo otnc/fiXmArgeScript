@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/afero"
+
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 )
@@ -17,8 +19,10 @@ type testCase struct {
 	src    string
 	stdin  string
 	stdout string
-	err    diag.Kind         // 空ならエラーなし
-	files  map[string]string // werer で読み込めるファイル
+	err    diag.Kind                         // 空ならエラーなし
+	files  map[string]string                 // werer で読み込めるファイル
+	disk   map[string]string                 // fxma:memoid から見えるファイル。/work からの相対パス
+	check  func(t *testing.T, fsys afero.Fs) // 実行した後のファイルを確かめる
 }
 
 // fixedNow は 2026-11-07T21:00:00.042+09:00。時刻を使うテストを毎回同じにする。
@@ -36,7 +40,16 @@ func runCase(t *testing.T, c testCase) {
 		}
 		return []byte(src), nil
 	}
-	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", Now: fixedNow, Location: tokyo}
+	fsys := afero.NewMemMapFs()
+	if err := fsys.MkdirAll("/work", 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for name, content := range c.disk {
+		if err := afero.WriteFile(fsys, "/work/"+name, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Now: fixedNow, Location: tokyo}
 	_, err := Run(c.src, "main.fxma", opts)
 	var de *diag.Error
 	switch {
@@ -44,6 +57,9 @@ func runCase(t *testing.T, c testCase) {
 		t.Errorf("%s: エラー %v", c.name, err)
 	case c.err != "" && (!errors.As(err, &de) || de.Kind != c.err):
 		t.Errorf("%s: エラー %v, want %s", c.name, err, c.err.Spelling())
+	}
+	if c.check != nil {
+		c.check(t, fsys)
 	}
 	if got := stdout.String(); got != c.stdout {
 		t.Errorf("%s:\n got %q\nwant %q", c.name, got, c.stdout)

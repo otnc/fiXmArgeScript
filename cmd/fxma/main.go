@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/spf13/afero"
 	"github.com/urfave/cli/v3"
 
 	"github.com/otnc/fiXmArgeScript/internal/build"
@@ -148,7 +149,7 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 	}
 	if err == nil {
 		wd, _ := os.Getwd()
-		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd})
+		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs()})
 	}
 	if err != nil {
 		fmt.Fprintln(s.stderr, err)
