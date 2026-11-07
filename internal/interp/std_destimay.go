@@ -11,8 +11,8 @@ import (
 // 乱数は入出力と同じ扱いなので、どの関数も abiryoku が要る。結果は記録して、やり直しでは記録を使う。
 func destimayPackage() *Module {
 	return newStd(map[string]stdDef{
-		"senchoose": {fn: destimaySenchoose, abiryoku: true},
-		"commity":   {fn: destimayCommity, abiryoku: true},
+		"senchoose": {fn: senchooseWith(seededRNG), abiryoku: true},
+		"commity":   {fn: commityWith(seededRNG), abiryoku: true},
 		"madrazy":   {fn: destimayMadrazy, abiryoku: true},
 		"uuid":      {fn: destimayUUID, abiryoku: true},
 		"gomi":      {fn: destimayGomi, abiryoku: true},
@@ -38,15 +38,25 @@ func destimayGomi(a *argv) (Value, error) {
 	return null, nil
 }
 
-func destimayCommity(a *argv) (Value, error) {
-	if err := a.count(0, 0); err != nil {
-		return nil, err
+// seededRNG は gomi で種を決められる乱数。keyga は暗号に使える乱数を渡す。
+func seededRNG(in *Interp) *rand.Rand { return in.rng }
+
+// commityWith は 0 以上 1 未満の小数を返す関数を作る。
+func commityWith(rng func(*Interp) *rand.Rand) stdFunc {
+	return func(a *argv) (Value, error) {
+		if err := a.count(0, 0); err != nil {
+			return nil, err
+		}
+		return a.in.recorded(func() Value { return Float(rng(a.in).Float64()) }), nil
 	}
-	return a.in.recorded(func() Value { return Float(a.in.rng.Float64()) }), nil
 }
 
-// destimaySenchoose は範囲か配列から1つ選ぶ。記録するのは選んだ位置で、要素そのものではない。
-func destimaySenchoose(a *argv) (Value, error) {
+// senchooseWith は範囲か配列から1つ選ぶ関数を作る。記録するのは選んだ位置で、要素そのものではない。
+func senchooseWith(rng func(*Interp) *rand.Rand) stdFunc {
+	return func(a *argv) (Value, error) { return senchoose(a, rng(a.in)) }
+}
+
+func senchoose(a *argv, rng *rand.Rand) (Value, error) {
 	if err := a.count(1, 1); err != nil {
 		return nil, err
 	}
@@ -56,7 +66,7 @@ func destimaySenchoose(a *argv) (Value, error) {
 		if n == 0 {
 			return nil, a.fail(diag.NiiExi)
 		}
-		k := a.in.recorded(func() Value { return Int(a.in.rng.Uint64N(n)) }).(Int)
+		k := a.in.recorded(func() Value { return Int(rng.Uint64N(n)) }).(Int)
 		// 範囲の幅は int64 に収まらないことがあるので、uint64 で数えて戻す
 		return Int(c.Lo + int64(uint64(k)*uint64(c.Step))), nil
 	case *Array:
@@ -64,7 +74,7 @@ func destimaySenchoose(a *argv) (Value, error) {
 		if n == 0 {
 			return nil, a.fail(diag.NiiExi)
 		}
-		k := a.in.recorded(func() Value { return Int(a.in.rng.IntN(n)) }).(Int)
+		k := a.in.recorded(func() Value { return Int(rng.IntN(n)) }).(Int)
 		return c.Elems[k], nil
 	}
 	return nil, a.fail(diag.ImJune)

@@ -21,6 +21,8 @@ func init() {
 		"toim":       toimPackage,
 		"memoid":     memoidPackage,
 		"ieviljio":   ieviljioPackage,
+		"keyga":      keygaPackage,
+		"gemon":      gemonPackage,
 	}
 }
 

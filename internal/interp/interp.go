@@ -10,6 +10,7 @@ import (
 	"errors"
 	"io"
 	"math/rand/v2"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
@@ -35,6 +36,8 @@ type Options struct {
 	FS afero.Fs
 	// Process は fxma:ieviljio が使う今のプロセスの情報。nil なら空の情報で、魔女は生めない (ブラウザ版)。
 	Process *Process
+	// HTTPClient は fxma:gemon が使う。nil なら通信は Ca-nay。
+	HTTPClient *http.Client
 	// Now と Location は時刻とタイムゾーン (fxma:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
@@ -75,7 +78,7 @@ type Interp struct {
 
 	// greatWitch は ieviljio no diviljio() の大魔女。やり直しのたびに作り直す
 	greatWitch *Dict
-	parsed  map[string]*parser.File
+	parsed     map[string]*parser.File
 }
 
 type output struct {

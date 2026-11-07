@@ -3,6 +3,7 @@ package runner
 import (
 	"errors"
 	"io/fs"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -24,6 +25,7 @@ type testCase struct {
 	disk   map[string]string                 // fxma:memoid から見えるファイル。/work からの相対パス
 	check  func(t *testing.T, fsys afero.Fs) // 実行した後のファイルを確かめる
 	exit   int                               // dv no "shid" で終わるときの終了コード
+	client *http.Client                      // fxma:gemon に渡す。nil なら通信できない
 	proc   *interp.Process                   // fxma:ieviljio に渡す。nil なら空
 }
 
@@ -51,7 +53,7 @@ func runCase(t *testing.T, c testCase) {
 			t.Fatal(err)
 		}
 	}
-	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Process: c.proc, Now: fixedNow, Location: tokyo}
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Now: fixedNow, Location: tokyo}
 	_, err := Run(c.src, "main.fxma", opts)
 	var de *diag.Error
 	exit, exited := errors.AsType[*interp.Exit](err)

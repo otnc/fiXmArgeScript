@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -153,7 +154,7 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 	}
 	if err == nil {
 		wd, _ := os.Getwd()
-		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(), Process: osProcess(cmd.Args().Tail())})
+		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(), Process: osProcess(cmd.Args().Tail()), HTTPClient: http.DefaultClient})
 	}
 	if exit, ok := errors.AsType[*interp.Exit](err); ok {
 		return exitCode(exit.Code)
