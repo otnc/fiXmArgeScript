@@ -1,0 +1,11 @@
+# 標準パッケージと、自分で書いたファイルを読み込む
+"fxma:coword" aste coword werer
+"fxma:varizama" aste varizama werer
+"./lib/stats" no average werer
+
+scores izu [72, 95, 88, 61]
+varizama no orei(scores) redogh
+average(scores) redogh
+
+names izu coword no confsoy("alte,meif,soda", ",")
+varizama no tarip(names, coword no gdie) redogh

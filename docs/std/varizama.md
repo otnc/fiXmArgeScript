@@ -22,6 +22,10 @@
 
 `naddy`、`vaniell`、`lea` は渡した配列そのものを書き換え、ほかの関数は新しい配列を返します。JavaScriptの `xs.push(x)` と `xs.toSorted()` と同じ分け方です。
 
+書き換える関数のうち `naddy` と `lea` は `vanita` を返します。JavaScriptの `push` は新しい長さを返しますが、値を返さないことで、新しい配列を返す関数と取り違えにくくしています。長さは `nang(xs)` で読みます。
+
+`vaniell` と `lea` の位置は `xs no i` と同じく、負の数なら後ろから数えます。`lea` の `-1` はJavaScriptの `splice` と同じく最後の要素の前です。範囲の外の位置や、空の配列への `vaniell` は `Nii eXi'` エラーです。
+
 ### 並べ替え
 
 - `orei(xs)` は、数は小さい順、文字列は文字の番号の順に並べます。数と文字列が混ざっていると `imJune` エラーです。

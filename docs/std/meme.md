@@ -33,4 +33,4 @@
 | `log(x)` / `log2(x)` / `log10(x)` | 自然対数 / 2を底 / 10を底 | `Math.log` など |
 
 - 定数は `showence` と同じく書き換えられません。`meme no pi` で読みます。
-- 0以下の数の対数や、範囲外の `asin` は `imJune` エラーです。
+- 0以下の数の対数、負の数の `mource`、範囲外の `asin` は `imJune` エラーです。JavaScriptなら `NaN` になるところです。

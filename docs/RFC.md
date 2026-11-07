@@ -795,7 +795,11 @@ twice("Mof" redogh)  # Mof を2回出力する
 - `werer`（迎える）は動詞なので文の後ろ、`oqun`（開く）は見出しに付く語なので前に置きます。
 - `"./util"` は `./util.fxma` を読みます。`"./util" werer` だけの書き方は `AyAmis`（構文エラー）です。
 - 公開できるのは `oqun` を付けた関数と定数（`showence`）だけです。付いていないものを外から使うと `Ca-nay`（できない）エラーです。
-- 読み込まれるファイルには、定義と `werer` だけを書けます。処理を実行する文は、`fxma keeon` で直接動かすファイルにだけ書けます。
+- 読み込まれるファイルには、定義（`weho` と `showence`）と `werer` だけを書けます。処理を実行する文は、`fxma keeon` で直接動かすファイルにだけ書けます。それ以外の文があると `Ca-nay` エラーです。
+- 読み込まれるファイルの一番外側は `abiryoku` の外として扱います。`showence` の右で入出力をする関数を呼ぶと `kiNbOO` エラーです。
+- 読み込んだ名前は、JavaScriptの `import` と同じく書き換えられません。`double izu 1` や `util no limit izu 1` は `blasTOac` エラーです。
+- 同じ名前を2回読み込むと `Su·Ready` エラーです。`aste` で別名を付けます。
+- 清書（`.fxmac`）を実行しているときは、読み込み先も清書を読みます。`fxma sinruits` は読み込み先の下書きもまとめて清書するので、そのまま動きます。
 - 読み込みが循環すると `Su·Ready`（既に）、読み込み先がないと `Nii eXi'` エラーです。
 
 フィクスマージ語（ソース）：
@@ -968,7 +972,7 @@ Nii eXi' main.fxma:3:5 cnt
 | --- | --- | --- | --- | --- |
 | `fxma keeon main.fxma` | 続ける | `run` | 下書きをメモリ上でビルドし、その清書を実行する | `go run` |
 | `fxma keeon main.fxmac` | 続ける | `run` | 清書をそのまま実行する | ビルド済みのファイルを実行 |
-| `fxma sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する | `go build` |
+| `fxma sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き（`./` か `../` で始まるもの）も、たどってまとめて清書する | `go build`、`tsc` |
 | `fxma sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する | `deno compile`、`bun build --compile` |
 | `fxma coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す | `go test` |
 | `fxma beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形する | `go fmt` |
