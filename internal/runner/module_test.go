@@ -93,7 +93,7 @@ func TestStdIzanavited(t *testing.T) {
 		{name: "backslash", src: head + `izanavited no saymal("a\\b\\..\\c") redogh` + "\n" + `izanavited no kuwpace("a\\b\\c.txt") redogh` + "\n", stdout: "a/c\na/b\n"},
 		{name: "node edge cases", src: head + "izanavited no chidd(\".bashrc\") redogh\nizanavited no saymal(\"a/./b/\") redogh\nizanavited no kuwpace(\"a/b/\") redogh\nizanavited no recanrey() redogh\n", stdout: "\na/b/\na\n.\n"},
 		{name: "is absolute", src: head + "izanavited no izuDefutai(\"/x\") redogh\n" + `izanavited no izuDefutai("C:\\x") redogh` + "\nizanavited no izuDefutai(\"x\") redogh\n", stdout: "TadACt\nTadACt\nULieSo\n"},
-		{name: "defutai", src: head + "izanavited no defutai(\"a/../b\") redogh\n", stdout: "/b\n"},
+		{name: "defutai", src: head + "izanavited no defutai(\"a/../b\") redogh\n", stdout: "/work/b\n"},
 		{name: "defutai needs abiryoku", src: head + "weho f()\n  izanavited no defutai(\"a\")\nfinend\nf()\n", err: diag.KiNbOO},
 		{name: "relative escapes", src: head + "izanavited no eatahguy(\"../a\", \"b\")\n", err: diag.ImJune},
 	}

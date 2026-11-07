@@ -17,6 +17,8 @@ func init() {
 		"varizama":   varizamaPackage,
 		"json":       jsonPackage,
 		"izanavited": izanavitedPackage,
+		"destimay":   destimayPackage,
+		"toim":       toimPackage,
 	}
 }
 

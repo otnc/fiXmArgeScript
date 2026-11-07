@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/interp"
@@ -20,6 +21,11 @@ type testCase struct {
 	files  map[string]string // werer で読み込めるファイル
 }
 
+// fixedNow は 2026-11-07T21:00:00.042+09:00。時刻を使うテストを毎回同じにする。
+func fixedNow() time.Time { return time.UnixMilli(1794052800042) }
+
+var tokyo = time.FixedZone("JST", 9*60*60)
+
 func runCase(t *testing.T, c testCase) {
 	t.Helper()
 	var stdout, stderr strings.Builder
@@ -30,7 +36,7 @@ func runCase(t *testing.T, c testCase) {
 		}
 		return []byte(src), nil
 	}
-	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile)}
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", Now: fixedNow, Location: tokyo}
 	_, err := Run(c.src, "main.fxma", opts)
 	var de *diag.Error
 	switch {

@@ -9,8 +9,10 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"math/rand/v2"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/parser"
@@ -27,6 +29,9 @@ type Options struct {
 	Load func(name string) (*parser.File, error)
 	// WorkDir は今いる場所 (izanavited no defutai が使う)。空ならブラウザ版と同じく /。
 	WorkDir string
+	// Now と Location は時刻とタイムゾーン (fxma:toim)。nil なら time.Now と time.Local。
+	Now      func() time.Time
+	Location *time.Location
 }
 
 // maxDepth は関数の呼び出しの深さの上限。超えると Bavellabion。
@@ -50,6 +55,11 @@ type Interp struct {
 	// 入力。やり直しのときは記録を使う
 	inputs      []Value
 	inputCursor int
+
+	// 時刻と乱数の結果。入力と同じく、やり直しのときは記録を使う (std/README.md)
+	records      []Value
+	recordCursor int
+	rng          *rand.Rand
 
 	frames []frame
 
@@ -90,7 +100,7 @@ func (b *backtrack) Error() string { return "backtrack" }
 
 // Run はファイルを実行する。捕まらなかったエラーを返す。
 func Run(f *parser.File, opts Options) error {
-	in := &Interp{file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}}
+	in := &Interp{file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
 	for {
 		err := in.runOnce(f)
 		var bt *backtrack
@@ -116,6 +126,7 @@ func (in *Interp) runOnce(f *parser.File) error {
 	in.emitted = 0
 	in.pending = nil
 	in.inputCursor = 0
+	in.recordCursor = 0
 	in.frames = []frame{{abiryoku: true, async: true, file: in.file}}
 	in.modules = map[string]*Module{}
 	in.loading = map[string]bool{}
@@ -217,6 +228,34 @@ func (in *Interp) readLine() Value {
 	in.inputs = append(in.inputs, v)
 	in.inputCursor++
 	return v
+}
+
+// recorded は時刻や乱数のように実行するたびに変わる結果を返す。やり直しのときは前の結果を使う。
+// 記録する値は数・文字列など書き換えられないものだけにする。配列を記録すると、前の実行で書き換えた中身が残ってしまうため。
+func (in *Interp) recorded(produce func() Value) Value {
+	if in.recordCursor < len(in.records) {
+		v := in.records[in.recordCursor]
+		in.recordCursor++
+		return v
+	}
+	v := produce()
+	in.records = append(in.records, v)
+	in.recordCursor++
+	return v
+}
+
+func (in *Interp) now() time.Time {
+	if in.opts.Now != nil {
+		return in.opts.Now()
+	}
+	return time.Now()
+}
+
+func (in *Interp) location() *time.Location {
+	if in.opts.Location != nil {
+		return in.opts.Location
+	}
+	return time.Local
 }
 
 func (in *Interp) errorf(kind diag.Kind, pos token.Pos, target string) error {
