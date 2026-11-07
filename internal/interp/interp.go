@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"path/filepath"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
@@ -24,6 +25,8 @@ type Options struct {
 	// Load は werer で読み込むファイルを読み、構文解析と検査をして返す。ファイルがなければ fs.ErrNotExist を包んだエラーを返す。
 	// nil ならファイルの読み込みは Ca-nay (標準パッケージは読める)。
 	Load func(name string) (*parser.File, error)
+	// WorkDir は今いる場所 (izanavited no defutai が使う)。空ならブラウザ版と同じく /。
+	WorkDir string
 }
 
 // maxDepth は関数の呼び出しの深さの上限。超えると Bavellabion。
@@ -118,6 +121,13 @@ func (in *Interp) runOnce(f *parser.File) error {
 	in.loading = map[string]bool{}
 	_, _, err := in.execBlock(f.Stmts, newEnv(nil, false))
 	return err
+}
+
+func (in *Interp) workDir() string {
+	if in.opts.WorkDir == "" {
+		return "/"
+	}
+	return filepath.ToSlash(in.opts.WorkDir)
 }
 
 func (in *Interp) frame() frame { return in.frames[len(in.frames)-1] }

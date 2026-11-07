@@ -12,9 +12,11 @@ var stdPackages map[string]func() *Module
 
 func init() {
 	stdPackages = map[string]func() *Module{
-		"meme":     memePackage,
-		"coword":   cowordPackage,
-		"varizama": varizamaPackage,
+		"meme":       memePackage,
+		"coword":     cowordPackage,
+		"varizama":   varizamaPackage,
+		"json":       jsonPackage,
+		"izanavited": izanavitedPackage,
 	}
 }
 

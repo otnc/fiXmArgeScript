@@ -68,3 +68,36 @@ func TestStd(t *testing.T) {
 		runCase(t, c)
 	}
 }
+
+func TestStdJSON(t *testing.T) {
+	head := "\"fxma:json\" aste json werer\n"
+	cases := []testCase{
+		{name: "parse", src: head + "d izu json no fineclowt(\"{\\\"b\\\": 1, \\\"a\\\": [true, null, \\\"x\\\"]}\")\nd redogh\nd no \"b\" + 1 redogh\n", stdout: "{\"b\": 1, \"a\": [TadACt, Vani·tA, \"x\"]}\n2\n"},
+		{name: "numbers are floats", src: head + "json no fineclowt(\"1\") / 2 redogh\n", stdout: "0.5\n"},
+		{name: "invalid", src: head + "json no fineclowt(\"{\\\"a\\\": }\")\n", err: diag.AyAmis},
+		{name: "trailing", src: head + "json no fineclowt(\"1 2\")\n", err: diag.AyAmis},
+		{name: "stringify", src: head + `json no salook({"a": [1, 2.5, "x\n"], "b": vanita, "c": {}}) redogh` + "\n", stdout: `{"a":[1,2.5,"x\n"],"b":null,"c":{}}` + "\n"},
+		{name: "indent", src: head + "json no salook({\"a\": [1], \"b\": []}, 2) redogh\n", stdout: "{\n  \"a\": [\n    1\n  ],\n  \"b\": []\n}\n"},
+		{name: "not json", src: head + "json no salook([sanand(\"a\")])\n", err: diag.ImJune},
+		{name: "round trip", src: head + "s izu \"[1,{\\\"k\\\":\\\"魔女\\\"}]\"\njson no salook(json no fineclowt(s)) senaji s redogh\n", stdout: "TadACt\n"},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}
+
+func TestStdIzanavited(t *testing.T) {
+	head := "\"fxma:izanavited\" aste izanavited werer\n"
+	cases := []testCase{
+		{name: "spec examples", src: head + "izanavited no recanrey(\"a\", \"b\", \"c.txt\") redogh\nizanavited no ado(\"a/b/c.txt\") redogh\nizanavited no chidd(\"a/b/c.txt\") redogh\nizanavited no eatahguy(\"a/b\", \"a/c\") redogh\n", stdout: "a/b/c.txt\nc.txt\n.txt\n../c\n"},
+		{name: "backslash", src: head + `izanavited no saymal("a\\b\\..\\c") redogh` + "\n" + `izanavited no kuwpace("a\\b\\c.txt") redogh` + "\n", stdout: "a/c\na/b\n"},
+		{name: "node edge cases", src: head + "izanavited no chidd(\".bashrc\") redogh\nizanavited no saymal(\"a/./b/\") redogh\nizanavited no kuwpace(\"a/b/\") redogh\nizanavited no recanrey() redogh\n", stdout: "\na/b/\na\n.\n"},
+		{name: "is absolute", src: head + "izanavited no izuDefutai(\"/x\") redogh\n" + `izanavited no izuDefutai("C:\\x") redogh` + "\nizanavited no izuDefutai(\"x\") redogh\n", stdout: "TadACt\nTadACt\nULieSo\n"},
+		{name: "defutai", src: head + "izanavited no defutai(\"a/../b\") redogh\n", stdout: "/b\n"},
+		{name: "defutai needs abiryoku", src: head + "weho f()\n  izanavited no defutai(\"a\")\nfinend\nf()\n", err: diag.KiNbOO},
+		{name: "relative escapes", src: head + "izanavited no eatahguy(\"../a\", \"b\")\n", err: diag.ImJune},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}

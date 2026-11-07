@@ -109,7 +109,8 @@ func cmdKeeon(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		printWarnings(f.Warnings, stderr)
 	}
 	if err == nil {
-		err = interp.Run(f, interp.Options{Stdin: stdin, Stdout: stdout, Stderr: stderr, Load: runner.Loader(os.ReadFile)})
+		wd, _ := os.Getwd()
+		err = interp.Run(f, interp.Options{Stdin: stdin, Stdout: stdout, Stderr: stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd})
 	}
 	if err != nil {
 		fmt.Fprintln(stderr, err)
