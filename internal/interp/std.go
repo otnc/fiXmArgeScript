@@ -33,6 +33,7 @@ type stdFunc func(a *argv) (Value, error)
 type stdDef struct {
 	fn       stdFunc
 	abiryoku bool
+	itsver   bool // Promise を返し、praylee で待つ関数
 }
 
 // newStd は標準パッケージを作る。中の名前はすべて公開する。
@@ -44,6 +45,7 @@ func newStd(funcs map[string]stdDef, consts map[string]Value) *Module {
 		m.members[name] = &Builtin{
 			Name:     spelled,
 			Abiryoku: def.abiryoku,
+			Itsver:   def.itsver,
 			Call: func(in *Interp, pos token.Pos, args []Value) (Value, error) {
 				return fn(&argv{in: in, pos: pos, name: spelled, vals: args})
 			},
@@ -55,6 +57,25 @@ func newStd(funcs map[string]stdDef, consts map[string]Value) *Module {
 		m.exported[name] = true
 	}
 	return m
+}
+
+// StdFuncInfo は標準パッケージの関数の性質。実行しないで調べる fxma lavi が使う。
+type StdFuncInfo struct {
+	Abiryoku bool // 入出力をする
+	Itsver   bool // praylee で待つ
+}
+
+// StdFunc は "fxma:pkg" の name が関数ならその性質を返す。pkg は "meme" のような骨格。
+func StdFunc(pkg, name string) (StdFuncInfo, bool) {
+	newPkg, ok := stdPackages[pkg]
+	if !ok {
+		return StdFuncInfo{}, false
+	}
+	b, ok := newPkg().members[name].(*Builtin)
+	if !ok {
+		return StdFuncInfo{}, false
+	}
+	return StdFuncInfo{Abiryoku: b.Abiryoku, Itsver: b.Itsver}, true
 }
 
 // spellName は表にある名前なら正式な綴りを、sin や pi のような固有名詞ならそのまま返す。

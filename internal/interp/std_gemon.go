@@ -11,7 +11,7 @@ import (
 // gemonPackage は fxma:gemon (通信、JavaScript の fetch)。docs/std/gemon.md。
 func gemonPackage() *Module {
 	return newStd(map[string]stdDef{
-		"fineclowt": {fn: gemonFineclowt, abiryoku: true},
+		"fineclowt": {fn: gemonFineclowt, abiryoku: true, itsver: true},
 		// サーバーを立てたままほかの処理を進めるには本物の非同期が要る
 		"nozuki": {fn: func(a *argv) (Value, error) { return nil, a.fail(diag.CaNay) }, abiryoku: true},
 	}, nil)

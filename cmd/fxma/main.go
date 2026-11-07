@@ -89,6 +89,7 @@ func (s streams) app() *cli.Command {
 				Action:  s.sinruits,
 			},
 			{Name: "coatain", Aliases: []string{"test"}, Action: s.coatain},
+			{Name: "lavi", Aliases: []string{"lint"}, Action: s.lavi},
 			{
 				Name:    "beaukshi",
 				Aliases: []string{"fmt"},
@@ -244,6 +245,7 @@ func (s streams) usage(w io.Writer) {
   fxma coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
   fxma beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
   fxma beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
+  fxma lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
   fxma nai <エラー名>        エラーや警告の意味を説明する (explain)
   fxma nai                   この使い方を出す (help)
   fxma neyar                 版を出す (version)

@@ -37,6 +37,7 @@ type (
 	Builtin struct {
 		Name     string
 		Abiryoku bool
+		Itsver   bool
 		Call     func(in *Interp, pos token.Pos, args []Value) (Value, error)
 	}
 	// Promise は itsver の関数を呼んだ結果。最初の版では呼んだときに最後まで実行しておく。

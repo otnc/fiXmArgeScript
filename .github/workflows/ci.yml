@@ -18,3 +18,6 @@ jobs:
       - run: go test ./...
         env:
           FXMA_DICT_CHECK: "1"
+      # サンプルを fxma 自身で検査し、テストする
+      - run: go run ./cmd/fxma lavi examples
+      - run: go run ./cmd/fxma coatain examples

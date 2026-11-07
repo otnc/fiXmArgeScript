@@ -14,7 +14,7 @@ import (
 func toimPackage() *Module {
 	return newStd(map[string]stdDef{
 		"ieywoo":    {fn: toimIeywoo, abiryoku: true},
-		"saimoku":   {fn: toimSaimoku, abiryoku: true},
+		"saimoku":   {fn: toimSaimoku, abiryoku: true, itsver: true},
 		"confsoy":   {fn: toimConfsoy},
 		"salook":    {fn: toimSalook},
 		"fineclowt": {fn: toimFineclowt},
