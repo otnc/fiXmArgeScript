@@ -2,9 +2,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/build"
@@ -77,6 +80,16 @@ func readSource(path string, stderr io.Writer) (string, bool) {
 	return string(src), true
 }
 
+// printReadError は、ファイルを読めなかったエラーをコンソールに出せる形にする。OS のエラー文は英語なので出さない。
+func printReadError(err error, stderr io.Writer) {
+	var pe *fs.PathError
+	if errors.As(err, &pe) {
+		fmt.Fprintln(stderr, diag.NiiExi.Spelling(), filepath.ToSlash(pe.Path))
+		return
+	}
+	fmt.Fprintln(stderr, err)
+}
+
 func printWarnings(warnings []diag.Warning, stderr io.Writer) {
 	for _, w := range warnings {
 		fmt.Fprintln(stderr, w)
@@ -96,7 +109,7 @@ func cmdKeeon(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		printWarnings(f.Warnings, stderr)
 	}
 	if err == nil {
-		err = interp.Run(f, interp.Options{Stdin: stdin, Stdout: stdout, Stderr: stderr})
+		err = interp.Run(f, interp.Options{Stdin: stdin, Stdout: stdout, Stderr: stderr, Load: runner.Loader(os.ReadFile)})
 	}
 	if err != nil {
 		fmt.Fprintln(stderr, err)
@@ -120,22 +133,19 @@ func cmdSinruits(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	if len(files) != 1 || !strings.HasSuffix(files[0], ".fxma") {
 		return cmdNai(nil, stdin, stderr, stderr)
 	}
-	src, ok := readSource(files[0], stderr)
-	if !ok {
-		return 1
-	}
-	fair, warnings, err := build.Build(src, files[0])
+	outputs, warnings, err := build.Project(files[0], os.ReadFile)
 	printWarnings(warnings, stderr)
 	if err != nil {
-		fmt.Fprintln(stderr, err)
+		printReadError(err, stderr)
 		return 1
 	}
-	out := files[0] + "c"
-	if err := os.WriteFile(out, []byte(fair), 0o644); err != nil {
-		fmt.Fprintln(stderr, diag.CaNay.Spelling(), out)
-		return 1
+	for _, out := range outputs {
+		if err := os.WriteFile(out.Name, []byte(out.Source), 0o644); err != nil {
+			fmt.Fprintln(stderr, diag.CaNay.Spelling(), out.Name)
+			return 1
+		}
+		fmt.Fprintln(stdout, lexicon.Spell("finend"), out.Name)
 	}
-	fmt.Fprintln(stdout, lexicon.Spell("finend"), out)
 	return 0
 }
 
