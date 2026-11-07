@@ -994,7 +994,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `fxma sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き（`./` か `../` で始まるもの）も、たどってまとめて清書する | `go build`、`tsc` |
 | `fxma sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する | `deno compile`、`bun build --compile` |
 | `fxma coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す。ファイルやフォルダを渡せて、省くと今いる場所より下のフォルダまで全部探す（隠しフォルダと `node_modules` は飛ばす） | `go test`、vitest |
-| `fxma beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形する | `go fmt` |
+| `fxma beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形してファイルを書き換える。下の「整形」 | `go fmt`、`deno fmt` |
 | `fxma beaukshi --curoi main.fxma` | 呪い | `--expand` | 呪い（マクロ）を展開した結果を表示する | `cargo expand` |
 | `fxma hak` | 話す | `repl` | 対話モード。1行ずつ打って実行する | 引数なしの `python` |
 | `fxma nai <エラー名>` | なぜ | `explain` | エラーや警告の意味と直し方を表示する | `rustc --explain` |
@@ -1015,6 +1015,20 @@ Nii eXi' main.fxma:3:5 cnt
 コンソールにはフィクスマージ語しか出さないため、`fxma nai` だけは意味を日本語で説明します。
 
 `fxma hak` では、1回の入力を実行し終えるたびに、その中の選択肢（`mekamo`）を確定して出力を書き出します。`praylee` で待つときと同じ考え方です。後の入力で `shoubek` が偽になっても前の入力には戻らず、`Co-Jundic` になります。
+
+### 整形（fxma beaukshi）
+
+`fxma beaukshi` は下書きを決まった形に整えて、ファイルを書き換えます。Goの `go fmt` やDenoの `deno fmt` と同じです。ファイルやフォルダを渡せて、省くと今いる場所より下の `.fxma` を全部整えます（`fxma coatain` と同じ探し方）。変わったファイルだけ書き換えて、その名前を出します（`beAukShi main.fxma`）。
+
+- 字下げは空白2つです。ブロックの中を1段深くし、`finend`、`siva`、`youlugive`、`ennote` の行は1段浅く書きます。
+- 行の中の空白もそろえます。演算子の前後に空白を1つ、`,` と `:` の後ろに空白を1つ置き、括弧の内側には空白を置きません（`x izu f(a, b) + 1`）。
+- 空白を置かないところ：呼び出しの `(` の前（`f(x)`、`dv no "murm"(w)`）、値の前の `-`（`xs no -1`）、範囲の `..` と値の間（`2..4`、`..1`）、複合代入の記号と `izu` の間（`x +izu 1`）。`weho (n)` や `nii (x)` のように、キーワードの後ろの `(` の前には空白を置きます。
+- 続く空行は1つにまとめ、ファイルの頭と終わりの空行と、行末の空白を消します。ファイルは改行1つで終わります。
+- コメントはそのまま残します。行末のコメントの前には空白を2つ置きます。
+- 括弧の中で改行していれば、改行を残します。次の行の字下げは、開いたままの括弧やブロックを開いた行1つにつき1段です（Prettierと同じ）。
+- 文字列の中は書き換えません。
+- 整えた結果を読み直して、字句の並びが変わっていないか確かめます。変わっていたら書き換えずに `SaiVI` エラーにします。
+- `fxma beaukshi --curoi main.fxma` は、呪いを展開した結果を画面に出すだけで、書き換えません。呪いの中で作った名前は、付け替えた名前（`tmp·1`）のまま出します。
 
 ### 法の悪魔（fxma lavi）
 
