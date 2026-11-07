@@ -20,6 +20,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/explain"
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/parser"
 	"github.com/otnc/fiXmArgeScript/internal/runner"
 )
 
@@ -87,6 +88,7 @@ func (s streams) app() *cli.Command {
 				Flags:   []cli.Flag{&cli.BoolFlag{Name: "karady", Aliases: []string{"compile", "k", "c"}}},
 				Action:  s.sinruits,
 			},
+			{Name: "coatain", Aliases: []string{"test"}, Action: s.coatain},
 			{Name: "neyar", Aliases: []string{"version"}, Action: s.neyar},
 			{Name: "nai", Aliases: []string{"help", "explain"}, Action: s.nai},
 		},
@@ -122,13 +124,12 @@ func isSource(path string) bool {
 	return strings.HasSuffix(path, ".fxma") || strings.HasSuffix(path, ".fxmac")
 }
 
-// printReadError は、ファイルを読めなかったエラーをコンソールに出せる形にする。OS のエラー文は英語なので出さない。
-func (s streams) printReadError(err error) {
+// readError は、ファイルを読めなかったエラーをコンソールに出せる形にする。OS のエラー文は英語なので出さない。
+func readError(err error) error {
 	if pe, ok := errors.AsType[*fs.PathError](err); ok {
-		fmt.Fprintln(s.stderr, diag.NiiExi.Spelling(), filepath.ToSlash(pe.Path))
-		return
+		return errors.New(diag.NiiExi.Spelling() + " " + filepath.ToSlash(pe.Path))
 	}
-	fmt.Fprintln(s.stderr, err)
+	return err
 }
 
 func (s streams) printWarnings(warnings []diag.Warning) {
@@ -137,24 +138,37 @@ func (s streams) printWarnings(warnings []diag.Warning) {
 	}
 }
 
-func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
-	if cmd.Args().Len() == 0 || !isSource(cmd.Args().First()) {
-		s.usage(s.stderr)
-		return exitCode(2)
-	}
-	path := cmd.Args().First()
+// prepare はファイルを読んで検査する。方言の警告はここで出す。
+func (s streams) prepare(path string) (*parser.File, error) {
 	src, err := os.ReadFile(path)
 	if err != nil {
-		s.printReadError(err)
-		return exitCode(1)
+		return nil, readError(err)
 	}
 	f, err := runner.Prepare(string(src), path)
 	if f != nil {
 		s.printWarnings(f.Warnings)
 	}
+	return f, err
+}
+
+// options はプログラムに渡す入出力。args は dv no "conwa" になる。
+func (s streams) options(args []string) interp.Options {
+	wd, _ := os.Getwd()
+	return interp.Options{
+		Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr,
+		Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(),
+		Process: osProcess(args), HTTPClient: http.DefaultClient,
+	}
+}
+
+func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
+	if cmd.Args().Len() == 0 || !isSource(cmd.Args().First()) {
+		s.usage(s.stderr)
+		return exitCode(2)
+	}
+	f, err := s.prepare(cmd.Args().First())
 	if err == nil {
-		wd, _ := os.Getwd()
-		err = interp.Run(f, interp.Options{Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr, Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(), Process: osProcess(cmd.Args().Tail()), HTTPClient: http.DefaultClient})
+		err = interp.Run(f, s.options(cmd.Args().Tail()))
 	}
 	if exit, ok := errors.AsType[*interp.Exit](err); ok {
 		return exitCode(exit.Code)
@@ -179,7 +193,7 @@ func (s streams) sinruits(_ context.Context, cmd *cli.Command) error {
 	outputs, warnings, err := build.Project(cmd.Args().First(), os.ReadFile)
 	s.printWarnings(warnings)
 	if err != nil {
-		s.printReadError(err)
+		fmt.Fprintln(s.stderr, readError(err))
 		return exitCode(1)
 	}
 	for _, out := range outputs {
@@ -221,6 +235,7 @@ func (s streams) usage(w io.Writer) {
 
   fxma keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
   fxma sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
+  fxma coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
   fxma nai <エラー名>        エラーや警告の意味を説明する (explain)
   fxma nai                   この使い方を出す (help)
   fxma neyar                 版を出す (version)

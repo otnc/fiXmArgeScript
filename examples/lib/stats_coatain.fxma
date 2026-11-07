@@ -1,0 +1,6 @@
+"./stats" no average werer
+
+sentky "average"
+  average([1, 2, 3]) senaji 2 shoubek
+  average([1, 2]) senaji 1.5 shoubek
+finend

@@ -45,3 +45,12 @@ func Run(src, file string, opts interp.Options) ([]diag.Warning, error) {
 	}
 	return f.Warnings, interp.Run(f, opts)
 }
+
+// RunTests は _coatain.fxma の sentky を実行して判決を出す。有罪が1つでもあれば failed が true。
+func RunTests(src, file string, opts interp.Options) (failed bool, err error) {
+	f, err := Prepare(src, file)
+	if err != nil {
+		return false, err
+	}
+	return interp.RunTests(f, opts)
+}

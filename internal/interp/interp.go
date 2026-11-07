@@ -72,6 +72,10 @@ type Interp struct {
 
 	frames []frame
 
+	// testing は fxma coatain で動かしているか。failed は有罪になった sentky の数で、やり直しのたびに数え直す
+	testing bool
+	failed  int
+
 	// 読み込んだモジュール。やり直しのたびに作り直す。構文木は使い回す
 	modules map[string]*Module
 	loading map[string]bool
@@ -91,6 +95,7 @@ type frame struct {
 	abiryoku bool   // 入出力をしてよいか
 	async    bool   // praylee を書けるか (itsver の関数とファイルの一番外側)
 	file     string // 実行中の文が書かれたファイル。エラーの位置に使う
+	test     bool   // sentky の本体を実行しているか。ここの shoubek は巻き戻さずテストとして扱う
 }
 
 // thrown は accuhearts で投げた例外と、捕まえられる実行時エラーを包んだもの。
@@ -112,7 +117,18 @@ func (b *backtrack) Error() string { return "backtrack" }
 
 // Run はファイルを実行する。捕まらなかったエラーを返す。
 func Run(f *parser.File, opts Options) error {
-	in := &Interp{file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
+	_, err := run(f, opts, false)
+	return err
+}
+
+// RunTests は _coatain.fxma を実行し、sentky ごとに判決を出す。有罪が1つでもあれば failed が true。
+func RunTests(f *parser.File, opts Options) (failed bool, err error) {
+	in, err := run(f, opts, true)
+	return in.failed > 0, err
+}
+
+func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
+	in := &Interp{testing: testing, file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
 	for {
 		err := in.runOnce(f)
 		var bt *backtrack
@@ -121,16 +137,20 @@ func Run(f *parser.File, opts Options) error {
 				continue
 			}
 			in.flush()
-			return diag.New(diag.CoJundic, bt.file, bt.pos, "")
+			return in, diag.New(diag.CoJundic, bt.file, bt.pos, "")
 		}
 		in.flush()
-		var th *thrown
-		if errors.As(err, &th) {
-			reason, _ := th.value.Get("lyuzun")
-			return diag.New(diag.KeItion, th.file, th.pos, Display(reason))
-		}
-		return err
+		return in, uncaught(err)
 	}
+}
+
+// uncaught は捕まらなかったエラーを表示する形にする。accuhearts で投げた例外だけは KeI·tion で、対象に理由を書く。
+func uncaught(err error) error {
+	if th, ok := errors.AsType[*thrown](err); ok {
+		reason, _ := th.value.Get("lyuzun")
+		return diag.New(diag.KeItion, th.file, th.pos, Display(reason))
+	}
+	return err
 }
 
 func (in *Interp) runOnce(f *parser.File) error {
@@ -143,6 +163,7 @@ func (in *Interp) runOnce(f *parser.File) error {
 	in.modules = map[string]*Module{}
 	in.loading = map[string]bool{}
 	in.greatWitch = nil
+	in.failed = 0
 	_, _, err := in.execBlock(f.Stmts, newEnv(nil, false))
 	return err
 }

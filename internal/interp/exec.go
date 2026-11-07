@@ -66,7 +66,11 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 		return flowNormal, nil, in.throw(s, env)
 	case *ast.Assert:
 		ok, err := in.evalBool(s.X, env, s.Pos, "shoubek")
-		if err == nil && !ok {
+		switch {
+		case err != nil || ok:
+		case in.frame().test:
+			err = &testFailure{file: in.frame().file, pos: s.Pos}
+		default:
 			err = &backtrack{file: in.frame().file, pos: s.Pos}
 		}
 		return flowNormal, nil, err
@@ -94,7 +98,10 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 	case *ast.Break:
 		return flowBreak, nil, nil
 	case *ast.Test:
-		return flowNormal, nil, in.errorf(diag.CaNay, s.Pos, "sentky")
+		if !in.testing {
+			return flowNormal, nil, in.errorf(diag.CaNay, s.Pos, "sentky")
+		}
+		return flowNormal, nil, in.runTest(s, env)
 	case *ast.Import:
 		return flowNormal, nil, in.execImport(s, env)
 	}
