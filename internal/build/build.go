@@ -24,12 +24,6 @@ func Build(src, file string) (string, []diag.Warning, error) {
 	return b.String(), warnings, nil
 }
 
-// compoundOps は izu の直前に付けて複合代入になる記号。清書では空白を挟まずに書く。
-var compoundOps = map[string]bool{
-	"+": true, "-": true, "*": true, "/": true, "//": true, "%": true, "**": true,
-	"&": true, "|": true, "^": true, "<<": true, ">>": true,
-}
-
 func render(b *strings.Builder, src string, tokens []token.Token, from, to int, file string) error {
 	prev := from
 	for i, t := range tokens {
@@ -37,7 +31,7 @@ func render(b *strings.Builder, src string, tokens []token.Token, from, to int, 
 			break
 		}
 		gap := src[prev:t.Start]
-		if t.IsKeyword("izu") && i > 0 && tokens[i-1].Kind == token.Op && compoundOps[tokens[i-1].Name] && !strings.Contains(gap, "\n") {
+		if t.IsKeyword("izu") && i > 0 && tokens[i-1].Kind == token.Op && token.CompoundOps[tokens[i-1].Name] && !strings.Contains(gap, "\n") {
 			gap = ""
 		}
 		b.WriteString(gap)

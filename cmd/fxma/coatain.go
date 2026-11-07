@@ -22,7 +22,7 @@ func (s streams) coatain(_ context.Context, cmd *cli.Command) error {
 	}
 	var files []string
 	for _, t := range targets {
-		found, err := testFiles(t)
+		found, err := findFiles(t, "_coatain.fxma")
 		if err != nil {
 			fmt.Fprintln(s.stderr, readError(err))
 			return exitCode(1)
@@ -51,9 +51,9 @@ func (s streams) coatain(_ context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-// testFiles は target がファイルならそれを、フォルダなら下のフォルダまで探した _coatain.fxma を返す
-// (vitest や deno test と同じ)。隠しフォルダと node_modules は飛ばす。
-func testFiles(target string) ([]string, error) {
+// findFiles は target がファイルならそれを、フォルダなら下のフォルダまで探した、名前が suffix で終わるファイルを返す
+// (vitest や deno fmt と同じ)。隠しフォルダと node_modules は飛ばす。
+func findFiles(target, suffix string) ([]string, error) {
 	info, err := os.Stat(target)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func testFiles(target string) ([]string, error) {
 		if d.IsDir() && path != target && (strings.HasPrefix(name, ".") || name == "node_modules") {
 			return filepath.SkipDir
 		}
-		if !d.IsDir() && strings.HasSuffix(name, "_coatain.fxma") {
+		if !d.IsDir() && strings.HasSuffix(name, suffix) {
 			files = append(files, filepath.ToSlash(path))
 		}
 		return nil

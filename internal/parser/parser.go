@@ -121,3 +121,17 @@ func (p *parser) text(t token.Token) string {
 	}
 	return p.src[t.Start:t.End]
 }
+
+// Expand は呪いを展開した後の字句の並びを返す (fxma beaukshi --curoi)。
+func Expand(src, file string) ([]token.Token, error) {
+	mode := lexer.ModeOf(file)
+	tokens, _, err := lexer.Lex(src, file, mode)
+	if err != nil {
+		return nil, err
+	}
+	p := &parser{src: src, file: file, mode: mode, tokens: tokens}
+	if err := p.expandMacros(); err != nil {
+		return nil, err
+	}
+	return p.tokens, nil
+}

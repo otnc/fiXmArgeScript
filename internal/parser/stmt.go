@@ -142,16 +142,11 @@ func (p *parser) parseSimpleStmt() (ast.Stmt, error) {
 // compoundOp は今の位置が +izu のような複合代入なら、その記号を読んで返す。
 func (p *parser) compoundOp() (string, bool) {
 	t := p.peek()
-	if t.Kind == token.Op && compoundOps[t.Name] && p.peekAt(1).IsKeyword("izu") {
+	if t.Kind == token.Op && token.CompoundOps[t.Name] && p.peekAt(1).IsKeyword("izu") {
 		p.next()
 		return t.Name, true
 	}
 	return "", false
-}
-
-var compoundOps = map[string]bool{
-	"+": true, "-": true, "*": true, "/": true, "//": true, "%": true, "**": true,
-	"&": true, "|": true, "^": true, "<<": true, ">>": true,
 }
 
 func (p *parser) parseAssign(target ast.Expr, op string, at ast.At) (*ast.Assign, error) {

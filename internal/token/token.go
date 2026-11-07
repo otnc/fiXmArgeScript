@@ -48,3 +48,9 @@ type StringPart struct {
 	Start  int // IsCode のとき、コードのソース上のバイト位置
 	Pos    Pos // IsCode のとき、コードの先頭の位置
 }
+
+// CompoundOps は izu の直前に付けて複合代入になる記号 (x +izu 1)。記号と izu の間には空白を書かない。
+var CompoundOps = map[string]bool{
+	"+": true, "-": true, "*": true, "/": true, "//": true, "%": true, "**": true,
+	"&": true, "|": true, "^": true, "<<": true, ">>": true,
+}

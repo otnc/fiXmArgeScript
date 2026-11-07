@@ -89,6 +89,12 @@ func (s streams) app() *cli.Command {
 				Action:  s.sinruits,
 			},
 			{Name: "coatain", Aliases: []string{"test"}, Action: s.coatain},
+			{
+				Name:    "beaukshi",
+				Aliases: []string{"fmt"},
+				Flags:   []cli.Flag{&cli.BoolFlag{Name: "curoi", Aliases: []string{"expand", "c", "e"}}},
+				Action:  s.beaukshi,
+			},
 			{Name: "neyar", Aliases: []string{"version"}, Action: s.neyar},
 			{Name: "nai", Aliases: []string{"help", "explain"}, Action: s.nai},
 		},
@@ -236,6 +242,8 @@ func (s streams) usage(w io.Writer) {
   fxma keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
   fxma sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
   fxma coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
+  fxma beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
+  fxma beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
   fxma nai <エラー名>        エラーや警告の意味を説明する (explain)
   fxma nai                   この使い方を出す (help)
   fxma neyar                 版を出す (version)
