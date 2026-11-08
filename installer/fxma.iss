@@ -8,7 +8,8 @@
 #ifndef BinDir
   #define BinDir "..\dist\windows"
 #endif
-; ファイルの版情報は数字しか書けないので、0.2.0-rc.0 の -rc.0 を外す
+; Explorer の「ファイル バージョン」(VersionInfoVersion) は数字だけで、書かないと 0.0.0.0 になる。
+; そこには 0.2.0-rc.0 の -rc.0 を外して渡す。製品バージョンの文字列は AppVersion のまま (-rc.0 付き) になる
 #if Pos("-", AppVersion) > 0
   #define NumericVersion Copy(AppVersion, 1, Pos("-", AppVersion) - 1)
 #else
@@ -16,10 +17,11 @@
 #endif
 
 [Setup]
-AppId={{6C8863CF-DD6A-40B8-8436-3D5D380F15ED}
+; 「設定 → アプリ」の登録キー (fiXmArgeScript_is1) になる。上書きとアンインストールがこれで見分けるので変えない
+AppId=fiXmArgeScript
 AppName=fiXmArge Script
 AppVersion={#AppVersion}
-AppPublisher=otnc (非公式のファンメイド作品)
+AppPublisher=otoneko.
 AppPublisherURL=https://github.com/otnc/fiXmArgeScript
 AppSupportURL=https://github.com/otnc/fiXmArgeScript/issues
 VersionInfoVersion={#NumericVersion}

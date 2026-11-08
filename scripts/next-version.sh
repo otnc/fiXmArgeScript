@@ -7,7 +7,9 @@ semver() {
   npx --yes semver@7.8.5 "$@"
 }
 
-# -p はプレリリースのタグも比べるため。タグがなければ 0.0.0 から数える
+# -p はプレリリースのタグも比べるため。タグがなければ 0.0.0 から数える。
+# タグは1つずつ別の引数で渡したいので、わざと分割させる (タグ名に空白は入らない)
+# shellcheck disable=SC2046
 current=$(semver -p $(git tag --list 'v*') 2>/dev/null | tail -n 1 || true)
 current=${current:-0.0.0}
 
