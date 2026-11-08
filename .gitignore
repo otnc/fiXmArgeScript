@@ -4,3 +4,4 @@ CLAUDE.local.md
 /fxma.exe
 *.fxmac
 !testdata/**/*.fxmac
+.claude/
