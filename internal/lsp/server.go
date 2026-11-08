@@ -20,8 +20,10 @@ type Server struct {
 	protocol.UnimplementedServer
 
 	version string
-	client  protocol.Client
-	conn    jsonrpc2.Conn
+	// client と conn は接続を作った後に入れる。エディタからの知らせはその前に届くことがあるので、ready が閉じるまで待つ
+	ready  chan struct{}
+	client protocol.Client
+	conn   jsonrpc2.Conn
 
 	mu   sync.Mutex
 	docs map[uri.URI]*document
@@ -29,8 +31,9 @@ type Server struct {
 
 // Serve は rwc (標準入出力など) で LSP を話し、エディタが接続を閉じるか exit を送るまで続ける。
 func Serve(ctx context.Context, rwc io.ReadWriteCloser, version string) error {
-	s := &Server{version: version, docs: map[uri.URI]*document{}}
+	s := &Server{version: version, ready: make(chan struct{}), docs: map[uri.URI]*document{}}
 	_, s.conn, s.client = protocol.NewServer(ctx, s, jsonrpc2.NewStream(rwc))
+	close(s.ready)
 	<-s.conn.Done()
 	if err := s.conn.Err(); err != nil && !errors.Is(err, io.EOF) {
 		return err
@@ -59,7 +62,10 @@ func (s *Server) Initialized(context.Context, *protocol.InitializedParams) error
 
 func (s *Server) Shutdown(context.Context) error { return nil }
 
-func (s *Server) Exit(context.Context) error { return s.conn.Close() }
+func (s *Server) Exit(context.Context) error {
+	<-s.ready
+	return s.conn.Close()
+}
 
 func (s *Server) DidOpen(ctx context.Context, p *protocol.DidOpenTextDocumentParams) error {
 	return s.update(ctx, p.TextDocument.URI, p.TextDocument.Text)
@@ -81,6 +87,7 @@ func (s *Server) DidClose(ctx context.Context, p *protocol.DidCloseTextDocumentP
 	s.mu.Lock()
 	delete(s.docs, p.TextDocument.URI)
 	s.mu.Unlock()
+	<-s.ready
 	return s.client.PublishDiagnostics(ctx, &protocol.PublishDiagnosticsParams{URI: p.TextDocument.URI, Diagnostics: []protocol.Diagnostic{}})
 }
 
@@ -89,6 +96,7 @@ func (s *Server) update(ctx context.Context, u uri.URI, text string) error {
 	s.mu.Lock()
 	s.docs[u] = d
 	s.mu.Unlock()
+	<-s.ready
 	return s.client.PublishDiagnostics(ctx, &protocol.PublishDiagnosticsParams{URI: u, Diagnostics: d.diagnostics()})
 }
 
