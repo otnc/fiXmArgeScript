@@ -20,7 +20,7 @@ var entries = []entry{
 	{diag.Bavellabion, "呪いの言葉があふれる。整数が64ビットの範囲を超えたか、関数の呼び出しや呪い (マクロ) の展開が深すぎます。"},
 	{diag.BlasTOac, "冒涜的。証拠品 (showence) に再代入しました。証拠を書き換えるのは裁判への冒涜です。"},
 	{diag.KiNbOO, "禁忌。abiryoku の付いていない関数の中で入出力をしたか、abiryoku の関数を呼びました。\n関数の定義に abiryoku を付けてください。"},
-	{diag.CoJundic, "矛盾。どの選択肢 (mekamo) でも shoubek を満たせませんでした。youlugive では捕まえられません。"},
+	{diag.CoJundic, "矛盾。どの選択肢 (mekamo) でも shoubek を満たせませんでした。praylee で待っているのに、ほかに動ける処理も外から届くものもなく、二度と再開できないとき (自分自身の結果を待つなど) にも出ます。youlugive では捕まえられません。"},
 	{diag.KeItion, "処刑。accuhearts で投げた例外が、誰にも許されませんでした (youlugive で捕まりませんでした)。"},
 	{diag.SuReady, "既に。同じ名前を二重に定義したか、関数の中から外の変数に izu したか、読み込みが循環しました。\n外の値を変えたいときは、戻り値か、配列や辞書を使います。"},
 	{diag.CraeyTA, "壊れた。ダウンロードしたパッケージが fxma.sum と合いません。"},

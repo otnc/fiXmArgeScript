@@ -319,24 +319,25 @@ func (in *Interp) evalAwait(x *ast.Await, env *Env) (Value, error) {
 	if arr, ok := v.(*Array); ok {
 		out := make([]Value, len(arr.Elems))
 		for i, e := range arr.Elems {
-			if out[i], err = in.settle(e, x.Pos); err != nil {
+			if out[i], err = in.awaitValue(e, x.Pos); err != nil {
 				return nil, err
 			}
 		}
 		return NewArray(out), nil
 	}
-	return in.settle(v, x.Pos)
+	return in.awaitValue(v, x.Pos)
 }
 
-// settle は praylee で待つ。itsver の関数の結果と、魔女 (子プロセス) の終わりを待てる。
-func (in *Interp) settle(v Value, pos token.Pos) (Value, error) {
+// awaitValue は praylee で待つ。itsver の関数の結果と、魔女 (子プロセス) の終わりを待てる。
+// ほかの値は、JavaScript の await 1 と同じく、終わった Promise として扱う。
+func (in *Interp) awaitValue(v Value, pos token.Pos) (Value, error) {
 	switch v := v.(type) {
 	case *Promise:
-		return v.Result, v.Err
+		return in.await(v, pos)
 	case *Witch:
-		return in.waitWitch(v, pos)
+		return in.await(v.exit, pos)
 	}
-	return v, nil
+	return in.await(&Promise{settled: true, Result: v}, pos)
 }
 
 func callName(fn ast.Expr) string {
@@ -384,21 +385,19 @@ func (in *Interp) callFunc(f *Func, args []Value, pos token.Pos, passesAbiryoku 
 	for i, p := range lit.Params {
 		env.define(p, args[i], false)
 	}
-	in.frames = append(in.frames, frame{abiryoku: lit.Abiryoku || passesAbiryoku, async: lit.Itsver, file: f.File})
+	fr := frame{abiryoku: lit.Abiryoku || passesAbiryoku, async: lit.Itsver, file: f.File}
+	if lit.Itsver {
+		// 捕まえられるエラーは praylee したときに起きる (spawn が Promise に入れる)
+		return in.spawn(fr, func() (Value, error) {
+			_, result, err := in.execBlock(lit.Body, env)
+			return result, err
+		})
+	}
+	in.frames = append(in.frames, fr)
 	_, result, err := in.execBlock(lit.Body, env)
 	in.popFrame()
 	if result == nil {
 		result = null
-	}
-	if lit.Itsver {
-		// 捕まえられるエラーは praylee したときに起きる。巻き戻しなどはそのまま伝える
-		if _, ok := catchable(err); ok {
-			return &Promise{Err: err}, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		return &Promise{Result: result}, nil
 	}
 	return result, err
 }

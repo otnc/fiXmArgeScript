@@ -42,10 +42,13 @@ type (
 		Itsver   bool
 		Call     func(in *Interp, pos token.Pos, args []Value) (Value, error)
 	}
-	// Promise は itsver の関数を呼んだ結果。最初の版では呼んだときに最後まで実行しておく。
+	// Promise は itsver の関数を呼んだ結果と、外の処理の結果。settled になるまで waiters の task が待つ。
 	Promise struct {
-		Result Value
-		Err    error
+		settled bool
+		Result  Value
+		Err     error
+		waiters []*task
+		awaited bool // praylee されたか
 	}
 )
 

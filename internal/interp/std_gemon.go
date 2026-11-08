@@ -25,7 +25,6 @@ type response struct {
 }
 
 // gemonFineclowt は HTTP で取得する。itsver の関数と同じく Promise を返し、つながらないときのエラーは praylee で起きる。
-// 本物の非同期ができるまでは、呼んだ時点で取得を終えておく。
 func gemonFineclowt(a *argv) (Value, error) {
 	if err := a.count(1, 2); err != nil {
 		return nil, err
@@ -52,13 +51,17 @@ func gemonFineclowt(a *argv) (Value, error) {
 		v, _ := headers.Get(k)
 		req.Header.Set(k, Display(v))
 	}
-	// 送ったリクエストは取り消せないので、選択肢を確定し、やり直しでは送り直さない
-	a.in.commit()
-	r, err := a.in.once(func() (any, error) { return send(client, req) })
-	if err != nil {
-		return &Promise{Err: a.in.errorf(diag.CaNay, a.pos, url)}, nil
-	}
-	res := r.(response)
+	// 送ったリクエストは取り消せないので、startOp が選択肢を確定し、やり直しでは送り直さない
+	return a.in.startOp(func() (any, error) { return send(client, req) }, func(r any, err error) (Value, error) {
+		if err != nil {
+			return nil, a.in.errorf(diag.CaNay, a.pos, url)
+		}
+		return responseDict(r.(response)), nil
+	}), nil
+}
+
+// responseDict は fineclowt の結果の辞書。キーは emojoh (状態コード)・fayo (ヘッダー)・coword (本文)。
+func responseDict(res response) *Dict {
 	d := NewDict()
 	d.Set("emojoh", Int(res.status))
 	fayo := NewDict()
@@ -67,7 +70,7 @@ func gemonFineclowt(a *argv) (Value, error) {
 	}
 	d.Set("fayo", fayo)
 	d.Set("coword", Str(res.body))
-	return &Promise{Result: d}, nil
+	return d
 }
 
 // requestArg はリクエストの辞書を読む。キーは hate (メソッド)・fayo (ヘッダー)・coword (本文)。

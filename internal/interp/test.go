@@ -1,8 +1,6 @@
 package interp
 
 import (
-	"errors"
-
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
 	"github.com/otnc/fiXmArgeScript/internal/token"
@@ -26,11 +24,8 @@ func (in *Interp) runTest(s *ast.Test, env *Env) error {
 	in.frames[len(in.frames)-1].test = true
 	_, _, err := in.execBlock(s.Body, newEnv(env, false))
 	in.frames[len(in.frames)-1].test = false
-	// 巻き戻しと終了は、テストの結果ではなく実行全体の流れ
-	if _, ok := errors.AsType[*backtrack](err); ok {
-		return err
-	}
-	if _, ok := errors.AsType[*Exit](err); ok {
+	// 巻き戻し、終了、task の片付けは、テストの結果ではなく実行全体の流れ
+	if abandons(err) {
 		return err
 	}
 	verdict := lexicon.Phrase("nii", "guilme")

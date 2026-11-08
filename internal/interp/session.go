@@ -70,15 +70,21 @@ func (s *Session) exec(stmts []ast.Stmt) error {
 			body, last = stmts[:n-1], es
 		}
 	}
-	if _, _, err := s.in.execBlock(body, s.env); err != nil || last == nil {
+	if _, _, err := s.in.execBlock(body, s.env); err != nil {
 		return err
 	}
-	v, err := s.in.eval(last.X, s.env)
-	if err == nil && v != null {
-		// 文字列は配列の中と同じく " で囲み、redogh の出力と見分けられるようにする
-		s.in.emit(false, inner(v)+"\n")
+	if last != nil {
+		v, err := s.in.eval(last.X, s.env)
+		if err != nil {
+			return err
+		}
+		if v != null {
+			// 文字列は配列の中と同じく " で囲み、redogh の出力と見分けられるようにする
+			s.in.emit(false, inner(v)+"\n")
+		}
 	}
-	return err
+	// 入力を実行し終えたら、ファイルの一番外側と同じく、動いている task と外の処理を待つ
+	return s.in.drain()
 }
 
 // replay は最後まで実行できた入力を頭から実行し直して、一番外側のブロックを作り直す。出力は書き出し済みなので出ない。

@@ -71,7 +71,23 @@ type Interp struct {
 	recordCursor int
 	rng          *rand.Rand
 
+	// frames は今動いている task の呼び出しの並び。task を切り替えるときに入れ替える
 	frames []frame
+
+	// 非同期 (async.go)。cur は今動いている task、main はファイルの一番外側、runq は順番を待つ task、
+	// tasks は終わっていない task (main を除く)。やり直しのたびに作り直す
+	cur, main *task
+	runq      []*task
+	tasks     []*task
+	rejected  []*Promise // 失敗した Promise。praylee されないまま残ったら、最後にそのエラーで止める
+	// 外の処理。ops は通し番号 → 結果を Promise に届ける関数、pendingOps はまだ終わっていない数。
+	// nextOp と events はやり直しても使い続ける (前の実行で始めた処理の知らせが後から届くため)
+	ops        map[int]func(any, error)
+	timers     []timer // 締め切りの早い順
+	pendingOps int
+	nextOp     int
+	events     chan event
+	closed     chan struct{} // 実行を終えたら閉じ、届け先のない知らせを送ろうとしている goroutine を終わらせる
 
 	// testing は fxma coatain で動かしているか。failed は有罪になった sentky の数で、やり直しのたびに数え直す
 	testing bool
@@ -131,6 +147,7 @@ func RunTests(f *parser.File, opts Options) (failed bool, err error) {
 func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
 	in := newInterp(f.Name, opts)
 	in.testing = testing
+	defer in.finish()
 	for {
 		err := in.runOnce(f)
 		if bt, ok := errors.AsType[*backtrack](err); ok {
@@ -145,8 +162,14 @@ func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
 	}
 }
 
+// finish は実行を終える。止まっている task を片付け、外の処理の知らせを待つのをやめる。
+func (in *Interp) finish() {
+	in.abandonTasks()
+	close(in.closed)
+}
+
 func newInterp(file string, opts Options) *Interp {
-	return &Interp{file: file, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
+	return &Interp{file: file, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64()), events: make(chan event), closed: make(chan struct{})}
 }
 
 // uncaught は捕まらなかったエラーを表示する形にする。accuhearts で投げた例外だけは KeI·tion で、対象に理由を書く。
@@ -159,12 +182,22 @@ func uncaught(err error) error {
 }
 
 func (in *Interp) runOnce(f *parser.File) error {
-	_, _, err := in.execBlock(f.Stmts, in.restart())
-	return err
+	if _, _, err := in.execBlock(f.Stmts, in.restart()); err != nil {
+		return err
+	}
+	return in.drain()
 }
 
 // restart は頭から実行し直す準備をして、一番外側のブロックを返す。記録 (plan、inputs、records) は残す。
 func (in *Interp) restart() *Env {
+	in.abandonTasks()
+	in.main = newTask(nil)
+	in.cur = in.main
+	in.runq = nil
+	in.rejected = nil
+	in.ops = map[int]func(any, error){}
+	in.timers = nil
+	in.pendingOps = 0
 	in.counts = in.counts[:0]
 	in.emitted = 0
 	in.pending = nil

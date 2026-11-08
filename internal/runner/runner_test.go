@@ -200,3 +200,24 @@ func TestInput(t *testing.T) {
 func TestSentkyOnlyInTestFile(t *testing.T) {
 	runCase(t, testCase{name: "sentky", src: "sentky \"x\"\n  tadact shoubek\nfinend\n", err: diag.CaNay})
 }
+
+func TestAsyncScheduling(t *testing.T) {
+	const toim = "\"fxma:toim\" aste toim werer\n"
+	cases := []testCase{
+		// 本体は呼んだらすぐ動き、最初の praylee で呼んだ側に戻る (JavaScript の async function と同じ)
+		{name: "starts at once", src: "itsver abiryoku weho f()\n  \"in\" redogh\n  1 praylee\n  \"after\" redogh\nfinend\np izu f()\n\"main\" redogh\np praylee\n", stdout: "in\nmain\nafter\n"},
+		{name: "timers in deadline order", src: toim + "itsver abiryoku weho say(ms, s)\n  toim no saimoku(ms) praylee\n  s redogh\nfinend\n[say(40, \"slow\"), say(1, \"fast\"), say(1, \"fast2\")] praylee\n", stdout: "fast\nfast2\nslow\n"},
+		{name: "interleave at praylee", src: "itsver abiryoku weho f(s)\n  \"#{s}1\" redogh\n  1 praylee\n  \"#{s}2\" redogh\nfinend\n[f(\"a\"), f(\"b\")] praylee\n", stdout: "a1\nb1\na2\nb2\n"},
+		{name: "waits for floating tasks", src: toim + "itsver abiryoku weho f()\n  toim no saimoku(1) praylee\n  \"late\" redogh\nfinend\nf()\n\"end\" redogh\n", stdout: "end\nlate\n"},
+		{name: "unhandled rejection", src: "itsver weho f()\n  1 praylee\n  \"bad\" accuhearts\nfinend\nf()\n", err: diag.KeItion},
+		{name: "rejection awaited later", src: "itsver weho f()\n  \"bad\" accuhearts\nfinend\np izu f()\nteitance\n  p praylee\nyoulugive e\n  e no \"lyuzun\" redogh\nfinend\n", stdout: "bad\n"},
+		{name: "waiting on itself", src: "box izu {}\nitsver weho f()\n  1 praylee\n  box no \"p\" praylee\nfinend\nbox no \"p\" izu f()\nbox no \"p\" praylee\n", err: diag.CoJundic},
+		{name: "backtrack inside task", src: "itsver weho check(x)\n  x senaji 2 shoubek\n  x itswa\nfinend\nx izu 1 owk 2 mekamo\np izu check(x)\np praylee redogh\n", stdout: "2\n"},
+		// 止まっている task は、巻き戻しで片付けてから頭からやり直すので、"later" は1回だけ出る
+		{name: "backtrack drops other tasks", src: "itsver abiryoku weho later()\n  1 praylee\n  \"later\" redogh\nfinend\nlater()\nx izu 1 owk 2 mekamo\nx senaji 2 shoubek\nx redogh\n", stdout: "2\nlater\n"},
+		{name: "exit inside task", src: "\"fxma:ieviljio\" aste p werer\nitsver abiryoku weho f()\n  1 praylee\n  p no diviljio() no \"shid\"(4)\nfinend\nf() praylee\n", exit: 4},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}

@@ -194,11 +194,7 @@ func (in *Interp) execTry(s *ast.Try, env *Env) (flow, Value, error) {
 		}
 		f, v, err = in.execBlock(s.Catch, catchEnv)
 	}
-	_, isBacktrack := errors.AsType[*backtrack](err)
-	_, isExit := errors.AsType[*Exit](err)
-	if !s.HasFinally || isBacktrack || isExit {
-		// 巻き戻すときは変数も出力も捨てるので、ennote を実行しても意味がない。
-		// dv no "shid" で終わるときも、JavaScript の process.exit と同じく実行しない
+	if !s.HasFinally || abandons(err) {
 		return f, v, err
 	}
 	ff, fv, ferr := in.execBlock(s.Finally, newEnv(env, false))
@@ -206,6 +202,15 @@ func (in *Interp) execTry(s *ast.Try, env *Env) (flow, Value, error) {
 		return ff, fv, ferr
 	}
 	return f, v, err
+}
+
+// abandons は、今の実行を捨てるエラーかを返す。ennote は実行しない。
+// 巻き戻すときと task を片付けるときは変数も出力も捨てるので、実行しても意味がない。
+// dv no "shid" で終わるときも、JavaScript の process.exit と同じく実行しない。
+func abandons(err error) bool {
+	_, isBacktrack := errors.AsType[*backtrack](err)
+	_, isExit := errors.AsType[*Exit](err)
+	return isBacktrack || isExit || errors.Is(err, errAbandoned)
 }
 
 // catchable は youlugive で捕まえられるエラーなら、例外の辞書にして返す。

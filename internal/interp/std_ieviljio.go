@@ -47,6 +47,7 @@ type ChildResult struct {
 type Witch struct {
 	child Child
 	done  bool
+	exit  *Promise // 終わるのを待つ。w praylee はこれを待つ
 }
 
 func (*Witch) value() {}
@@ -166,8 +167,17 @@ func ieviljioMeif(a *argv, witches *Array) (Value, error) {
 	case err != nil:
 		return nil, a.in.errorf(diag.CaNay, a.pos, name)
 	}
-	witches.Elems = append(witches.Elems, w.(*Witch))
-	return w.(*Witch), nil
+	witch := w.(*Witch)
+	// 生んだときから終わるのを待ち始める。やり直しでは記録から同じ魔女が返るので、待つ Promise だけ作り直す
+	witch.exit = a.in.startOp(func() (any, error) { return witch.child.Wait() }, func(r any, err error) (Value, error) {
+		witch.done = true
+		if err != nil {
+			return nil, a.in.errorf(diag.CaNay, a.pos, lexicon.Spell("praylee"))
+		}
+		return childResult(r.(ChildResult)), nil
+	})
+	witches.Elems = append(witches.Elems, witch)
+	return witch, nil
 }
 
 // spawnOptions は meif の3つ目の引数を読む。キーはほかの語にそろえてある (zanfession・edo・lowhell・nozuki)。
@@ -209,19 +219,13 @@ func spawnOptions(a *argv, c *Command) error {
 	return nil
 }
 
-// waitWitch は w praylee。終わるまで待ち、出力と終了コードの辞書を返す。
-func (in *Interp) waitWitch(w *Witch, pos token.Pos) (Value, error) {
-	r, err := in.once(func() (any, error) { return w.child.Wait() })
-	w.done = true
-	if err != nil {
-		return nil, in.errorf(diag.CaNay, pos, lexicon.Spell("praylee"))
-	}
-	res := r.(ChildResult)
+// childResult は w praylee の結果の辞書。出力と終了コード。
+func childResult(res ChildResult) *Dict {
 	d := NewDict()
 	d.Set("redogh", Str(res.Stdout))
 	d.Set("canosiri", Str(res.Stderr))
 	d.Set("shid", Int(res.Code))
-	return d, nil
+	return d
 }
 
 func ieviljioMurm(a *argv) (Value, error) {

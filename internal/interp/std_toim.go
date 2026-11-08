@@ -28,8 +28,7 @@ func toimIeywoo(a *argv) (Value, error) {
 	return a.in.recorded(func() Value { return Int(a.in.now().UnixMilli()) }), nil
 }
 
-// toimSaimoku は待つ。本物の非同期を作るまでは、呼んだ時点で待ち終えてから Promise を返す。
-// やり直しのときは、もう待ったので待たない。
+// toimSaimoku は待つ (setTimeout)。待っている間はほかの task が動く。やり直しのときは、もう待ったので待たない。
 func toimSaimoku(a *argv) (Value, error) {
 	if err := a.count(1, 1); err != nil {
 		return nil, err
@@ -38,12 +37,8 @@ func toimSaimoku(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	a.in.recorded(func() Value {
-		// setTimeout と同じく、負の数は 0 として扱う
-		time.Sleep(time.Duration(max(0, ms) * float64(time.Millisecond)))
-		return null
-	})
-	return &Promise{Result: null}, nil
+	// setTimeout と同じく、負の数は 0 として扱う
+	return a.in.startTimer(time.Duration(max(0, ms) * float64(time.Millisecond))), nil
 }
 
 // timeArg は i 番目の引数の時刻を、タイムゾーンを当てた time.Time にする。
