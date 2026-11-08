@@ -7,3 +7,6 @@ CLAUDE.local.md
 .claude/
 /THIRD_PARTY_LICENSES
 /dist/
+
+# Vim のヘルプの索引は、プラグインを入れたときに作られる
+/doc/tags

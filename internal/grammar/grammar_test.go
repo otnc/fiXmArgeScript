@@ -10,13 +10,19 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/lexer"
 )
 
-// TestUpToDate は、editors/vscode/syntaxes の文法が語の表と合っているかを確かめる。
+// TestUpToDate は、VS Code 拡張の TextMate 文法と Vim のファイルが語の表と合っているかを確かめる。
 // 語を足したら FXMA_UPDATE=1 go test ./internal/grammar/ で書き直す。
 func TestUpToDate(t *testing.T) {
+	root := filepath.Join("..", "..")
+	files := map[string][]byte{filepath.Join("autoload", "fxma", "words.vim"): VimWords()}
 	for _, mode := range []lexer.Mode{lexer.Draft, lexer.Fair} {
-		want, err := TextMate(mode)
+		textMate, err := TextMate(mode)
 		require.NoError(t, err)
-		path := filepath.Join("..", "..", "editors", "vscode", "syntaxes", File(mode))
+		files[filepath.Join("editors", "vscode", "syntaxes", File(mode))] = textMate
+		files[filepath.Join("syntax", VimFiletype(mode)+".vim")] = VimSyntax(mode)
+	}
+	for name, want := range files {
+		path := filepath.Join(root, name)
 		if os.Getenv("FXMA_UPDATE") != "" {
 			require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
 			require.NoError(t, os.WriteFile(path, want, 0o644))
@@ -24,6 +30,6 @@ func TestUpToDate(t *testing.T) {
 		}
 		got, err := os.ReadFile(path)
 		require.NoError(t, err, "FXMA_UPDATE=1 go test ./internal/grammar/ で作ってください")
-		require.Equal(t, string(want), string(got), "FXMA_UPDATE=1 go test ./internal/grammar/ で書き直してください")
+		require.Equal(t, string(want), string(got), "FXMA_UPDATE=1 go test ./internal/grammar/ で書き直してください: %s", name)
 	}
 }

@@ -1,6 +1,6 @@
-// Package grammar は、エディタの色分けに使う TextMate 文法を語の表 (lexicon) から作る。
-// VS Code 拡張 (editors/vscode) が使う。字句解析に沿った正確な色は LSP のセマンティックトークンが上書きするので、
-// ここでは fxma を入れていなくても読める程度の色を付ける。
+// Package grammar は、エディタの色分けに使うファイルを語の表 (lexicon) から作る。
+// VS Code 拡張 (editors/vscode) の TextMate 文法と、Vim・Neovim の syntax と字下げの語 (リポジトリの直下)。
+// 字句解析に沿った正確な色は LSP のセマンティックトークンが上書きするので、ここでは fxma を入れていなくても読める程度の色を付ける。
 package grammar
 
 import (

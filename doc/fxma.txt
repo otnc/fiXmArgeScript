@@ -1,0 +1,88 @@
+*fxma.txt*	fiXmArge Script (fxma) の Vim・Neovim プラグイン
+
+==============================================================================
+目次							*fxma-contents*
+
+  1. 概要			|fxma-intro|
+  2. 入れ方			|fxma-install|
+  3. 言語サーバー		|fxma-lsp|
+  4. 設定			|fxma-options|
+
+==============================================================================
+1. 概要							*fxma* *fxma-intro*
+
+fiXmArge Script (fxma) の下書き (`.fxma`) と清書 (`.fxmac`) を編集するためのプラグインです。「魔法少女ノ魔女裁判」の非公式のファンメイド作品で、公認・監修は受けていません。完全無料です。AI利用：生成AIを使って制作しています。
+
+このプラグインがすること:
+
+- ファイルタイプ `fxma` (下書き) と `fxmac` (清書) を付ける
+- 色分け。語の表から作っているので、`fxma` を入れていなくても色は付く
+- 字下げ。`fxma beaukshi` と同じく空白2つで、ブロックの語 (`finend` など) を打ち終えると字下げし直す
+- コメント (`#`) の設定と、`gf` で `werer` の読み込み先を開くための 'suffixesadd'
+
+診断、補完、ホバー、定義へ移動、整形は言語サーバー `fxma trench` が行います。|fxma-lsp| を見てください。
+
+==============================================================================
+2. 入れ方						*fxma-install*
+
+このリポジトリがそのままプラグインです。言語サーバーを使うには、別に `fxma` を入れて `PATH` を通しておきます (リポジトリの README.md を見てください)。
+
+lazy.nvim: >lua
+	{ 'otnc/fiXmArgeScript' }
+<
+Neovim 0.12 の |vim.pack|: >lua
+	vim.pack.add({ 'https://github.com/otnc/fiXmArgeScript' })
+<
+vim-plug: >vim
+	Plug 'otnc/fiXmArgeScript'
+<
+Vim のパッケージ (|packages|): >sh
+	git clone https://github.com/otnc/fiXmArgeScript \
+	  ~/.vim/pack/fxma/start/fiXmArgeScript
+<
+パッケージで入れたときは、`:helptags ALL` でこのヘルプを引けるようにします。
+
+版は `fxma` と同じ Git のタグ (`v0.1.0` など) で選べます。lazy.nvim なら `version`、|vim.pack| なら `version` に書きます。
+
+==============================================================================
+3. 言語サーバー						*fxma-lsp*
+
+Neovim 0.11 から ~
+							*fxma-neovim*
+`lsp/fxma.lua` に設定があるので、つなぐだけです。 >lua
+	vim.lsp.enable('fxma')
+<
+`fxma` が `PATH` にないときは、場所を書きます。 >lua
+	vim.lsp.config('fxma', { cmd = { '/path/to/fxma', 'trench' } })
+<
+整形は |vim.lsp.buf.format()| です。
+
+Vim ~
+							*fxma-vim-lsp*
+Vim には言語サーバーをつなぐ機能が組み込まれていないので、別のプラグインを使います。
+
+yegappan/lsp: >vim
+	call LspAddServer([#{
+	  \ name: 'fxma',
+	  \ filetype: ['fxma', 'fxmac'],
+	  \ path: 'fxma',
+	  \ args: ['trench'],
+	  \ }])
+<
+vim-lsp (prabirshrestha/vim-lsp): >vim
+	autocmd User lsp_setup call lsp#register_server(#{
+	  \ name: 'fxma',
+	  \ cmd: ['fxma', 'trench'],
+	  \ allowlist: ['fxma', 'fxmac'],
+	  \ })
+<
+==============================================================================
+4. 設定							*fxma-options*
+
+						*g:fxma_recommended_style*
+g:fxma_recommended_style	(既定 1)
+	1 なら 'expandtab' を付け、'shiftwidth' と 'softtabstop' を 2 にします (`fxma beaukshi` と同じ字下げ)。自分の設定を使うときは 0 にします。 >vim
+	let g:fxma_recommended_style = 0
+<
+==============================================================================
+ vim:ts=8:noet:ft=help:norl:

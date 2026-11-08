@@ -1130,7 +1130,9 @@ Nii eXi' main.fxma:3:5 cnt
 
 名前の解決 (どの名前がどの定義を指すか) は、実行時と同じ規則を `fxma lavi` と共有します。
 
-VS Code拡張 (`editors/vscode`) は、色分けの土台にTextMate文法を持ち、ほかは言語サーバーに任せます。TextMate文法は語の表から生成するので、`fxma` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fxma` と `fxmac`) と別の文法にします。言語サーバーは `PATH` の `fxma` を動かし、設定 `fxma.path` で場所を変えられます。見つからなければ `Nii eXi' fxma` と出します。Neovim・Vimのプラグインは後で作ります。
+VS Code拡張 (`editors/vscode`) は、色分けの土台にTextMate文法を持ち、ほかは言語サーバーに任せます。TextMate文法は語の表から生成するので、`fxma` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fxma` と `fxmac`) と別の文法にします。言語サーバーは `PATH` の `fxma` を動かし、設定 `fxma.path` で場所を変えられます。見つからなければ `Nii eXi' fxma` と出します。
+
+Neovim・Vimのプラグインは、リポジトリの直下に置き (`ftdetect/`・`ftplugin/`・`indent/`・`syntax/`・`autoload/`・`lsp/`・`doc/`)、リポジトリそのものをプラグインとして入れられるようにします。中身はVS Code拡張と同じく、ファイルタイプ (`fxma` と `fxmac`)、語の表から生成する色分け、`fxma beaukshi` と同じ字下げです。言語サーバーは、Neovim 0.11からは `lsp/fxma.lua` を置くので `vim.lsp.enable('fxma')` でつながります。勝手にはつなぎません (nvim-lspconfigと同じ)。Vimには言語サーバーをつなぐ機能が組み込まれていないので、yegappan/lspとvim-lspの設定の例をヘルプ (`:help fxma`) に書きます。
 
 ## 配布
 
@@ -1182,7 +1184,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 - **同梱するライセンス**: `THIRD_PARTY_LICENSES` は、リリースのときにGo本体のライセンスと、`go-licenses` で集めた依存のライセンスから作ります。CLIとWebAssembly版で同じファイルを使います。
 - **npmのパッケージ**: リポジトリの `package.json` の `version` は `0.0.0` のままにし、リリースのときだけ書き換えて公開します (コミットはしません)。dist-tagは、プレリリースなら識別子 (`0.2.0-rc.1` なら `rc`)、正式版なら `latest` です。
 - **VS Code拡張**: Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。VSIXファイル (`fxma_<版>_vscode.vsix`) は、どの版でもReleasesに添付します。
-- **Neovim・Vimのプラグイン**: 版のファイルは持たず、ミラーのリポジトリ (fxma.nvim) に同じタグを打ちます。lazy.nvimの `version` もNeovimの `vim.pack` も、Gitのタグで版を選びます。
+- **Neovim・Vimのプラグイン**: 版のファイルは持たず、リポジトリのタグをそのまま使います。lazy.nvimの `version` もNeovimの `vim.pack` も、Gitのタグで版を選びます。
 - **インストーラ**: Inno Setupには、ビルドのときに版を渡します (`iscc /DAppVersion=0.2.0`)。`install.sh` はReleasesの最新版を見るので、版を持ちません。
 
 ### WebAssembly版

@@ -1,3 +1,7 @@
 .agents/skills/** linguist-vendored
 # sh は CR を読めないので、Windows で取り出しても LF のままにする
 *.sh text eol=lf
+# 語の表から internal/grammar が作るファイル
+syntax/*.vim linguist-generated
+autoload/fxma/words.vim linguist-generated
+editors/vscode/syntaxes/*.json linguist-generated

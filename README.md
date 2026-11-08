@@ -38,6 +38,8 @@ WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fxma`) と [pl
 
 VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fxma trench` が行います。
 
+Vim と Neovim では、このリポジトリをそのままプラグインとして入れられます (lazy.nvim なら `{ 'otnc/fiXmArgeScript' }`)。Neovim 0.11 からは `vim.lsp.enable('fxma')` で言語サーバーにつながります。詳しくは [doc/fxma.txt](doc/fxma.txt) (`:help fxma`) にあります。
+
 ## ライセンス
 
 コードは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。
