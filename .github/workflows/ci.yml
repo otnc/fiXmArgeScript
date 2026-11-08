@@ -79,3 +79,15 @@ jobs:
           Start-Sleep -Seconds 3
           if ((UserPath) -split ";" -contains $app) { throw "PATH still contains $app" }
           if (Test-Path "$app\fxma.exe") { throw "fxma.exe was not removed" }
+
+  # VS Code 拡張を VSIX にまとめられるか確かめる (文法が語の表と合っているかは go test が見る)
+  vscode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm ci --prefix editors/vscode
+      - run: npx vsce package --out fxma.vsix
+        working-directory: editors/vscode

@@ -91,3 +91,30 @@ jobs:
           # GoReleaser と同じ形 (ハッシュ、空白2つ、名前) で、改行は LF
           [IO.File]::AppendAllText("dist\checksums.txt", "$hash  $setup`n")
           gh release upload $env:TAG "dist\$setup" dist\checksums.txt --clobber
+
+  # VS Code 拡張の VSIX を Releases に足す。checksums.txt を書き換えるので、installer の後に動かす
+  vscode:
+    needs: [release, installer]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm ci --prefix editors/vscode
+      - name: Package and upload
+        working-directory: editors/vscode
+        run: |
+          version=${TAG#v}
+          vsix="fxma_${version}_vscode.vsix"
+          # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
+          npm pkg set version="$version"
+          npx vsce package --out "$vsix"
+          gh release download "$TAG" -p checksums.txt --clobber
+          sha256sum "$vsix" >> checksums.txt
+          gh release upload "$TAG" "$vsix" checksums.txt --clobber

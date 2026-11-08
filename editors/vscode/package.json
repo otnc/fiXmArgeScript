@@ -1,0 +1,68 @@
+{
+  "name": "fxma",
+  "displayName": "fiXmArge Script",
+  "description": "fiXmArge Script (fxma) の色分け、診断、補完、整形。「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。",
+  "version": "0.0.0",
+  "publisher": "otnc",
+  "author": "otoneko.",
+  "license": "MIT OR Apache-2.0",
+  "homepage": "https://github.com/otnc/fiXmArgeScript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otnc/fiXmArgeScript.git",
+    "directory": "editors/vscode"
+  },
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": ["Programming Languages", "Formatters", "Linters"],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "fxma",
+        "aliases": ["fiXmArge Script", "fxma"],
+        "extensions": [".fxma"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "fxmac",
+        "aliases": ["fiXmArge Script (清書)", "fxmac"],
+        "extensions": [".fxmac"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "fxma",
+        "scopeName": "source.fxma",
+        "path": "./syntaxes/fxma.tmLanguage.json"
+      },
+      {
+        "language": "fxmac",
+        "scopeName": "source.fxmac",
+        "path": "./syntaxes/fxmac.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "fiXmArge Script",
+      "properties": {
+        "fxma.path": {
+          "type": "string",
+          "default": "fxma",
+          "markdownDescription": "言語サーバー (`fxma trench`) として動かす `fxma` の場所。既定では `PATH` から探します。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "node build.mjs",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^11.0.0"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^4.0.0"
+  }
+}

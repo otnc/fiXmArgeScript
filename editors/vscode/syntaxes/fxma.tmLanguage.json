@@ -1,0 +1,176 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "fiXmArge Script",
+  "scopeName": "source.fxma",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#declaration"
+    },
+    {
+      "include": "#constant"
+    },
+    {
+      "include": "#operator-word"
+    },
+    {
+      "include": "#keyword"
+    },
+    {
+      "include": "#support"
+    },
+    {
+      "include": "#call"
+    },
+    {
+      "include": "#operator"
+    }
+  ],
+  "repository": {
+    "call": {
+      "match": "([A-Za-z_]\\w*)(?=\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.fxma"
+        }
+      }
+    },
+    "comment": {
+      "name": "comment.line.number-sign.fxma",
+      "match": "#.*$"
+    },
+    "constant": {
+      "name": "constant.language.fxma",
+      "match": "\\b(tadact|ulieso|vanita)\\b"
+    },
+    "declaration": {
+      "match": "\\b(curoi|weho)\\b\\s+([A-Za-z_]\\w*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.function.fxma"
+        },
+        "2": {
+          "name": "entity.name.function.fxma"
+        }
+      }
+    },
+    "escape": {
+      "name": "constant.character.escape.fxma",
+      "match": "\\\\(?:u\\{[0-9A-Fa-f]+\\}|.)"
+    },
+    "interpolation": {
+      "name": "meta.interpolation.fxma",
+      "begin": "#\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.interpolation.begin.fxma"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.interpolation.end.fxma"
+        }
+      },
+      "patterns": [
+        {
+          "include": "$self"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "storage.modifier.fxma",
+          "match": "\\b(abiryoku|showence|itsver|oqun)\\b"
+        },
+        {
+          "name": "keyword.control.fxma",
+          "match": "\\b(accuhearts|zanfession|youlugive|canosiri|teitance|azagara|praylee|shoubek|ennote|finend|ketzen|mekamo|redogh|sentky|itswa|werer|aste|keip|siva|mof)\\b"
+        }
+      ]
+    },
+    "number": {
+      "name": "constant.numeric.fxma",
+      "match": "\\b\\d(?:_?\\d)*(?:\\.\\d(?:_?\\d)*)?(?:[eE][+-]?\\d+)?\\b"
+    },
+    "operator": {
+      "name": "keyword.operator.fxma",
+      "match": "\\*\\*|//|<<|>>|<=|>=|\\.\\.=?|[-+*/%<>&|^~]"
+    },
+    "operator-word": {
+      "name": "keyword.operator.word.fxma",
+      "match": "\\b(senaji|batte|sond|exi|izu|nii|owk|no)\\b"
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.triple.fxma",
+          "begin": "\"\"\"",
+          "end": "\"\"\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.fxma"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.fxma"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#escape"
+            },
+            {
+              "include": "#interpolation"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.double.fxma",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.fxma"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.fxma"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#escape"
+            },
+            {
+              "include": "#interpolation"
+            }
+          ]
+        }
+      ]
+    },
+    "support": {
+      "patterns": [
+        {
+          "name": "support.function.fxma",
+          "match": "\\b((?i:fineclowtKuwpace|izanavitedExi|madrazySanand|meifKuwpace|batteKolsu|foreSenaji|izuDefutai|izuKuwpace|laineiAlte|fineclowt|senchoose|diviljio|eatahguy|pyusense|recanrey|sodaKast|commity|confsoy|defutai|kuwpace|lighluw|madrazy|saimoku|shojika|sodaGun|tsuyong|vaniell|ieywoo|lainei|matill|mource|nozuki|racdam|sagain|salook|sanand|saymal|yoweak|chidd|gokuu|kolsu|litto|muyon|naddy|onkhe|tarip|zelln|gdie|gomi|kast|nang|orei|surc|ado|eda|edo|gun|hir|lea))\\b"
+        },
+        {
+          "name": "entity.name.namespace.fxma",
+          "match": "\\b((?i:izanavited|destimay|ieviljio|varizama|coword|memoid|gemon|keyga|meme|toim))\\b"
+        }
+      ]
+    }
+  }
+}
