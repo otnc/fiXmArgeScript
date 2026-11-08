@@ -22,3 +22,20 @@ jobs:
       # サンプルを fxma 自身で検査し、テストする
       - run: go run ./cmd/fxma lavi examples
       - run: go run ./cmd/fxma coatain examples
+
+  # WebAssembly 版を作り、npm のパッケージをテストし、プレイグラウンドがビルドできるか確かめる
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: GOOS=js GOARCH=wasm go vet ./cmd/fxma-wasm/
+      - run: node npm/build.mjs
+      - run: node --test npm/test/fxma.test.js
+      - run: npm ci --prefix playground
+      - run: npm run build --prefix playground

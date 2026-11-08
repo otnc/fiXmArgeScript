@@ -1168,8 +1168,8 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 `GOOS=js GOARCH=wasm` で `fxma.wasm` を作り、Go付属の `wasm_exec.js` と組み合わせて配ります。
 
 - **Releases**: `fxma_<版>_wasm.zip` に `fxma.wasm`、`wasm_exec.js`、`README.md`、ライセンス類を入れる。
-- **npm**: パッケージとして公開し、JavaScriptから `run(source, { stdin })` と `build(source)` を呼べるようにする。`run` は出力とエラーを返す。
-- **プレイグラウンド**: GitHub Pagesに置き、ブラウザだけで書いて実行できるようにする。
+- **npm**: パッケージ `fxma` として公開し、JavaScriptから `run(source, { stdin, files, args })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`files` は名前と中身の組で、`werer` でも `fxma:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
+- **プレイグラウンド**: GitHub Pagesに置き、ブラウザだけで書いて実行できるようにする。ViteとCodeMirror 6で作り、リポジトリの `playground/` にある。ファイルを足して `werer` で読み込める。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
 
 ブラウザでは対話的な入力ができないため、`zanfession` で読む入力は実行前にまとめて渡します。これは巻き戻しの「入力を記録して使い回す」方式とも合います。実行ファイルが大きすぎる場合は、後でTinyGoでのビルドを検討します。
 

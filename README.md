@@ -22,6 +22,8 @@ go run ./cmd/fxma keeon examples/fizzbuzz.fxma
 go run ./cmd/fxma sinruits examples/fizzbuzz.fxma
 ```
 
+WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fxma`) と [playground/](playground/) (ブラウザのプレイグラウンド) にあります。
+
 ## ライセンス
 
 コードは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。

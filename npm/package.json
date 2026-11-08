@@ -1,0 +1,35 @@
+{
+  "name": "fxma",
+  "version": "0.0.0",
+  "description": "fiXmArge Script の WebAssembly 版。「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。",
+  "keywords": ["fixmarge", "programming-language", "webassembly"],
+  "homepage": "https://github.com/otnc/fiXmArgeScript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otnc/fiXmArgeScript.git",
+    "directory": "npm"
+  },
+  "license": "MIT OR Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "wasm_exec.js",
+    "fxma.wasm",
+    "LICENSE-MIT",
+    "LICENSE-APACHE"
+  ],
+  "engines": {
+    "node": ">=20.16"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test"
+  }
+}
