@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"slices"
+
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/token"
@@ -134,7 +136,7 @@ func (p *parser) parseSimpleStmt() (ast.Stmt, error) {
 		return &ast.Throw{At: at, X: x}, nil
 	case "shoubek":
 		p.next()
-		return &ast.Assert{At: ast.At{Pos: t.Pos}, X: x}, nil
+		return &ast.Assert{Pos: t.Pos, X: x}, nil
 	}
 	return &ast.ExprStmt{At: at, X: x}, nil
 }
@@ -189,7 +191,7 @@ func (p *parser) parseDecl() (ast.Stmt, error) {
 			if !p.peek().IsKeyword("izu") {
 				return nil, p.unexpected(p.peek())
 			}
-			a, err := p.parseAssign(&ast.Ident{At: ast.At{Pos: name.Pos}, Name: name.Name}, "", at)
+			a, err := p.parseAssign(&ast.Ident{Pos: name.Pos, Name: name.Name}, "", at)
 			if err != nil {
 				return nil, err
 			}
@@ -242,10 +244,8 @@ func (p *parser) parseFunc(at ast.At, abiryoku, itsver bool) (*ast.FuncLit, erro
 		if err != nil {
 			return nil, err
 		}
-		for _, prev := range fn.Params {
-			if prev == name.Name {
-				return nil, diag.New(diag.SuReady, p.file, name.Pos, name.Name)
-			}
+		if slices.Contains(fn.Params, name.Name) {
+			return nil, diag.New(diag.SuReady, p.file, name.Pos, name.Name)
 		}
 		fn.Params = append(fn.Params, name.Name)
 	}
@@ -258,7 +258,7 @@ func (p *parser) parseFunc(at ast.At, abiryoku, itsver bool) (*ast.FuncLit, erro
 }
 
 func (p *parser) parseIf() (ast.Stmt, error) {
-	s := &ast.If{At: ast.At{Pos: p.next().Pos}}
+	s := &ast.If{Pos: p.next().Pos}
 	for {
 		cond, err := p.parseExpr()
 		if err != nil {
@@ -287,7 +287,7 @@ func (p *parser) parseIf() (ast.Stmt, error) {
 }
 
 func (p *parser) parseTry() (ast.Stmt, error) {
-	s := &ast.Try{At: ast.At{Pos: p.next().Pos}}
+	s := &ast.Try{Pos: p.next().Pos}
 	var err error
 	if s.Body, err = p.parseStmts(); err != nil {
 		return nil, err
@@ -332,7 +332,7 @@ func (p *parser) parseImport() (ast.Stmt, error) {
 	if len(pathTok.Parts) > 1 || (len(pathTok.Parts) == 1 && pathTok.Parts[0].IsCode) {
 		return nil, p.unexpected(pathTok)
 	}
-	s := &ast.Import{At: ast.At{Pos: pathTok.Pos}, Path: stringText(pathTok)}
+	s := &ast.Import{Pos: pathTok.Pos, Path: stringText(pathTok)}
 	switch {
 	case p.acceptKeyword("aste"):
 		alias, err := p.expectIdent()

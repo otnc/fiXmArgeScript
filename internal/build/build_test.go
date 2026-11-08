@@ -57,8 +57,7 @@ func TestFairRoundTrip(t *testing.T) {
 
 func TestFairRejectsSkeleton(t *testing.T) {
 	_, _, err := lexer.Lex("x izu 1\n", "main.fxmac", lexer.Fair)
-	var de *diag.Error
-	if !errors.As(err, &de) || de.Kind != diag.AyAmis {
+	if de, ok := errors.AsType[*diag.Error](err); !ok || de.Kind != diag.AyAmis {
 		t.Errorf("清書の骨格は AyAmis になるはず: %v", err)
 	}
 }
@@ -76,8 +75,7 @@ func TestDialectWarning(t *testing.T) {
 func TestMixedCaseKeywordIsError(t *testing.T) {
 	for _, src := range []string{"IZU\n", "Izu\n", "x izu 1 == 1\n"} {
 		_, _, err := Build(src, "main.fxma")
-		var de *diag.Error
-		if !errors.As(err, &de) || de.Kind != diag.AyAmis {
+		if de, ok := errors.AsType[*diag.Error](err); !ok || de.Kind != diag.AyAmis {
 			t.Errorf("Build(%q) = %v, want AyAmis", src, err)
 		}
 	}

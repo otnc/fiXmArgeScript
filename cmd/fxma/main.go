@@ -46,8 +46,7 @@ type streams struct {
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	s := streams{stdin, stdout, stderr}
 	err := s.app().Run(context.Background(), append([]string{"fxma"}, args...))
-	var code exitCode
-	if errors.As(err, &code) {
+	if code, ok := errors.AsType[exitCode](err); ok {
 		return int(code)
 	}
 	if err != nil {

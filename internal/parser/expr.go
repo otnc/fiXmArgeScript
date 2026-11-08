@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"slices"
 	"strconv"
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
@@ -15,7 +16,7 @@ func (p *parser) parseExprWithEnd() (ast.Expr, error) {
 	if t := p.peek(); t.IsKeyword("zanfession") {
 		// name izu zanfession のように、プロンプトなしで書ける
 		p.next()
-		x = &ast.Input{At: ast.At{Pos: t.Pos}}
+		x = &ast.Input{Pos: t.Pos}
 	} else {
 		var err error
 		if x, err = p.parseExpr(); err != nil {
@@ -75,7 +76,7 @@ func (p *parser) parseNot() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &ast.Unary{At: ast.At{Pos: t.Pos}, Op: "nii", X: x}, nil
+		return &ast.Unary{Pos: t.Pos, Op: "nii", X: x}, nil
 	}
 	return p.parseComparison()
 }
@@ -85,7 +86,7 @@ func (p *parser) parseComparison() (ast.Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmp := &ast.Compare{At: ast.At{Pos: first.Position()}, Operands: []ast.Expr{first}}
+	cmp := &ast.Compare{Pos: first.Position(), Operands: []ast.Expr{first}}
 	for {
 		t := p.peek()
 		op := ""
@@ -104,7 +105,7 @@ func (p *parser) parseComparison() (ast.Expr, error) {
 				return nil, p.unexpected(t)
 			}
 			p.next()
-			return &ast.Exists{At: ast.At{Pos: t.Pos}, X: first}, nil
+			return &ast.Exists{Pos: t.Pos, X: first}, nil
 		}
 		p.next()
 		y, err := p.parseRange()
@@ -130,7 +131,7 @@ func (p *parser) parseRange() (ast.Expr, error) {
 		return lo, nil
 	}
 	p.next()
-	r := &ast.Range{At: ast.At{Pos: t.Pos}, Lo: lo, Inclusive: t.Name == ".."}
+	r := &ast.Range{Pos: t.Pos, Lo: lo, Inclusive: t.Name == ".."}
 	if r.Hi, err = p.parseBinary(0); err != nil {
 		return nil, err
 	}
@@ -170,7 +171,7 @@ func (p *parser) parseBinary(level int) (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		x = &ast.Binary{At: ast.At{Pos: t.Pos}, Op: t.Name, X: x, Y: y}
+		x = &ast.Binary{Pos: t.Pos, Op: t.Name, X: x, Y: y}
 	}
 }
 
@@ -179,12 +180,7 @@ func (p *parser) isBinaryOp(t token.Token, ops []string) bool {
 	if t.Kind != token.Op || p.peekAt(1).IsKeyword("izu") {
 		return false
 	}
-	for _, op := range ops {
-		if t.Name == op {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(ops, t.Name)
 }
 
 func (p *parser) parseUnary() (ast.Expr, error) {
@@ -195,7 +191,7 @@ func (p *parser) parseUnary() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &ast.Unary{At: ast.At{Pos: t.Pos}, Op: t.Name, X: x}, nil
+		return &ast.Unary{Pos: t.Pos, Op: t.Name, X: x}, nil
 	}
 	return p.parsePower()
 }
@@ -212,7 +208,7 @@ func (p *parser) parsePower() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &ast.Binary{At: ast.At{Pos: t.Pos}, Op: "**", X: x, Y: y}, nil
+		return &ast.Binary{Pos: t.Pos, Op: "**", X: x, Y: y}, nil
 	}
 	return x, nil
 }
@@ -231,7 +227,7 @@ func (p *parser) parsePostfix() (ast.Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			x = &ast.Call{At: ast.At{Pos: t.Pos}, Fn: x, Args: args}
+			x = &ast.Call{Pos: t.Pos, Fn: x, Args: args}
 		case t.IsKeyword("no"):
 			p.next()
 			if x, err = p.parseNo(x, ast.At{Pos: t.Pos}); err != nil {
@@ -291,7 +287,7 @@ func (p *parser) parseNoOperand() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &ast.Unary{At: ast.At{Pos: t.Pos}, Op: "-", X: x}, nil
+		return &ast.Unary{Pos: t.Pos, Op: "-", X: x}, nil
 	}
 	return p.parsePrimary()
 }
@@ -427,7 +423,7 @@ func (p *parser) parseDict(at ast.At) (ast.Expr, error) {
 
 // parseString は文字列を読み、#{} の中を式として読む。
 func (p *parser) parseString(t token.Token) (ast.Expr, error) {
-	s := &ast.StringLit{At: ast.At{Pos: t.Pos}}
+	s := &ast.StringLit{Pos: t.Pos}
 	for _, part := range t.Parts {
 		if !part.IsCode {
 			s.Parts = append(s.Parts, ast.StringPiece{Text: part.Text})

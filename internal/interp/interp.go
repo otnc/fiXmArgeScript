@@ -131,8 +131,7 @@ func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
 	in := &Interp{testing: testing, file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
 	for {
 		err := in.runOnce(f)
-		var bt *backtrack
-		if errors.As(err, &bt) {
+		if bt, ok := errors.AsType[*backtrack](err); ok {
 			if in.advancePlan() {
 				continue
 			}

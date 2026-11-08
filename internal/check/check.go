@@ -3,6 +3,7 @@
 package check
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
@@ -69,8 +70,8 @@ func (c *checker) stmts(stmts []ast.Stmt, ctx context) {
 }
 
 func (c *checker) isConst(name string) bool {
-	for i := len(c.scopes) - 1; i >= 0; i-- {
-		if isConst, ok := c.scopes[i][name]; ok {
+	for _, v := range slices.Backward(c.scopes) {
+		if isConst, ok := v[name]; ok {
 			return isConst
 		}
 	}

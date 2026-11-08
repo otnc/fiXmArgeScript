@@ -88,11 +88,11 @@ func izanavitedAdo(p string) string {
 // izanavitedChidd は拡張子を返す。.bashrc のように . で始まる名前は、Node.js と同じく拡張子なし。
 func izanavitedChidd(p string) string {
 	base := izanavitedAdo(p)
-	i := strings.LastIndex(base, ".")
-	if i <= 0 {
+	stem, ext, ok := strings.CutLast(base, ".")
+	if !ok || stem == "" {
 		return ""
 	}
-	return base[i:]
+	return "." + ext
 }
 
 func izanavitedRecanrey(a *argv) (Value, error) {
@@ -173,7 +173,7 @@ func izanavitedEatahguy(a *argv) (Value, error) {
 func splitPath(p string) []string {
 	clean := path.Clean(strings.ReplaceAll(p, `\`, "/"))
 	var parts []string
-	for _, s := range strings.Split(clean, "/") {
+	for s := range strings.SplitSeq(clean, "/") {
 		if s != "" && s != "." {
 			parts = append(parts, s)
 		}

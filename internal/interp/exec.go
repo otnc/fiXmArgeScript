@@ -194,9 +194,9 @@ func (in *Interp) execTry(s *ast.Try, env *Env) (flow, Value, error) {
 		}
 		f, v, err = in.execBlock(s.Catch, catchEnv)
 	}
-	var bt *backtrack
-	var exit *Exit
-	if !s.HasFinally || errors.As(err, &bt) || errors.As(err, &exit) {
+	_, isBacktrack := errors.AsType[*backtrack](err)
+	_, isExit := errors.AsType[*Exit](err)
+	if !s.HasFinally || isBacktrack || isExit {
 		// 巻き戻すときは変数も出力も捨てるので、ennote を実行しても意味がない。
 		// dv no "shid" で終わるときも、JavaScript の process.exit と同じく実行しない
 		return f, v, err
@@ -210,12 +210,10 @@ func (in *Interp) execTry(s *ast.Try, env *Env) (flow, Value, error) {
 
 // catchable は youlugive で捕まえられるエラーなら、例外の辞書にして返す。
 func catchable(err error) (*Dict, bool) {
-	var th *thrown
-	if errors.As(err, &th) {
+	if th, ok := errors.AsType[*thrown](err); ok {
 		return th.value, true
 	}
-	var de *diag.Error
-	if errors.As(err, &de) && de.Kind.Catchable() {
+	if de, ok := errors.AsType[*diag.Error](err); ok && de.Kind.Catchable() {
 		return exception(de.Error(), de.Kind.Spelling()), true
 	}
 	return nil, false

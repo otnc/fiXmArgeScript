@@ -55,7 +55,7 @@ func runCase(t *testing.T, c testCase) {
 	}
 	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Now: fixedNow, Location: tokyo}
 	_, err := Run(c.src, "main.fxma", opts)
-	var de *diag.Error
+	de, isDiag := errors.AsType[*diag.Error](err)
 	exit, exited := errors.AsType[*interp.Exit](err)
 	switch {
 	case exited:
@@ -66,7 +66,7 @@ func runCase(t *testing.T, c testCase) {
 		t.Errorf("%s: 終了していない (%v)", c.name, err)
 	case c.err == "" && err != nil:
 		t.Errorf("%s: エラー %v", c.name, err)
-	case c.err != "" && (!errors.As(err, &de) || de.Kind != c.err):
+	case c.err != "" && (!isDiag || de.Kind != c.err):
 		t.Errorf("%s: エラー %v, want %s", c.name, err, c.err.Spelling())
 	}
 	if c.check != nil {

@@ -64,7 +64,7 @@ func allowedRules(dir string) []string {
 		data, err := os.ReadFile(filepath.Join(dir, "fxma.mod"))
 		if err == nil {
 			var rules []string
-			for _, line := range strings.Split(string(data), "\n") {
+			for line := range strings.SplitSeq(string(data), "\n") {
 				if fields := strings.Fields(line); len(fields) > 0 && fields[0] == "youlugive" {
 					rules = append(rules, fields[1:]...)
 				}

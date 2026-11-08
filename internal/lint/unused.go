@@ -1,6 +1,7 @@
 package lint
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
@@ -80,8 +81,8 @@ func (r *resolver) define(d definition) {
 
 // read は名前を読んだ印を付ける。関数の外の変数も読める。
 func (r *resolver) read(name string) {
-	for i := len(r.scopes) - 1; i >= 0; i-- {
-		if b, ok := r.scopes[i].vars[name]; ok {
+	for _, v := range slices.Backward(r.scopes) {
+		if b, ok := v.vars[name]; ok {
 			b.used = true
 			return
 		}
@@ -90,11 +91,11 @@ func (r *resolver) read(name string) {
 
 // assignable は izu の左の名前が、今の関数の中にもうある変数かを返す。なければ新しく作る (実行時の resolveAssign と同じ)。
 func (r *resolver) assignable(name string) bool {
-	for i := len(r.scopes) - 1; i >= 0; i-- {
-		if _, ok := r.scopes[i].vars[name]; ok {
+	for _, v := range slices.Backward(r.scopes) {
+		if _, ok := v.vars[name]; ok {
 			return true
 		}
-		if r.scopes[i].funcTop {
+		if v.funcTop {
 			return false
 		}
 	}

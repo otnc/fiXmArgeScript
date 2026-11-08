@@ -50,8 +50,7 @@ func TestProject(t *testing.T) {
 func TestProjectMissingImport(t *testing.T) {
 	files := map[string]string{"main.fxma": "\"./nothing\" aste n werer\n"}
 	_, _, err := Project("main.fxma", readFrom(files))
-	var de *diag.Error
-	if !errors.As(err, &de) || de.Kind != diag.NiiExi {
+	if de, ok := errors.AsType[*diag.Error](err); !ok || de.Kind != diag.NiiExi {
 		t.Fatalf("エラー %v, want Nii eXi'", err)
 	}
 }

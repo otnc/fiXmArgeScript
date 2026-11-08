@@ -154,11 +154,11 @@ func cowordEda(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	i := strings.Index(s, x)
-	if i < 0 {
+	before, _, ok := strings.Cut(s, x)
+	if !ok {
 		return Int(-1), nil
 	}
-	return Int(utf8.RuneCountInString(s[:i])), nil
+	return Int(utf8.RuneCountInString(before)), nil
 }
 
 // padFunc は sodaKast (front が true) と sodaGun を作る。埋める文字列が長ければ、JavaScript の padStart と同じく途中で切る。

@@ -146,7 +146,7 @@ func dedent(parts []token.StringPart) {
 		}
 	}
 	indent := -1
-	for _, line := range strings.Split(flat.String(), "\n") {
+	for line := range strings.SplitSeq(flat.String(), "\n") {
 		trimmed := strings.TrimLeft(line, " \t")
 		if trimmed == "" {
 			continue
