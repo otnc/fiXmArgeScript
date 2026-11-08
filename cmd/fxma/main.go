@@ -96,6 +96,7 @@ func (s streams) app() *cli.Command {
 				Action:  s.beaukshi,
 			},
 			{Name: "hak", Aliases: []string{"repl"}, Action: s.hak},
+			{Name: "trench", Aliases: []string{"lsp"}, Action: s.trench},
 			{Name: "neyar", Aliases: []string{"version"}, Action: s.neyar},
 			{Name: "nai", Aliases: []string{"help", "explain"}, Action: s.nai},
 		},
@@ -247,6 +248,7 @@ func (s streams) usage(w io.Writer) {
   fxma beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
   fxma lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
   fxma hak                   対話モード。1行ずつ打って実行する (repl)
+  fxma trench                エディタのための言語サーバーを動かす (lsp)
   fxma nai <エラー名>        エラーや警告の意味を説明する (explain)
   fxma nai                   この使い方を出す (help)
   fxma neyar                 版を出す (version)

@@ -48,6 +48,7 @@ func (e Entry) IsKeyword() bool { return e.Uses&Keyword != 0 }
 
 var (
 	bySkeleton = map[string]Entry{}
+	meanings   = map[string]string{}
 	// longestFirst は清書を読むときの最長一致のための並び。
 	longestFirst []Entry
 )
@@ -55,6 +56,7 @@ var (
 func init() {
 	for _, w := range words {
 		add(Entry{Name: Skeleton(w.Spelling), Spelling: w.Spelling, Uses: w.Uses})
+		meanings[Skeleton(w.Spelling)] = w.Meaning
 	}
 	for _, name := range compounds {
 		var spelling strings.Builder
@@ -140,6 +142,22 @@ func MatchSpelling(s string) (Entry, bool) {
 		}
 	}
 	return Entry{}, false
+}
+
+// Meaning は名前の辞書の訳を返す。2語の名前は部品の訳を「・」でつなぐ。表にない名前なら空。
+func Meaning(name string) string {
+	e, _, ok := Lookup(Skeleton(name))
+	if !ok {
+		return ""
+	}
+	if e.Uses&Compound == 0 {
+		return meanings[Skeleton(e.Spelling)]
+	}
+	parts := SplitCamel(e.Name)
+	for i, part := range parts {
+		parts[i] = meanings[part]
+	}
+	return strings.Join(parts, "・")
 }
 
 // Words は表の語をすべて返す。

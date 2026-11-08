@@ -43,7 +43,7 @@ func (l *linter) emptyBlocks(stmts []ast.Stmt) {
 			l.report(SAiMoku, n.Position(), lexicon.Spell(word))
 		}
 	}
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.If:
 			for _, b := range n.Blocks {
@@ -71,7 +71,7 @@ func (l *linter) emptyBlocks(stmts []ast.Stmt) {
 // needlessAbiryoku は emBasy。入出力をしていないのに abiryoku が付いている関数。
 // 中で呼ぶ関数のうち1つでも実行前に分からないものがあれば、入出力をするかもしれないので指摘しない。
 func (l *linter) needlessAbiryoku(stmts []ast.Stmt) {
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		if fn, ok := n.(*ast.FuncLit); ok && fn.Abiryoku && !l.mayDoIO(fn) {
 			l.report(EmBasy, fn.Pos, fn.Name)
 		}
@@ -81,7 +81,7 @@ func (l *linter) needlessAbiryoku(stmts []ast.Stmt) {
 
 func (l *linter) mayDoIO(fn *ast.FuncLit) bool {
 	io := false
-	eachStmt(fn.Body, func(n ast.Node) bool {
+	ast.InspectStmts(fn.Body, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.FuncLit:
 			// 中で定義しただけの関数は、呼ぶまで何もしない
@@ -116,7 +116,7 @@ func (l *linter) passesIO(args []ast.Expr, params []string) bool {
 
 // floatingPromises は anxAn。itsver の関数を呼んで、結果を praylee せずに捨てている文。
 func (l *linter) floatingPromises(stmts []ast.Stmt) {
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		if s, ok := n.(*ast.ExprStmt); ok {
 			if call, ok := s.X.(*ast.Call); ok {
 				if c := l.resolve(call.Fn); c.known && c.itsver {
@@ -132,7 +132,7 @@ func (l *linter) floatingPromises(stmts []ast.Stmt) {
 // 関数ごとに、eda の結果を入れた変数のうち、比べずに添字に使ったものを指摘する。
 func (l *linter) uncheckedEda(stmts []ast.Stmt) {
 	l.checkEdaIn(stmts)
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		if fn, ok := n.(*ast.FuncLit); ok {
 			l.checkEdaIn(fn.Body)
 		}
@@ -144,7 +144,7 @@ func (l *linter) checkEdaIn(body []ast.Stmt) {
 	fromEda := map[string]bool{}
 	compared := map[string]bool{}
 	var keys []*ast.Index
-	eachStmt(body, func(n ast.Node) bool {
+	ast.InspectStmts(body, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.FuncLit:
 			return false
@@ -175,7 +175,7 @@ func (l *linter) checkEdaIn(body []ast.Stmt) {
 
 // comparisons は Meh·BeRac (小数を senaji で比べている) と JokeDan (型が違うので必ず ulieso になる senaji)。
 func (l *linter) comparisons(stmts []ast.Stmt) {
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		c, ok := n.(*ast.Compare)
 		if !ok {
 			return true
@@ -236,7 +236,7 @@ func computesFloat(x ast.Expr) bool {
 
 func hasFloatLit(x ast.Expr) bool {
 	found := false
-	inspect(x, func(n ast.Node) bool {
+	ast.Inspect(x, func(n ast.Node) bool {
 		if _, ok := n.(*ast.FloatLit); ok {
 			found = true
 		}
@@ -252,12 +252,12 @@ func hasFloatLit(x ast.Expr) bool {
 func (l *linter) hopelessShoubek(stmts []ast.Stmt) {
 	hasChoice := false
 	tests := map[ast.Node]bool{}
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.Choice:
 			hasChoice = true
 		case *ast.Test:
-			eachStmt(n.Body, func(m ast.Node) bool {
+			ast.InspectStmts(n.Body, func(m ast.Node) bool {
 				_, isFunc := m.(*ast.FuncLit)
 				tests[m] = true
 				return !isFunc
@@ -273,7 +273,7 @@ func (l *linter) hopelessShoubek(stmts []ast.Stmt) {
 	if hasChoice {
 		return
 	}
-	inspectFile(stmts, func(n ast.Node) bool {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
 		if a, ok := n.(*ast.Assert); ok && !tests[a] {
 			l.report(DesLee, a.Pos, lexicon.Spell("shoubek"))
 		}

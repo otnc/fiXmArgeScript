@@ -1,6 +1,9 @@
 package interp
 
 import (
+	"maps"
+	"slices"
+
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
 	"github.com/otnc/fiXmArgeScript/internal/token"
@@ -76,6 +79,15 @@ func StdFunc(pkg, name string) (StdFuncInfo, bool) {
 		return StdFuncInfo{}, false
 	}
 	return StdFuncInfo{Abiryoku: b.Abiryoku, Itsver: b.Itsver}, true
+}
+
+// StdMembers は "fxma:pkg" の中の名前を並べて返す。pkg は "meme" のような骨格。なければ nil。
+func StdMembers(pkg string) []string {
+	newPkg, ok := stdPackages[pkg]
+	if !ok {
+		return nil
+	}
+	return slices.Sorted(maps.Keys(newPkg().members))
 }
 
 // spellName は表にある名前なら正式な綴りを、sin や pi のような固有名詞ならそのまま返す。

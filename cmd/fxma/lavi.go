@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/urfave/cli/v3"
 
 	"github.com/otnc/fiXmArgeScript/internal/lint"
+	"github.com/otnc/fiXmArgeScript/internal/modfile"
 	"github.com/otnc/fiXmArgeScript/internal/runner"
 )
 
@@ -51,30 +51,9 @@ func (s streams) lintFile(path string) bool {
 		fmt.Fprintln(s.stderr, err)
 		return false
 	}
-	findings := lint.File(f, string(src), allowedRules(filepath.Dir(path)))
+	findings := lint.File(f, string(src), modfile.AllowedRules(filepath.Dir(path)))
 	for _, fd := range findings {
 		fmt.Fprintln(s.stdout, fd)
 	}
 	return len(findings) == 0
-}
-
-// allowedRules は、dir から上にたどって最初に見つけた fxma.mod の youlugive に並べた規則を返す。
-func allowedRules(dir string) []string {
-	for {
-		data, err := os.ReadFile(filepath.Join(dir, "fxma.mod"))
-		if err == nil {
-			var rules []string
-			for line := range strings.SplitSeq(string(data), "\n") {
-				if fields := strings.Fields(line); len(fields) > 0 && fields[0] == "youlugive" {
-					rules = append(rules, fields[1:]...)
-				}
-			}
-			return rules
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			return nil
-		}
-		dir = parent
-	}
 }

@@ -98,7 +98,7 @@ type linter struct {
 
 func newLinter(f *parser.File) *linter {
 	l := &linter{file: f.Name, aliases: map[string]string{}, named: map[string]importedName{}, funcs: map[string]*ast.FuncLit{}}
-	inspectFile(f.Stmts, func(n ast.Node) bool {
+	ast.InspectStmts(f.Stmts, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.Import:
 			if n.Alias != "" {
