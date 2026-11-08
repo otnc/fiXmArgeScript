@@ -22,6 +22,11 @@ jobs:
       # サンプルを fxma 自身で検査し、テストする
       - run: go run ./cmd/fxma lavi examples
       - run: go run ./cmd/fxma coatain examples
+      # リリースのときに初めて設定の誤りに気付かないように
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          version: "~> v2"
+          args: check
 
   # WebAssembly 版を作り、npm のパッケージをテストし、プレイグラウンドがビルドできるか確かめる
   wasm:

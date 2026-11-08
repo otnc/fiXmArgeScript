@@ -1,0 +1,61 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "次の版：patch・minor・major・prerelease のどれか、または版そのもの (0.2.0、0.2.0-rc.0)"
+        required: true
+        default: patch
+      preid:
+        description: "プレリリースの識別子 (rc・beta など)。patch・minor・major と一緒なら 0.2.0-rc.0 のようにプレリリースにする"
+        required: false
+        default: ""
+
+permissions:
+  contents: write # タグを打ち、Releases を作る
+
+concurrency: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go test -race ./...
+        env:
+          FXMA_DICT_CHECK: "1"
+      - run: node npm/build.mjs
+      - run: node --test npm/test/fxma.test.js
+
+      - name: Decide version
+        id: next
+        env:
+          VERSION: ${{ inputs.version }}
+          PREID: ${{ inputs.preid }}
+        run: sh scripts/next-version.sh >> "$GITHUB_OUTPUT"
+
+      - name: Tag
+        env:
+          TAG: ${{ steps.next.outputs.tag }}
+        run: |
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

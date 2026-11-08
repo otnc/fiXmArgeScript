@@ -1157,7 +1157,13 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 - **CLI**: Go 1.24からは、ビルドのときにGitのタグとコミットから版が実行ファイルに埋め込まれます。`fxma neyar` はそれを読んで、版とコミットとその日時を出します。タグの上なら `v0.2.0`、タグより後なら `v0.2.1-0.<日時>-<コミット>`、手元の変更が残っていれば `+dirty` が付きます。`go install ...@v0.2.0` で入れた場合も同じく `v0.2.0` になります。
 - **全部同じ版**: CLI、WebAssembly版 (npm)、VS Code拡張、LSP、Neovim・Vimのプラグインは、1つのタグで同じ版にそろえます。言語の仕様とLSPと拡張は一緒に変わるからです。
-- **リリースの手順**: GitHub Actionsを `workflow_dispatch` で動かし、次の版 (`patch`・`minor`・`major`・`prerelease`、または版を直接書く) と、プレリリースの識別子 (`rc`・`beta` など) を選びます。最新のタグから次の版を決め、テストを通してからタグを打ち、GoReleaserでReleasesを作ります。
+- **リリースの手順**: GitHub Actionsの `release` を `workflow_dispatch` で動かし、次の版 (`patch`・`minor`・`major`・`prerelease`、または版を直接書く) と、プレリリースの識別子 (`rc`・`beta` など、空でもよい) を選びます。最新のタグから次の版を決め、テストを通してからタグを打ち、GoReleaserでReleasesを作ります。版の計算はnpmの `semver` と同じです。
+  - 識別子なしの `patch`・`minor`・`major` は正式版になる (`v0.1.0` の次の `minor` は `v0.2.0`、`v0.2.0-rc.1` の次の `minor` は `v0.2.0`)。
+  - 識別子ありの `patch`・`minor`・`major` は、その版のプレリリースの最初になる (`v0.1.0` の次の `minor` と `rc` は `v0.2.0-rc.0`)。
+  - `prerelease` はプレリリースの番号を1つ進める (`v0.2.0-rc.0` の次は `v0.2.0-rc.1`)。識別子を書けば識別子を変えられる (`rc` から `beta` へは戻れない。下の決まりのため)。
+  - 版を直接書くときは、識別子を空にして版に書く (`0.2.0-rc.0`)。
+  - 次の版は最新のタグより新しくなければならず、プレリリースの識別子は英小文字だけにする (`0.1.1-0` のような数字だけの識別子はdist-tagにできないため)。
+- **同梱するライセンス**: `THIRD_PARTY_LICENSES` は、リリースのときにGo本体のライセンスと、`go-licenses` で集めた依存のライセンスから作ります。CLIとWebAssembly版で同じファイルを使います。
 - **npmのパッケージ**: リポジトリの `package.json` の `version` は `0.0.0` のままにし、リリースのときだけ書き換えて公開します (コミットはしません)。dist-tagは、プレリリースなら識別子 (`0.2.0-rc.1` なら `rc`)、正式版なら `latest` です。
 - **VS Code拡張**: Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。プレリリースのときは、VSIXファイルをReleasesに添付するだけにします。
 - **Neovim・Vimのプラグイン**: 版のファイルは持たず、ミラーのリポジトリ (fxma.nvim) に同じタグを打ちます。lazy.nvimの `version` もNeovimの `vim.pack` も、Gitのタグで版を選びます。

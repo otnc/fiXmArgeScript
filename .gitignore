@@ -5,3 +5,5 @@ CLAUDE.local.md
 *.fxmac
 !testdata/**/*.fxmac
 .claude/
+/THIRD_PARTY_LICENSES
+/dist/

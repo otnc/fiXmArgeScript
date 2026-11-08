@@ -1,0 +1,68 @@
+# 版はタグから決まる (docs/RFC.md の「版とリリース」)。タグを打つのは release.yml。
+version: 2
+
+before:
+  hooks:
+    # npm/ に wasm_exec.js を写すため。fxma.wasm もできるが、ここでは使わない
+    - node npm/build.mjs
+    - sh scripts/third-party-licenses.sh
+
+builds:
+  - id: fxma
+    main: ./cmd/fxma
+    binary: fxma
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    # fxma neyar は Go が埋め込む版を読むので、-X で版を渡さない
+    ldflags: [-s -w]
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+  - id: wasm
+    main: ./cmd/fxma-wasm
+    binary: fxma
+    env:
+      - CGO_ENABLED=0
+    goos: [js]
+    goarch: [wasm]
+    flags: [-trimpath]
+    ldflags: [-s -w]
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: fxma
+    ids: [fxma]
+    name_template: "fxma_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE-MIT
+      - LICENSE-APACHE
+      - THIRD_PARTY_LICENSES
+
+  - id: wasm
+    ids: [wasm]
+    name_template: "fxma_{{ .Version }}_wasm"
+    formats: [zip]
+    files:
+      - README.md
+      - LICENSE-MIT
+      - LICENSE-APACHE
+      - THIRD_PARTY_LICENSES
+      - src: npm/wasm_exec.js
+        strip_parent: true
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  use: github-native
+
+release:
+  prerelease: auto

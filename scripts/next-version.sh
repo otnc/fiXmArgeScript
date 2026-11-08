@@ -1,0 +1,60 @@
+#!/bin/sh
+# 最新のタグと入力 (VERSION・PREID) から次の版を決め、GitHub Actions の出力の形 (tag=v0.2.0) で書く。
+# 版の計算は npm の semver に任せる。決まりは docs/RFC.md の「版とリリース」。
+set -eu
+
+semver() {
+  npx --yes semver@7.8.5 "$@"
+}
+
+# -p はプレリリースのタグも比べるため。タグがなければ 0.0.0 から数える
+current=$(semver -p $(git tag --list 'v*') 2>/dev/null | tail -n 1 || true)
+current=${current:-0.0.0}
+
+case "$VERSION" in
+  patch | minor | major)
+    if [ -n "$PREID" ]; then
+      next=$(semver -i "pre$VERSION" --preid "$PREID" "$current")
+    else
+      next=$(semver -i "$VERSION" "$current")
+    fi
+    ;;
+  prerelease)
+    if [ -n "$PREID" ]; then
+      next=$(semver -i prerelease --preid "$PREID" "$current")
+    else
+      next=$(semver -i prerelease "$current")
+    fi
+    ;;
+  *)
+    if [ -n "$PREID" ]; then
+      echo "::error::版を直接書くときは preid を空にしてください (0.2.0-rc.0 のように版に書く)" >&2
+      exit 1
+    fi
+    next=$(semver "$VERSION") || {
+      echo "::error::版として読めません: $VERSION" >&2
+      exit 1
+    }
+    ;;
+esac
+
+# 識別子は Releases と npm の dist-tag に使うので、0.1.1-0 のような数字だけの識別子は認めない
+case "$next" in
+  *-*)
+    id=${next#*-}
+    id=${id%%.*}
+    case "$id" in
+      '' | *[!a-z]*)
+        echo "::error::プレリリースの識別子は英小文字にしてください: $next (preid で rc などを指定する)" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+esac
+
+if [ "$current" != 0.0.0 ] && ! semver -r ">$current" -p "$next" >/dev/null; then
+  echo "::error::$next は今の最新 v$current より新しくありません" >&2
+  exit 1
+fi
+
+echo "tag=v$next"
