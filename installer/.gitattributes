@@ -1,0 +1,3 @@
+# Inno Setup は BOM で UTF-8 と分かる。Windows のファイルなので改行も CRLF にそろえる
+*.iss text eol=crlf
+*.txt text eol=crlf

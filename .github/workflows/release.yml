@@ -20,6 +20,8 @@ concurrency: release
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.next.outputs.tag }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -59,3 +61,33 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+  # Inno Setup は Windows でしか動かないので、Releases の Windows 向けの zip からセットアップを作って足す
+  installer:
+    needs: release
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - name: Build setup
+        run: |
+          $version = $env:TAG.Substring(1)
+          foreach ($arch in "amd64", "arm64") {
+            gh release download $env:TAG -p "fxma_${version}_windows_${arch}.zip" -D dist
+            Expand-Archive "dist\fxma_${version}_windows_${arch}.zip" "dist\windows\$arch"
+          }
+          Copy-Item dist\windows\amd64\THIRD_PARTY_LICENSES .
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" installer\fxma.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
+      - name: Upload
+        run: |
+          $setup = "fxma_$($env:TAG.Substring(1))_windows_setup.exe"
+          gh release download $env:TAG -p checksums.txt -D dist --clobber
+          $hash = (Get-FileHash "dist\$setup" -Algorithm SHA256).Hash.ToLower()
+          # GoReleaser と同じ形 (ハッシュ、空白2つ、名前) で、改行は LF
+          [IO.File]::AppendAllText("dist\checksums.txt", "$hash  $setup`n")
+          gh release upload $env:TAG "dist\$setup" dist\checksums.txt --clobber

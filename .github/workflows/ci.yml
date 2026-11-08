@@ -22,6 +22,7 @@ jobs:
       # サンプルを fxma 自身で検査し、テストする
       - run: go run ./cmd/fxma lavi examples
       - run: go run ./cmd/fxma coatain examples
+      - run: shellcheck installer/public/install.sh scripts/*.sh
       # リリースのときに初めて設定の誤りに気付かないように
       - uses: goreleaser/goreleaser-action@v7
         with:
@@ -48,3 +49,33 @@ jobs:
         working-directory: playground
       - run: npx cf deploy --prebuilt --mode production --dry-run
         working-directory: playground
+
+  # Windows のセットアップを作り、黙って入れて消し、PATH が足されて戻るか確かめる
+  installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Build fxma.exe
+        shell: bash
+        run: |
+          for arch in amd64 arm64; do
+            GOOS=windows GOARCH=$arch go build -trimpath -ldflags="-s -w" -o dist/windows/$arch/fxma.exe ./cmd/fxma
+          done
+          sh scripts/third-party-licenses.sh
+      - name: Build setup
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci installer\fxma.iss'
+      - name: Install and uninstall
+        run: |
+          $app = "$env:LOCALAPPDATA\Programs\fxma"
+          function UserPath { [Environment]::GetEnvironmentVariable("Path", "User") }
+          Start-Process dist\fxma_0.0.0-ci_windows_setup.exe -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/CURRENTUSER" -Wait
+          & "$app\fxma.exe" neyar
+          if ($LASTEXITCODE -ne 0) { throw "fxma neyar failed" }
+          if ((UserPath) -split ";" -notcontains $app) { throw "PATH does not contain $app" }
+          Start-Process "$app\unins000.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES" -Wait
+          Start-Sleep -Seconds 3
+          if ((UserPath) -split ";" -contains $app) { throw "PATH still contains $app" }
+          if (Test-Path "$app\fxma.exe") { throw "fxma.exe was not removed" }

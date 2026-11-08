@@ -969,9 +969,8 @@ Nii eXi' main.fxma:3:5 cnt
 | 方言の警告 | `DowGuil lowhel → LowhEll` | 疑惑 |
 | テストの結果 | `hung gement fizzbuzz: Nii Guil-me` | 判決、罪なし |
 | テストの失敗 | `hung gement fizzbuzz: Guil-me` | 判決、罪 |
-| インストール完了 | `FineNd` | 終わり |
 
-例外として、`fxma neyar` が出す非公式表記だけは日本語にします。ガイドラインが「分かりやすい位置に明記」を求めているためです。
+例外として、`fxma neyar` が出す非公式表記だけは日本語にします。ガイドラインが「分かりやすい位置に明記」を求めているためです。インストーラの画面も日本語です (「インストーラ」の章)。
 
 ## 実装方針
 
@@ -1181,33 +1180,26 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 ## インストーラ
 
-インストーラを「フィクスマージ語で書く」とは、画面に出る文言をフィクスマージ語にするという意味です。インストーラ本体は既存のツールで作ります。
+インストーラ本体は既存のツールで作り、画面の文言は日本語にします。フィクスマージ語の語彙ではインストーラの文言 (エラー、確認、ディスクの容量など) を表しきれないためです。中身は `installer/` にあります。
 
 ### Windows: Inno Setup
 
-- Inno Setupで `fxma_<版>_windows_setup.exe` を作り、Releasesで配る。
-- 文言は独自の言語ファイル `fixmarge.isl` に書く。Inno Setupは、標準の `Default.isl` を複製して文言を差し替えるだけで、新しい言語を追加できる。
+- Inno Setupで `fxma_<版>_windows_setup.exe` を作り、Releasesで配る。x86\_64とarm64の実行ファイルを1つのセットアップに入れ、インストールするときにCPUに合うほうを選ぶ。
+- 文言はInno Setup付属の日本語の言語ファイル (`Japanese.isl`) を使う。
+- 既定では管理者権限なしで自分だけに入れる (`%LOCALAPPDATA%\Programs\fxma`)。起動したときに、全員向け (`Program Files`、管理者権限が要る) も選べる。入れた場所を、自分だけならユーザーの、全員向けならシステムの `PATH` に足し、アンインストールで取り除く。
 - Inno Setupは非営利なら無料で使える。6.5.0から営利利用には有償ライセンスを求めているが、この作品は非営利なので対象外。
-- メッセージボックスのボタン (OK、キャンセルなど) は、Windowsの言語のままで変えられない。
 - 署名していない `.exe` は、起動時にWindowsのSmartScreenの警告が出る。最初の版では署名せず、警告の出方と実行の手順をREADMEに書く。使う人が増えたら、オープンソース向けの無償の署名サービスに申し込む。
-- ライセンス同意の画面には、READMEの非公式表記を日本語のまま出す。ガイドラインの「分かりやすい位置に明記」を満たすためです。
+- ライセンス同意の画面には、READMEの非公式表記を出す。ガイドラインの「分かりやすい位置に明記」を満たすためです。
+- リリースでは、GoReleaserが作ったWindows向けのzipからセットアップを作り、Releasesと `checksums.txt` に足す。
 
-### macOS・Linux
+### macOS・Linux: install.sh
 
-`install.sh` が画面に出す文言をフィクスマージ語にします。中身は、OSとCPUを調べ、圧縮ファイルと `checksums.txt` を取得して照合し、PATHの通った場所に置くだけです。HomebrewやmacOSの `.pkg` は後で検討します。
+`curl -fsSL https://fixmargescript.oto.im/install.sh | sh` で入れます。`sh -s v0.2.0` のように版を渡すと、その版を入れます。渡さなければ最新の正式版です。
 
-### 文言
-
-| 場面 | 文言 | 辞書の意味 |
-| --- | --- | --- |
-| 開始 | `weRer` | 歓迎 |
-| 次へ | `GoKuu` | 行く |
-| 戻る | `itsver` | 以前に |
-| 場所を選ぶ | `KuwPace` | 空間 |
-| インストール中 | `Kei-P` | 継続 |
-| 完了 | `FineNd` | 終わり |
-| 失敗 | `ShiFey` | 失敗 |
-| 中止 | `Syu Tain` | 休廷 |
+- OSとCPUを調べ、圧縮ファイルと `checksums.txt` を取得してSHA-256を照合し、`~/.fxma/bin/fxma` に置く。READMEとライセンス類は `~/.fxma` に置く。場所は環境変数 `FXMA_INSTALL` で変えられる。
+- 使っているシェル (bash・zsh・fish) の設定ファイルに、`PATH` に足す行を書く (Bunと同じ)。すでに `PATH` に入っていれば書かない。macOSのbashは `.bash_profile`、Linuxのbashは `.bashrc`。ほかのシェルでは、足す行を表示するだけにする。
+- `install.sh` はプレイグラウンドと同じ場所 (Cloudflare Workersの静的アセット) に置く。
+- HomebrewやmacOSの `.pkg` は後で検討する。
 
 ## 二次創作ガイドラインと法的な対応
 

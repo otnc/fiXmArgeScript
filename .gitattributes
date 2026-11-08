@@ -1,1 +1,3 @@
 .agents/skills/** linguist-vendored
+# sh は CR を読めないので、Windows で取り出しても LF のままにする
+*.sh text eol=lf

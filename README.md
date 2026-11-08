@@ -15,6 +15,18 @@
 
 開発中です。仕様は [docs/RFC.md](docs/RFC.md)、標準パッケージは [docs/std/](docs/std/README.md) にあります。
 
+## インストール
+
+macOS と Linux では、次のコマンドで `~/.fxma/bin` に入ります。シェルの設定ファイルに `PATH` を足す行も書きます。
+
+```
+curl -fsSL https://fixmargescript.oto.im/install.sh | sh
+```
+
+Windows では、[Releases](https://github.com/otnc/fiXmArgeScript/releases) の `fxma_<版>_windows_setup.exe` を実行します。セットアップには署名がないので、初めて開くと「Windows によって PC が保護されました」(SmartScreen) と出ます。「詳細情報」を押し、「実行」を押すと進めます。
+
+どの OS でも、Releases の圧縮ファイルを展開して `PATH` の通った場所に置くか、Go があれば `go install github.com/otnc/fiXmArgeScript/cmd/fxma@latest` でも入れられます。
+
 ## 使い方
 
 ```
