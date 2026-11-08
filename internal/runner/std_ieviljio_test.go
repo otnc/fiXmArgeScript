@@ -4,22 +4,26 @@ import (
 	"errors"
 	"io/fs"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 )
 
-// fakeChild は、入力をそのまま出力に返す魔女。
+// fakeChild は、入力をそのまま出力に返す魔女。sleep だけは殺されるまで終わらない。
+// 本物の子プロセスと同じく、Wait と Kill は別々の goroutine から同時に呼ばれる。
 type fakeChild struct {
 	c      interp.Command
-	killed bool
+	killed chan struct{}
+	once   sync.Once
 }
 
 func (f *fakeChild) Pid() int { return 42 }
 
 func (f *fakeChild) Wait() (interp.ChildResult, error) {
-	if f.killed {
+	if f.c.Name == "sleep" {
+		<-f.killed
 		return interp.ChildResult{Code: -1}, nil
 	}
 	out := f.c.Name + " " + strings.Join(f.c.Args, " ") + "|" + f.c.Stdin + "|" + f.c.Dir + "|" + strings.Join(f.c.Env, ",")
@@ -27,7 +31,7 @@ func (f *fakeChild) Wait() (interp.ChildResult, error) {
 }
 
 func (f *fakeChild) Kill() error {
-	f.killed = true
+	f.once.Do(func() { close(f.killed) })
 	return nil
 }
 
@@ -47,7 +51,7 @@ func fakeProcess(spawned *int) *interp.Process {
 				return nil, errors.New("broken")
 			}
 			*spawned++
-			return &fakeChild{c: c}, nil
+			return &fakeChild{c: c, killed: make(chan struct{})}, nil
 		},
 	}
 }

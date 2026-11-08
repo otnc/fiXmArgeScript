@@ -30,7 +30,7 @@ type Command struct {
 	Stdin string
 }
 
-// Child は生んだ魔女。
+// Child は生んだ魔女。生んだときから別の goroutine で Wait し始めるので、Kill は Wait と同時に呼ばれる。
 type Child interface {
 	Pid() int
 	Wait() (ChildResult, error)
