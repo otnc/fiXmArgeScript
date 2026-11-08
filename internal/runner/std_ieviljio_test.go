@@ -26,6 +26,10 @@ func (f *fakeChild) Wait() (interp.ChildResult, error) {
 		<-f.killed
 		return interp.ChildResult{Code: -1}, nil
 	}
+	if f.c.OnOutput != nil {
+		f.c.OnOutput(false, "out")
+		f.c.OnOutput(true, "warn")
+	}
 	out := f.c.Name + " " + strings.Join(f.c.Args, " ") + "|" + f.c.Stdin + "|" + f.c.Dir + "|" + strings.Join(f.c.Env, ",")
 	return interp.ChildResult{Stdout: out, Stderr: "err", Code: len(f.c.Args)}, nil
 }

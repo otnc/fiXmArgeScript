@@ -19,6 +19,9 @@ type Process struct {
 	Version  string // dv no "neyar"
 	// Spawn は魔女を生む。nil なら生めない (ブラウザ版)。コマンドがなければ fs.ErrNotExist を包んだエラーを返す。
 	Spawn func(c Command) (Child, error)
+	// Signal はシグナル name ("SIGINT" など) に気付くたびに send を呼び、done が閉じたら止める。すぐに戻る。
+	// nil なら気付けない (ブラウザ版)。知らない名前なら fs.ErrNotExist を包んだエラーを返す。
+	Signal func(name string, send func(), done <-chan struct{}) error
 }
 
 // Command は生む魔女の指定。Env は "KEY=value" の並びで、nil なら大魔女と同じ。
@@ -28,6 +31,9 @@ type Command struct {
 	Dir   string
 	Env   []string
 	Stdin string
+	// OnOutput は出力が届くたびに呼ぶ (meif の "nozuki")。nil なら呼ばない。
+	// 届いた出力も ChildResult にまとめて入れる。Wait は、出力を全部 OnOutput に渡し終えてから戻る。
+	OnOutput func(stderr bool, text string)
 }
 
 // Child は生んだ魔女。生んだときから別の goroutine で Wait し始めるので、Kill は Wait と同時に呼ばれる。
@@ -93,7 +99,7 @@ func ieviljioDiviljio(a *argv) (Value, error) {
 	}{
 		{"meif", func(a *argv) (Value, error) { return ieviljioMeif(a, witches) }},
 		{"murm", ieviljioMurm},
-		{"nozuki", func(a *argv) (Value, error) { return nil, a.fail(diag.CaNay) }}, // シグナルを待つには本物の非同期が要る
+		{"nozuki", func(a *argv) (Value, error) { return ieviljioNozuki(a, p) }},
 		{"shid", func(a *argv) (Value, error) { return ieviljioShid(a, witches) }},
 	}
 	for _, m := range methods {
@@ -148,10 +154,24 @@ func ieviljioMeif(a *argv, witches *Array) (Value, error) {
 		}
 		c.Args = append(c.Args, string(s))
 	}
+	var onOutput Value
 	if a.has(2) {
-		if err := spawnOptions(a, &c); err != nil {
+		if onOutput, err = spawnOptions(a, &c); err != nil {
 			return nil, err
 		}
+	}
+	if onOutput != nil {
+		// 出力の知らせを受け取る処理を先に始め、その送り先を魔女に渡す。やり直しでは魔女を生まないので post は使わない
+		var post func(any)
+		call := a.callbackLater(onOutput)
+		err := a.in.listen(false, func(send func(any), _ <-chan struct{}) error {
+			post = send
+			return nil
+		}, func(v any) { call([]Value{outputDict(v.(childOutput))}, nil) })
+		if err != nil {
+			return nil, err
+		}
+		c.OnOutput = func(stderr bool, text string) { post(childOutput{stderr, text}) }
 	}
 	a.in.commit()
 	w, err := a.in.once(func() (any, error) {
@@ -180,11 +200,29 @@ func ieviljioMeif(a *argv, witches *Array) (Value, error) {
 	return witch, nil
 }
 
+// childOutput は魔女の出力が届いた知らせ。
+type childOutput struct {
+	stderr bool
+	text   string
+}
+
+// outputDict は "nozuki" の関数に渡す辞書。{"redogh": 届いた文字列} か {"canosiri": 届いた文字列}。
+func outputDict(o childOutput) *Dict {
+	key := "redogh"
+	if o.stderr {
+		key = "canosiri"
+	}
+	d := NewDict()
+	d.Set(key, Str(o.text))
+	return d
+}
+
 // spawnOptions は meif の3つ目の引数を読む。キーはほかの語にそろえてある (zanfession・edo・lowhell・nozuki)。
-func spawnOptions(a *argv, c *Command) error {
+// "nozuki" の関数を返す。
+func spawnOptions(a *argv, c *Command) (onOutput Value, err error) {
 	opts, ok := a.vals[2].(*Dict)
 	if !ok {
-		return a.fail(diag.ImJune)
+		return nil, a.fail(diag.ImJune)
 	}
 	for _, k := range opts.Keys() {
 		v, _ := opts.Get(k)
@@ -192,7 +230,7 @@ func spawnOptions(a *argv, c *Command) error {
 		case "zanfession", "edo":
 			s, ok := v.(Str)
 			if !ok {
-				return a.fail(diag.ImJune)
+				return nil, a.fail(diag.ImJune)
 			}
 			if k == "zanfession" {
 				c.Stdin = string(s)
@@ -202,7 +240,7 @@ func spawnOptions(a *argv, c *Command) error {
 		case "lowhell":
 			env, ok := v.(*Dict)
 			if !ok {
-				return a.fail(diag.ImJune)
+				return nil, a.fail(diag.ImJune)
 			}
 			c.Env = []string{}
 			for _, name := range env.Keys() {
@@ -210,13 +248,45 @@ func spawnOptions(a *argv, c *Command) error {
 				c.Env = append(c.Env, name+"="+Display(val))
 			}
 		case "nozuki":
-			// 出力が届くたびに呼ぶには本物の非同期が要る
-			return a.in.errorf(diag.CaNay, a.pos, k)
+			if !isFunc(v) {
+				return nil, a.fail(diag.ImJune)
+			}
+			onOutput = v
 		default:
-			return a.in.errorf(diag.NiiExi, a.pos, k)
+			return nil, a.in.errorf(diag.NiiExi, a.pos, k)
 		}
 	}
-	return nil
+	return onOutput, nil
+}
+
+// ieviljioNozuki はシグナルに気付くたびに f() を呼ぶ (process.on)。
+// Node.js と同じく、シグナルを待っているだけなら、ほかに待つものがなくなった時点でプログラムは終わる。
+func ieviljioNozuki(a *argv, p *Process) (Value, error) {
+	if err := a.count(2, 2); err != nil {
+		return nil, err
+	}
+	if p.Signal == nil {
+		return nil, a.fail(diag.CaNay)
+	}
+	name, err := a.str(0)
+	if err != nil {
+		return nil, err
+	}
+	f, err := a.fn(1)
+	if err != nil {
+		return nil, err
+	}
+	call := a.callbackLater(f)
+	err = a.in.listen(false, func(send func(any), done <-chan struct{}) error {
+		return p.Signal(name, func() { send(nil) }, done)
+	}, func(any) { call(nil, nil) })
+	switch {
+	case errors.Is(err, fs.ErrNotExist):
+		return nil, a.in.errorf(diag.NiiExi, a.pos, name)
+	case err != nil:
+		return nil, a.in.errorf(diag.CaNay, a.pos, name)
+	}
+	return null, nil
 }
 
 // childResult は w praylee の結果の辞書。出力と終了コード。

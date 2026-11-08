@@ -149,6 +149,13 @@ func (a *argv) call(f Value, args ...Value) (Value, error) {
 	return a.in.call(f, args, a.pos, a.name)
 }
 
+// callbackLater は、後で知らせが届いたときに f を呼ぶ関数を作る (async.go の callback)。
+// f の呼び出しで起きたエラーの場所は、今の呼び出し (nozuki を書いた場所) にする。
+func (a *argv) callbackLater(f Value) func(args []Value, after func(Value) error) {
+	in, file, pos, name := a.in, a.in.frame().file, a.pos, a.name
+	return func(args []Value, after func(Value) error) { in.callback(f, args, file, pos, name, after) }
+}
+
 // callBool は条件として使う関数を呼ぶ。tadact と ulieso 以外を返したら imJune (RFC の真偽値)。
 func (a *argv) callBool(f Value, args ...Value) (bool, error) {
 	v, err := a.call(f, args...)

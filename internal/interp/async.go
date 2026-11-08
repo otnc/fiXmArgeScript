@@ -66,12 +66,15 @@ func (in *Interp) runTask(t *task, p *Promise, body func() (Value, error)) {
 		return
 	}
 	in.tasks = slices.DeleteFunc(in.tasks, func(x *task) bool { return x == t })
-	if _, ok := catchable(err); err != nil && !ok {
-		// 巻き戻し、終了、検査のエラーなどは、プログラム全体の流れなので main に渡す
+	if _, ok := catchable(err); err != nil && (!ok || p == nil) {
+		// 巻き戻し、終了、検査のエラーなどは、プログラム全体の流れなので main に渡す。
+		// 結果を受け取る Promise がない task (callback) は、どのエラーでも止める
 		in.stopWith(err)
 		return
 	}
-	in.settle(p, result, err)
+	if p != nil {
+		in.settle(p, result, err)
+	}
 	next, err := in.nextTask()
 	if err != nil {
 		in.stopWith(err)
@@ -238,8 +241,12 @@ func (in *Interp) nextEvent() event {
 	return v.(event)
 }
 
-// deliver は知らせを Promise に届ける。fxma hak でなかったことにした入力が始めた処理の知らせは、届け先がないので捨てる。
+// deliver は知らせを Promise か listener に届ける。fxma hak でなかったことにした入力が始めた処理の知らせは、届け先がないので捨てる。
 func (in *Interp) deliver(e event) {
+	if handle, ok := in.listeners[e.op]; ok {
+		handle(e.v)
+		return
+	}
 	settle, ok := in.ops[e.op]
 	if !ok {
 		return
@@ -248,6 +255,58 @@ func (in *Interp) deliver(e event) {
 	in.timers = slices.DeleteFunc(in.timers, func(t timer) bool { return t.op == e.op })
 	in.pendingOps--
 	settle(e.v, e.err)
+}
+
+// listen は何度も知らせが届く外の処理 (サーバー、見張り、シグナル、魔女の出力) を始める。
+// start は send で知らせを送り、done が閉じたら止まる。知らせが届くたびに handle を呼ぶ。
+// keepAlive なら、プログラムはこの処理がある限り終わらない (Node.js のサーバーと fs.watch と同じ)。
+// 始めた処理は取り消せないので選択肢を確定し、やり直しでは始め直さない。
+func (in *Interp) listen(keepAlive bool, start func(send func(any), done <-chan struct{}) error, handle func(any)) error {
+	in.commit()
+	v, err := in.once(func() (any, error) {
+		id := in.nextOp
+		in.nextOp++
+		closed := in.closed
+		send := func(v any) {
+			select {
+			case in.events <- event{op: id, v: v}:
+			case <-closed:
+			}
+		}
+		return id, start(send, closed)
+	})
+	if err != nil {
+		return err
+	}
+	in.listeners[v.(int)] = handle
+	if keepAlive {
+		in.pendingOps++
+	}
+	return nil
+}
+
+// callback は外からの知らせで fxma の関数 f を呼ぶ task を作り、runq の最後に入れる。
+// f が Promise を返したら待つ。after があれば f の結果を渡す (サーバーの返事)。
+// f の中の捕まえていないエラーは、Node.js と同じくプログラム全体を止める。
+func (in *Interp) callback(f Value, args []Value, file string, pos token.Pos, name string, after func(Value) error) {
+	t := newTask([]frame{{abiryoku: true, file: file}})
+	in.tasks = append(in.tasks, t)
+	in.runq = append(in.runq, t)
+	go in.runTask(t, nil, func() (Value, error) {
+		v, err := in.call(f, args, pos, name)
+		if err != nil {
+			return nil, err
+		}
+		if p, ok := v.(*Promise); ok {
+			if v, err = in.await(p, pos); err != nil {
+				return nil, err
+			}
+		}
+		if after != nil {
+			err = after(v)
+		}
+		return v, err
+	})
 }
 
 // drain は一番外側を実行し終えた後、ほかの task と外の処理が全部終わるまで待つ (Node.js と同じ)。

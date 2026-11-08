@@ -34,10 +34,16 @@ type Options struct {
 	WorkDir string
 	// FS は fxma:memoid が使うファイル。nil なら memoid の関数は Ca-nay (ブラウザ版)。
 	FS afero.Fs
+	// Watch は memoid no nozuki が使う。path (今いる場所を足した絶対パス) のファイルか、フォルダの直下が変わるたびに、
+	// 変わったものの名前 (フォルダの中なら最後の部分) を send に渡し、done が閉じたら止める。すぐに戻る。nil なら Ca-nay。
+	Watch func(path string, send func(name string), done <-chan struct{}) error
 	// Process は fxma:ieviljio が使う今のプロセスの情報。nil なら空の情報で、魔女は生めない (ブラウザ版)。
 	Process *Process
 	// HTTPClient は fxma:gemon が使う。nil なら通信は Ca-nay。
 	HTTPClient *http.Client
+	// Serve は gemon no nozuki が使う。port で受け付けを始めてすぐに戻り、リクエストを handler に渡し、done が閉じたら止める。
+	// nil ならサーバーは Ca-nay。
+	Serve func(port int, handler http.Handler, done <-chan struct{}) error
 	// Now と Location は時刻とタイムゾーン (fxma:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
@@ -83,7 +89,8 @@ type Interp struct {
 	// 外の処理。ops は通し番号 → 結果を Promise に届ける関数、pendingOps はまだ終わっていない数。
 	// nextOp と events はやり直しても使い続ける (前の実行で始めた処理の知らせが後から届くため)
 	ops        map[int]func(any, error)
-	timers     []timer // 締め切りの早い順
+	listeners  map[int]func(any) // 何度も知らせが届く処理 (listen)。届いても終わらない
+	timers     []timer           // 締め切りの早い順
 	pendingOps int
 	nextOp     int
 	events     chan event
@@ -196,6 +203,7 @@ func (in *Interp) restart() *Env {
 	in.runq = nil
 	in.rejected = nil
 	in.ops = map[int]func(any, error){}
+	in.listeners = map[int]func(any){}
 	in.timers = nil
 	in.pendingOps = 0
 	in.counts = in.counts[:0]
@@ -287,7 +295,8 @@ func (in *Interp) flush() {
 		io.WriteString(w, o.text)
 	}
 	in.pending = nil
-	in.committed = in.emitted
+	// やり直しの途中で呼ばれても、前の実行で書き出した分まで下げない
+	in.committed = max(in.committed, in.emitted)
 }
 
 // readLine は1行読む。入力が終わっていたら vanita を返す。

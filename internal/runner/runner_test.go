@@ -20,13 +20,15 @@ type testCase struct {
 	src    string
 	stdin  string
 	stdout string
-	err    diag.Kind                         // 空ならエラーなし
-	files  map[string]string                 // werer で読み込めるファイル
-	disk   map[string]string                 // fxma:memoid から見えるファイル。/work からの相対パス
-	check  func(t *testing.T, fsys afero.Fs) // 実行した後のファイルを確かめる
-	exit   int                               // dv no "shid" で終わるときの終了コード
-	client *http.Client                      // fxma:gemon に渡す。nil なら通信できない
-	proc   *interp.Process                   // fxma:ieviljio に渡す。nil なら空
+	err    diag.Kind                                                             // 空ならエラーなし
+	files  map[string]string                                                     // werer で読み込めるファイル
+	disk   map[string]string                                                     // fxma:memoid から見えるファイル。/work からの相対パス
+	check  func(t *testing.T, fsys afero.Fs)                                     // 実行した後のファイルを確かめる
+	exit   int                                                                   // dv no "shid" で終わるときの終了コード
+	client *http.Client                                                          // fxma:gemon に渡す。nil なら通信できない
+	proc   *interp.Process                                                       // fxma:ieviljio に渡す。nil なら空
+	serve  func(port int, h http.Handler, done <-chan struct{}) error            // gemon no nozuki に渡す
+	watch  func(path string, send func(name string), done <-chan struct{}) error // memoid no nozuki に渡す
 }
 
 // fixedNow は 2026-11-07T21:00:00.042+09:00。時刻を使うテストを毎回同じにする。
@@ -53,7 +55,7 @@ func runCase(t *testing.T, c testCase) {
 			t.Fatal(err)
 		}
 	}
-	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Now: fixedNow, Location: tokyo}
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Serve: c.serve, Watch: c.watch, Now: fixedNow, Location: tokyo}
 	_, err := Run(c.src, "main.fxma", opts)
 	de, isDiag := errors.AsType[*diag.Error](err)
 	exit, exited := errors.AsType[*interp.Exit](err)
@@ -187,6 +189,8 @@ func TestAsync(t *testing.T) {
 		{name: "await error", src: "itsver weho f()\n  \"bad\" accuhearts\nfinend\np izu f()\nteitance\n  p praylee\nyoulugive e\n  e no \"lyuzun\" redogh\nfinend\n", stdout: "bad\n"},
 		{name: "await outside itsver", src: "weho f()\n  1 praylee\nfinend\nf()\n", err: diag.CaNay},
 		{name: "await commits choices", src: "x izu 1 owk 2 mekamo\ny izu x praylee\nx senaji 2 shoubek\n", err: diag.CoJundic},
+		// やり直しの途中の praylee で、書き出し済みの "a" をもう一度出さない
+		{name: "await during replay", src: "1 praylee\n\"a\" redogh\nx izu 1 owk 2 mekamo\nx senaji 2 shoubek\nx redogh\n", stdout: "a\n2\n"},
 	}
 	for _, c := range cases {
 		runCase(t, c)

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/afero"
@@ -370,7 +371,49 @@ func memoidEdo(a *argv) (Value, error) {
 	return Str(a.in.workDir()), nil
 }
 
-// memoidNozuki は変更を見張る。見張りながらほかの処理を進めるには本物の非同期が要るので、それまでは Ca-nay。
+// memoidNozuki はファイルかフォルダの直下を見張り、変わるたびに f(変わったパス) を呼ぶ (fs.watch)。
+// パスは書いた形で渡し、フォルダならその中の名前をつなげる。Node.js と同じく、プログラムは見張っている限り終わらない。
 func memoidNozuki(a *argv) (Value, error) {
-	return nil, a.fail(diag.CaNay)
+	if err := a.count(2, 2); err != nil {
+		return nil, err
+	}
+	watch := a.in.opts.Watch
+	if watch == nil {
+		return nil, a.fail(diag.CaNay)
+	}
+	written, resolved, err := pathArg(a, 0)
+	if err != nil {
+		return nil, err
+	}
+	f, err := a.fn(1)
+	if err != nil {
+		return nil, err
+	}
+	isDir, err := fileOp(a, false, written, func(fsys afero.Fs) (any, error) {
+		info, err := fsys.Stat(resolved)
+		if err != nil {
+			return nil, err
+		}
+		return info.IsDir(), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	call := a.callbackLater(f)
+	err = a.in.listen(true, func(send func(any), done <-chan struct{}) error {
+		return watch(resolved, func(name string) { send(name) }, done)
+	}, func(v any) {
+		changed := written
+		if isDir.(bool) {
+			changed = strings.TrimSuffix(written, "/") + "/" + v.(string)
+		}
+		call([]Value{Str(changed)}, nil)
+	})
+	switch {
+	case errors.Is(err, fs.ErrNotExist):
+		return nil, a.in.errorf(diag.NiiExi, a.pos, written)
+	case err != nil:
+		return nil, a.in.errorf(diag.CaNay, a.pos, written)
+	}
+	return null, nil
 }

@@ -164,7 +164,7 @@ func (s streams) options(args []string) interp.Options {
 	return interp.Options{
 		Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr,
 		Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(),
-		Process: osProcess(args), HTTPClient: http.DefaultClient,
+		Process: osProcess(args), HTTPClient: http.DefaultClient, Serve: serve, Watch: watch,
 	}
 }
 
