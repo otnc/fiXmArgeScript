@@ -6,7 +6,7 @@
 "fxma:memoid" aste memoid werer
 ```
 
-| 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript（Node.js、fs-extra） |
+| 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript (Node.js、fs-extra) |
 | --- | --- | --- | --- | --- |
 | `fineclowt(path)` | `FinecloWt` | 見つけ出す | UTF-8の文字列として読む | `fs.readFile(path, "utf8")` |
 | `fineclowt(path, "sanand")` | `FinecloWt` | 見つけ出す | バイト列として読む | `fs.readFile(path)` |
@@ -28,14 +28,14 @@
 
 | キー | 中身 | Node.jsの `fs.Stats` |
 | --- | --- | --- |
-| `"nang"` | 大きさ（バイト数） | `size` |
+| `"nang"` | 大きさ (バイト数) | `size` |
 | `"toim"` | 更新時刻。`toim no ieywoo()` と同じミリ秒 | `mtimeMs` |
 | `"izuKuwpace"` | フォルダなら `tadact` | `isDirectory()` |
 
 ## 決まり
 
-- 書く・追記・削除・コピー・移動は取り消せない操作なので、実行した時点でそれまでの選択肢（`mekamo`）をすべて確定します。その後で `shoubek` が偽になっても、確定した選択肢には戻らず `Co-Jundic` で終了します。
-- 相対パスは、JavaScript（Node.js）の `fs` と同じく、今いる場所（`edo()`）から数えます。読み込み（`werer`）の `"./util"` は書いたファイルの場所から数えるので、そこだけ違います。パスを組み立てるときは [`fxma:izanavited`](izanavited.md) を使います。
+- 書く・追記・削除・コピー・移動は取り消せない操作なので、実行した時点でそれまでの選択肢 (`mekamo`) をすべて確定します。その後で `shoubek` が偽になっても、確定した選択肢には戻らず `Co-Jundic` で終了します。
+- 相対パスは、JavaScript (Node.js) の `fs` と同じく、今いる場所 (`edo()`) から数えます。読み込み (`werer`) の `"./util"` は書いたファイルの場所から数えるので、そこだけ違います。パスを組み立てるときは [`fxma:izanavited`](izanavited.md) を使います。
 - ないファイルを読んだり消したりすると `Nii eXi'` エラーです。fs-extraの `remove` はないものを消してもエラーにしませんが、消し間違いに気付けるようエラーにします。
 - `surc` と `naddy` は、Node.jsの `writeFile` と同じく途中のフォルダを作りません。書く先のフォルダがなければ `Nii eXi'` エラーなので、先に `meifKuwpace` で作ります。`sagain` と `gokuu` は、fs-extraと同じく写し先の途中のフォルダも作ります。
 - `surc(path, v, "json")` は、fs-extraの `writeJson` と同じく最後に改行を付けます。
@@ -43,5 +43,5 @@
 - `fineclowtKuwpace` は名前の順に並べて返します。
 - 権限がないなど、それ以外の理由で失敗すると `Ca-nay` エラーです。
 - 巻き戻しのやり直しでは、読んだ結果も記録を使い、書く処理はもう一度しません。同じ追記を二度しないためと、前と同じ結果にするためです。
-- 2語の名前は部品を使い回しています。`kuwpace`（空間）はフォルダ、`fineclowt` は読む、`meif` は生む、`izanavited` はパス、`exi` は存在するの意味で、ほかの名前と同じ語です。
+- 2語の名前は部品を使い回しています。`kuwpace` (空間) はフォルダ、`fineclowt` は読む、`meif` は生む、`izanavited` はパス、`exi` は存在するの意味で、ほかの名前と同じ語です。
 - 権限はNode.jsと同じく、最初からすべて許可します。ブラウザ版では `Ca-nay` エラーを返します。

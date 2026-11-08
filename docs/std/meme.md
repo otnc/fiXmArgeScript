@@ -13,7 +13,7 @@
 | `litto(x)` | `Litto` | ちょうど | 四捨五入。ちょうど真ん中は0から遠い方に丸める | `Math.round` に近い。`-2.5` の扱いが違う |
 | `pyusense(x)` | `PyusenS'e` | 純粋な | 絶対値 | `Math.abs` |
 | `mource(x)` | `mOurce` | 元、根源 | 平方根 | `Math.sqrt` |
-| `tsuyong(a, b)` / `yoweak(a, b)` | `tSuYoNg` / `YowEAk` | 強い / 弱い | 最大 / 最小（配列も受け取る） | `Math.max` / `Math.min` |
+| `tsuyong(a, b)` / `yoweak(a, b)` | `tSuYoNg` / `YowEAk` | 強い / 弱い | 最大 / 最小 (配列も受け取る) | `Math.max` / `Math.min` |
 | `zelln(xs)` | `Zelln` | 全員 | 合計 | なし |
 
 - `racdam`、`hir`、`litto` は小数を返します。GoやJavaScriptと同じです。`litto(2.5)` は `3.0`、`litto(-2.5)` は `-3.0` です。
@@ -25,7 +25,7 @@
 
 | 書き方 | 中身 | JavaScript |
 | --- | --- | --- |
-| `pi` / `e` | 円周率 / 自然対数の底（定数） | `Math.PI` / `Math.E` |
+| `pi` / `e` | 円周率 / 自然対数の底 (定数) | `Math.PI` / `Math.E` |
 | `sin(x)` / `cos(x)` / `tan(x)` | 三角関数。角度はラジアン | `Math.sin` など |
 | `asin(x)` / `acos(x)` / `atan(x)` | 逆三角関数 | `Math.asin` など |
 | `atan2(y, x)` | 点 (x, y) の角度 | `Math.atan2` |

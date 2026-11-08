@@ -11,8 +11,8 @@
 | `naddy(xs, x)` | `nAddY` | 仲間 | 末尾に追加 | `xs.push(x)` |
 | `muyon(xs)` | `mu·Yon` | 向こう側 | 逆順 | `xs.toReversed()` |
 | `orei(xs)` | `oRei` | 命令、順序 | 並べ替え | `xs.toSorted()` |
-| `tarip(xs, f)` | `Tarip` | 旅 | 1つずつ変換（map） | `xs.map(f)` |
-| `onkhe(xs, f)` | `oNkhe` | 〜だけ | 絞り込み（filter） | `xs.filter(f)` |
+| `tarip(xs, f)` | `Tarip` | 旅 | 1つずつ変換 (map) | `xs.map(f)` |
+| `onkhe(xs, f)` | `oNkhe` | 〜だけ | 絞り込み (filter) | `xs.filter(f)` |
 | `eda(xs, x)` | `Eda` | そこ | `x` の位置。関数を渡すと、`tadact` を返す最初の要素の位置。なければ `-1` | `xs.indexOf(x)` / `xs.findIndex(f)` |
 | `vaniell(xs, i)` | `Vani·Ell` | 消える | `i` 番目を取り出して消し、その値を返す。`i` を省くと最後の要素 | `xs.splice(i, 1)[0]` / `xs.pop()` |
 | `lea(xs, i, x)` | `LEA` | さあ、来い | `i` 番目に `x` を差し込む | `xs.splice(i, 0, x)` |
