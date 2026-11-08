@@ -10,6 +10,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
+// Mode は語の読み方。ファイルの拡張子で決まる (ModeOf)。
 type Mode int
 
 const (

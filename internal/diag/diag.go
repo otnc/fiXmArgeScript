@@ -61,6 +61,7 @@ func (e *Error) Error() string {
 	return s
 }
 
+// New は位置の付いたエラーを作る。target はエラーの対象 (名前やパスなど) で、なければ空。
 func New(kind Kind, file string, pos token.Pos, target string) *Error {
 	return &Error{Kind: kind, File: file, Pos: pos, Target: target}
 }

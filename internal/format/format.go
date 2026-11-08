@@ -186,7 +186,7 @@ func (p *printer) breakInside(g string, tokens []token.Token, next int, stack []
 	if c := commentIn(rows[0]); c != "" {
 		p.b.WriteString("  " + c)
 	}
-	// 行の頭で続けて閉じるもの (finend) など) は、閉じた後の深さで書く
+	// 行の頭で続けて閉じるもの (finend や ) が並ぶ所) は、閉じた後の深さで書く
 	view := stack
 	for j := next; j < len(tokens) && isCloser(tokens[j]) && len(view) > 0; j++ {
 		if j > next && strings.Contains(p.gap(tokens[j-1].End, tokens[j].Start), "\n") {

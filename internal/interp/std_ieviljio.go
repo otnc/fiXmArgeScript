@@ -37,6 +37,7 @@ type Child interface {
 	Kill() error
 }
 
+// ChildResult は終わった魔女の出力と終了コード。
 type ChildResult struct {
 	Stdout, Stderr string
 	Code           int

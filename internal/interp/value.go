@@ -1,6 +1,8 @@
 package interp
 
 import (
+	"slices"
+
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
@@ -79,7 +81,8 @@ func (d *Dict) Set(k string, v Value) {
 	d.values[k] = v
 }
 
-func (d *Dict) Keys() []string { return append([]string(nil), d.keys...) }
+// Keys はキーを入れた順に返す。写しを返すので、回している途中で Set してもよい。
+func (d *Dict) Keys() []string { return slices.Clone(d.keys) }
 
 func (d *Dict) Len() int { return len(d.keys) }
 

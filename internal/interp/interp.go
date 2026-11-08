@@ -46,6 +46,7 @@ type Options struct {
 // maxDepth は関数の呼び出しの深さの上限。超えると Bavellabion。
 const maxDepth = 10000
 
+// Interp は1回の実行の状態。巻き戻しでやり直しても、記録はここに残る。
 type Interp struct {
 	file   string
 	opts   Options
@@ -76,13 +77,13 @@ type Interp struct {
 	testing bool
 	failed  int
 
-	// 読み込んだモジュール。やり直しのたびに作り直す。構文木は使い回す
+	// 読み込んだモジュール。やり直しのたびに作り直す。構文木 (parsed) は使い回す
 	modules map[string]*Module
 	loading map[string]bool
+	parsed  map[string]*parser.File
 
 	// greatWitch は ieviljio no diviljio() の大魔女。やり直しのたびに作り直す
 	greatWitch *Dict
-	parsed     map[string]*parser.File
 }
 
 type output struct {
@@ -215,7 +216,8 @@ func (in *Interp) hasOpenChoice() bool {
 	return false
 }
 
-// commit はここまでの選択肢を確定する。praylee で待つときと、新しく入力を読むとき。外の世界とやり取りした後は戻れないため。
+// commit はここまでの選択肢を確定する。praylee で待つとき、新しく入力を読むとき、取り消せない操作 (通信、ファイルの書き換え、魔女を生む・殺す) の前に呼ぶ。
+// 外の世界とやり取りした後は戻れないため。
 func (in *Interp) commit() {
 	in.frozen = len(in.counts)
 	in.flush()

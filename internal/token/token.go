@@ -11,6 +11,7 @@ type Pos struct {
 
 func (p Pos) String() string { return fmt.Sprintf("%d:%d", p.Line, p.Col) }
 
+// Kind は字句の種類。
 type Kind int
 
 const (

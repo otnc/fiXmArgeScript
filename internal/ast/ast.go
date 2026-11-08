@@ -3,15 +3,18 @@ package ast
 
 import "github.com/otnc/fiXmArgeScript/internal/token"
 
+// Node は構文木の部品。エラーの位置を出すために、どれも位置を持つ。
 type Node interface {
 	Position() token.Pos
 }
 
+// Expr は式。exprNode は、文を式の所に入れられないようにするための印。
 type Expr interface {
 	Node
 	exprNode()
 }
 
+// Stmt は文。stmtNode は Expr の exprNode と同じ印。
 type Stmt interface {
 	Node
 	stmtNode()
@@ -136,6 +139,7 @@ type (
 	}
 )
 
+// StringPiece は StringLit の部品。Expr が nil なら Text の文字、そうでなければ #{} の中の式。
 type StringPiece struct {
 	Text string
 	Expr Expr
@@ -221,6 +225,7 @@ type (
 	}
 )
 
+// ImportName は "./util" no a aste b werer の a と b。Alias は省くと空。
 type ImportName struct {
 	Name  string
 	Alias string
