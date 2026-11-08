@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "cf deploy"
   },
   "dependencies": {
     "@codemirror/language": "^6.13.1",
@@ -16,6 +17,8 @@
     "fxma": "file:../npm"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^2.0.0-beta.v.0",
+    "cf": "^1.0.0-beta.28",
     "vite": "^8.3.6"
   }
 }

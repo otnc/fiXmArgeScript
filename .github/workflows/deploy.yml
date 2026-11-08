@@ -1,0 +1,32 @@
+name: deploy
+
+# プレイグラウンドを Cloudflare Workers (https://fixmargescript.oto.im/) に置く。公開するまでは手で動かすときだけにする
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: node npm/build.mjs
+      - run: npm ci --prefix playground
+      - run: npx cf build
+        working-directory: playground
+      - run: npx cf deploy --prebuilt --mode production
+        working-directory: playground
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

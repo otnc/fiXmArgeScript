@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 export default defineConfig({
-  // GitHub Pages の https://otnc.github.io/fiXmArgeScript/ のように、どのパスに置いても動くようにする
-  base: "./",
   // fxma は new URL("./fxma.wasm", import.meta.url) で wasm を探すので、まとめ直さずにそのまま使う
   optimizeDeps: { exclude: ["fxma"] },
+  plugins: [cloudflare()],
 });

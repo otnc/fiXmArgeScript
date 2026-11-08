@@ -38,4 +38,8 @@ jobs:
       - run: node npm/build.mjs
       - run: node --test npm/test/fxma.test.js
       - run: npm ci --prefix playground
-      - run: npm run build --prefix playground
+      # Cloudflare に送る形まで作り、送らずに確かめる
+      - run: npx cf build
+        working-directory: playground
+      - run: npx cf deploy --prebuilt --mode production --dry-run
+        working-directory: playground
