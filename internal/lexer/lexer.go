@@ -118,6 +118,13 @@ func (l *lexer) errorf(kind diag.Kind, pos token.Pos, target string) error {
 	return diag.New(kind, l.file, pos, target)
 }
 
+// Unfinished は、ソースが途中で終わっているので読めなかったエラー。続きを書けば読める見込みがある。
+// fxma hak は、これなら次の行を待つ。
+type Unfinished struct{ Err *diag.Error }
+
+func (u *Unfinished) Error() string { return u.Err.Error() }
+func (u *Unfinished) Unwrap() error { return u.Err }
+
 func (l *lexer) emitNewline() {
 	n := len(l.tokens)
 	if n == 0 || l.tokens[n-1].Kind == token.Newline {

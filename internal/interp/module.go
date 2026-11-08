@@ -47,7 +47,7 @@ func (in *Interp) execImport(s *ast.Import, env *Env) error {
 
 // bindImport は読み込んだ名前を定義する。同じ名前がもうあれば、aste で別名を付けるよう Su·Ready で知らせる。
 func (in *Interp) bindImport(env *Env, name string, v Value, pos token.Pos) error {
-	if _, dup := env.vars[name]; dup {
+	if env.declared(name) {
 		return in.errorf(diag.SuReady, pos, name)
 	}
 	env.define(name, v, true)

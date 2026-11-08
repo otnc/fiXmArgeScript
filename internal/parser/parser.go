@@ -109,7 +109,11 @@ func (p *parser) skipNewlines() {
 
 // unexpected は、その字句がそこに書けないことを AyAmis で知らせる。
 func (p *parser) unexpected(t token.Token) error {
-	return diag.New(diag.AyAmis, p.file, t.Pos, p.text(t))
+	err := diag.New(diag.AyAmis, p.file, t.Pos, p.text(t))
+	if t.Kind == token.EOF {
+		return &lexer.Unfinished{Err: err}
+	}
+	return err
 }
 
 func (p *parser) text(t token.Token) string {

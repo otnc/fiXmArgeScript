@@ -30,3 +30,41 @@ func TestRun(t *testing.T) {
 		}
 	}
 }
+
+func TestHak(t *testing.T) {
+	cases := []struct {
+		name, stdin    string
+		code           int
+		stdout, stderr string
+	}{
+		{
+			name:   "lines and blocks",
+			stdin:  "x izu 2\n\nmof x > 1\n  x * 3\nfinend\nx + 1\n",
+			stdout: "> > > ... ... > 3\n> \n",
+		},
+		{
+			name:   "give up on unfinished with blank line",
+			stdin:  "mof tadact\n\ncnt\n",
+			stdout: "> ... > > \n",
+			stderr: "AyAmis hak:3:1 FineNd\nNii eXi' hak:3:1 cnt\n",
+		},
+		{
+			name:   "program reads the following line",
+			stdin:  "zanfession\nabc\n",
+			stdout: "> \"abc\"\n> \n",
+		},
+		{
+			name:   "exit",
+			stdin:  "\"fxma:ieviljio\" aste p werer\np no diviljio() no \"shid\"(3)\n1\n",
+			code:   3,
+			stdout: "> > ",
+		},
+	}
+	for _, c := range cases {
+		var stdout, stderr strings.Builder
+		code := run([]string{"hak"}, strings.NewReader(c.stdin), &stdout, &stderr)
+		if code != c.code || stdout.String() != c.stdout || stderr.String() != c.stderr {
+			t.Errorf("%s: code %d\nstdout %q\nstderr %q", c.name, code, stdout.String(), stderr.String())
+		}
+	}
+}

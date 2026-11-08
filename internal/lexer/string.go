@@ -22,7 +22,7 @@ func (l *lexer) lexString() error {
 	litStart := l.i
 	for {
 		if l.i >= len(l.src) {
-			return l.errorf(diag.AyAmis, pos, quote)
+			return &Unfinished{diag.New(diag.AyAmis, l.file, pos, quote)}
 		}
 		if strings.HasPrefix(l.src[l.i:], quote) {
 			parts = append(parts, token.StringPart{Text: l.src[litStart:l.i]})

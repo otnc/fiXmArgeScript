@@ -129,7 +129,8 @@ func RunTests(f *parser.File, opts Options) (failed bool, err error) {
 }
 
 func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
-	in := &Interp{testing: testing, file: f.Name, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
+	in := newInterp(f.Name, opts)
+	in.testing = testing
 	for {
 		err := in.runOnce(f)
 		if bt, ok := errors.AsType[*backtrack](err); ok {
@@ -144,6 +145,10 @@ func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
 	}
 }
 
+func newInterp(file string, opts Options) *Interp {
+	return &Interp{file: file, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64())}
+}
+
 // uncaught は捕まらなかったエラーを表示する形にする。accuhearts で投げた例外だけは KeI·tion で、対象に理由を書く。
 func uncaught(err error) error {
 	if th, ok := errors.AsType[*thrown](err); ok {
@@ -154,6 +159,12 @@ func uncaught(err error) error {
 }
 
 func (in *Interp) runOnce(f *parser.File) error {
+	_, _, err := in.execBlock(f.Stmts, in.restart())
+	return err
+}
+
+// restart は頭から実行し直す準備をして、一番外側のブロックを返す。記録 (plan、inputs、records) は残す。
+func (in *Interp) restart() *Env {
 	in.counts = in.counts[:0]
 	in.emitted = 0
 	in.pending = nil
@@ -164,8 +175,7 @@ func (in *Interp) runOnce(f *parser.File) error {
 	in.loading = map[string]bool{}
 	in.greatWitch = nil
 	in.failed = 0
-	_, _, err := in.execBlock(f.Stmts, newEnv(nil, false))
-	return err
+	return newEnv(nil, false)
 }
 
 func (in *Interp) workDir() string {

@@ -25,7 +25,7 @@ func (in *Interp) execBlock(stmts []ast.Stmt, env *Env) (flow, Value, error) {
 		if !ok {
 			continue
 		}
-		if _, dup := env.vars[d.Fn.Name]; dup {
+		if env.declared(d.Fn.Name) {
 			return flowNormal, nil, in.errorf(diag.SuReady, d.Pos, d.Fn.Name)
 		}
 		env.define(d.Fn.Name, &Func{Lit: d.Fn, Env: env, File: in.frame().file}, false)
@@ -263,7 +263,7 @@ func (in *Interp) assign(s *ast.Assign, env *Env) error {
 func (in *Interp) assignName(s *ast.Assign, t *ast.Ident, value Value, env *Env) error {
 	v, res := env.resolveAssign(t.Name)
 	if s.Const {
-		if res != assignNew {
+		if res != assignNew && !env.inherited[t.Name] {
 			return in.errorf(diag.SuReady, t.Pos, t.Name)
 		}
 		env.define(t.Name, value, true)
