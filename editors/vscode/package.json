@@ -23,13 +23,13 @@
         "id": "fxma",
         "aliases": ["fiXmArge Script", "fxma"],
         "extensions": [".fxma"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./fxma.language-configuration.json"
       },
       {
         "id": "fxmac",
         "aliases": ["fiXmArge Script (清書)", "fxmac"],
         "extensions": [".fxmac"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./fxmac.language-configuration.json"
       }
     ],
     "grammars": [

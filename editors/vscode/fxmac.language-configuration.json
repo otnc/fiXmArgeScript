@@ -1,0 +1,62 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [
+    [
+      "(",
+      ")"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "{",
+      "}"
+    ]
+  ],
+  "autoClosingPairs": [
+    {
+      "open": "(",
+      "close": ")"
+    },
+    {
+      "open": "[",
+      "close": "]"
+    },
+    {
+      "open": "{",
+      "close": "}"
+    },
+    {
+      "open": "\"",
+      "close": "\"",
+      "notIn": [
+        "string"
+      ]
+    }
+  ],
+  "surroundingPairs": [
+    [
+      "(",
+      ")"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "{",
+      "}"
+    ],
+    [
+      "\"",
+      "\""
+    ]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^(?![^#]*(?<![\\w'’~·-])(FineNd)(?![\\w]))(?:\\s*(?<![\\w'’~·-])(yOuLugiVe|En-NOte|FineNd|SiVa)(?![\\w])|[^#]*(?<![\\w'’~·-])(Tei-Tance|aZaGara|sent-ky|We-Ho|cUrOi|Mof)(?![\\w]))",
+    "decreaseIndentPattern": "^\\s*(?<![\\w'’~·-])(yOuLugiVe|En-NOte|FineNd|SiVa)(?![\\w])"
+  }
+}
