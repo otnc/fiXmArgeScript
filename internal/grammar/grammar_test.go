@@ -14,7 +14,12 @@ import (
 // 語を足したら FXMA_UPDATE=1 go test ./internal/grammar/ で書き直す。
 func TestUpToDate(t *testing.T) {
 	root := filepath.Join("..", "..")
-	files := map[string][]byte{filepath.Join("autoload", "fxma", "words.vim"): VimWords()}
+	ado, err := AdoTextMate()
+	require.NoError(t, err)
+	files := map[string][]byte{
+		filepath.Join("autoload", "fxma", "words.vim"):          VimWords(),
+		filepath.Join("editors", "vscode", "syntaxes", AdoFile): ado,
+	}
 	for _, mode := range []lexer.Mode{lexer.Draft, lexer.Fair} {
 		textMate, err := TextMate(mode)
 		require.NoError(t, err)

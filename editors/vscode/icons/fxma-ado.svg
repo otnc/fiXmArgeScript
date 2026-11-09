@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="56%" r="50%">
+      <stop offset="0" stop-color="#3a0712"/>
+      <stop offset="1" stop-color="#0d0a0c"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#glow)"/>
+  <path d="M74 452V118L92 92L110 118V452ZM186 452V118L204 92L222 118V452ZM290 452V118L308 92L326 118V452ZM402 452V118L420 92L438 118V452ZM70 168H442V184H70ZM70 402H442V418H70Z" fill="#f2ecec" opacity="0.88"/>
+  <g transform="translate(256 270) scale(1.1)">
+    <g>
+    <path d="M6 -6C22 -60 70 -122 150 -140L196 -130C188 -96 172 -60 150 -40C128 -20 98 -6 60 0C36 3 16 2 6 -6ZM6 4C44 8 100 24 112 60C118 80 110 96 92 104L100 158L76 108C56 104 34 82 22 56C14 38 8 20 6 4Z" fill="#6e0818" stroke="#0d0a0c" stroke-width="10" stroke-linejoin="round" paint-order="stroke"/>
+    <path d="M6 -6C22 -60 70 -122 150 -140L196 -130C188 -96 172 -60 150 -40C128 -20 98 -6 60 0C36 3 16 2 6 -6ZM6 4C44 8 100 24 112 60C118 80 110 96 92 104L100 158L76 108C56 104 34 82 22 56C14 38 8 20 6 4Z" fill="#b0102a" transform="scale(0.8)"/>
+    </g>
+    <g transform="scale(-1 1)">
+    <path d="M6 -6C22 -60 70 -122 150 -140L196 -130C188 -96 172 -60 150 -40C128 -20 98 -6 60 0C36 3 16 2 6 -6ZM6 4C44 8 100 24 112 60C118 80 110 96 92 104L100 158L76 108C56 104 34 82 22 56C14 38 8 20 6 4Z" fill="#6e0818" stroke="#0d0a0c" stroke-width="10" stroke-linejoin="round" paint-order="stroke"/>
+    <path d="M6 -6C22 -60 70 -122 150 -140L196 -130C188 -96 172 -60 150 -40C128 -20 98 -6 60 0C36 3 16 2 6 -6ZM6 4C44 8 100 24 112 60C118 80 110 96 92 104L100 158L76 108C56 104 34 82 22 56C14 38 8 20 6 4Z" fill="#b0102a" transform="scale(0.8)"/>
+    </g>
+    
+    <path d="M0 -40C10 -40 12 -20 10 10C8 40 4 70 0 84C-4 70 -8 40 -10 10C-12 -20 -10 -40 0 -40Z" fill="#f2ecec" stroke="#0d0a0c" stroke-width="6" paint-order="stroke"/>
+    <path d="M-4 -38C-14 -70 -30 -92 -50 -102M4 -38C14 -70 30 -92 50 -102" fill="none" stroke="#f2ecec" stroke-width="5" stroke-linecap="round"/>
+    <path d="M-50 -110L-42 -102L-50 -94L-58 -102ZM50 -110L58 -102L50 -94L42 -102Z" fill="#f2ecec"/>
+  </g>
+  <circle cx="392" cy="392" r="120" fill="#f2ecec" stroke="#0d0a0c" stroke-width="16"/>
+  <g transform="translate(392 392)"><path d="M0 -62L56 -32L0 -2L-56 -32Z" fill="#b0102a"/>
+    <path d="M-56 -32L0 -2V64L-56 34Z" fill="#6e0818"/>
+    <path d="M56 -32L0 -2V64L56 34Z" fill="#3a0712"/>
+    <path d="M0 -62L56 -32V34L0 64L-56 34V-32ZM-56 -32L0 -2L56 -32M0 -2V64" fill="none" stroke="#0d0a0c" stroke-width="10" stroke-linejoin="round"/></g>
+</svg>

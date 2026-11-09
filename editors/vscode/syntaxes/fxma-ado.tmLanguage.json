@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "fiXmArge Script (fxma.ado)",
+  "scopeName": "source.fxma-ado",
+  "patterns": [
+    {
+      "include": "#field"
+    },
+    {
+      "include": "#string"
+    }
+  ],
+  "repository": {
+    "field": {
+      "match": "^\\s*\\b((?i:youlugive|foryulvu|mokpose|lainei|unneyo|neyo|ado))\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.other.fxma-ado"
+        }
+      }
+    },
+    "string": {
+      "name": "string.quoted.double.fxma-ado",
+      "match": "\"(?:[^\"\\\\]|\\\\.)*\""
+    }
+  }
+}

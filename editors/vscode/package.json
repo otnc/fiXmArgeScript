@@ -24,13 +24,34 @@
         "id": "fxma",
         "aliases": ["fiXmArge Script", "fxma"],
         "extensions": [".fxma"],
-        "configuration": "./fxma.language-configuration.json"
+        "configuration": "./fxma.language-configuration.json",
+        "icon": { "light": "./icons/fxma.svg", "dark": "./icons/fxma.svg" }
       },
       {
         "id": "fxmac",
         "aliases": ["fiXmArge Script (清書)", "fxmac"],
         "extensions": [".fxmac"],
-        "configuration": "./fxmac.language-configuration.json"
+        "configuration": "./fxmac.language-configuration.json",
+        "icon": { "light": "./icons/fxma.svg", "dark": "./icons/fxma.svg" }
+      },
+      {
+        "id": "fxma-ado",
+        "aliases": ["fiXmArge Script (fxma.ado)"],
+        "filenames": ["fxma.ado"],
+        "icon": { "light": "./icons/fxma-ado.svg", "dark": "./icons/fxma-ado.svg" }
+      },
+      {
+        "id": "fxma-showroof",
+        "aliases": ["fiXmArge Script (fxma.showroof)"],
+        "filenames": ["fxma.showroof"],
+        "icon": { "light": "./icons/fxma-showroof.svg", "dark": "./icons/fxma-showroof.svg" }
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "fxma-icons",
+        "label": "fiXmArge Script のファイルアイコン (補助)",
+        "path": "./icons/fxma-icon-theme.json"
       }
     ],
     "grammars": [
@@ -43,6 +64,11 @@
         "language": "fxmac",
         "scopeName": "source.fxmac",
         "path": "./syntaxes/fxmac.tmLanguage.json"
+      },
+      {
+        "language": "fxma-ado",
+        "scopeName": "source.fxma-ado",
+        "path": "./syntaxes/fxma-ado.tmLanguage.json"
       }
     ],
     "configuration": {

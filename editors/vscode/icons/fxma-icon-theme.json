@@ -1,0 +1,27 @@
+{
+  "iconDefinitions": {
+    "fxma": {
+      "iconPath": "./fxma.svg"
+    },
+    "fxma-ado": {
+      "iconPath": "./fxma-ado.svg"
+    },
+    "fxma-showroof": {
+      "iconPath": "./fxma-showroof.svg"
+    }
+  },
+  "languageIds": {
+    "fxma": "fxma",
+    "fxmac": "fxma",
+    "fxma-ado": "fxma-ado",
+    "fxma-showroof": "fxma-showroof"
+  },
+  "fileExtensions": {
+    "fxma": "fxma",
+    "fxmac": "fxma"
+  },
+  "fileNames": {
+    "fxma.ado": "fxma-ado",
+    "fxma.showroof": "fxma-showroof"
+  }
+}

@@ -112,6 +112,39 @@ func TextMate(mode lexer.Mode) ([]byte, error) {
 		g.Name += " (清書)"
 		g.ScopeName = "source.fxmac"
 	}
+	return marshal(g)
+}
+
+// AdoFile は fxma.ado の文法のファイルの名前。
+const AdoFile = "fxma-ado.tmLanguage.json"
+
+// AdoTextMate は fxma.ado の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
+func AdoTextMate() ([]byte, error) {
+	var fields []string
+	for _, e := range lexicon.Entries() {
+		if e.Uses&lexicon.ModField != 0 {
+			fields = append(fields, e.Name)
+		}
+	}
+	return marshal(grammar{
+		Schema:    "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+		Name:      "fiXmArge Script (fxma.ado)",
+		ScopeName: "source.fxma-ado",
+		Patterns:  []rule{include("field"), include("string")},
+		Repository: map[string]rule{
+			"field": {
+				Match:    `^\s*` + words(fields, lexer.Draft),
+				Captures: map[string]capture{"1": {"keyword.other.fxma-ado"}},
+			},
+			"string": {
+				Name:  "string.quoted.double.fxma-ado",
+				Match: `"(?:[^"\\]|\\.)*"`,
+			},
+		},
+	})
+}
+
+func marshal(g grammar) ([]byte, error) {
 	out, err := json.Marshal(g, json.Deterministic(true), jsontext.WithIndent("  "))
 	if err != nil {
 		return nil, err

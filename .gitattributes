@@ -9,3 +9,4 @@ editors/vscode/*.language-configuration.json linguist-generated
 # assets/build.mjs が作るファイル
 assets/*.svg linguist-generated
 playground/src/favicon.svg linguist-generated
+editors/vscode/icons/* linguist-generated

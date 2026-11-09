@@ -130,6 +130,44 @@ function logo(ink) {
 `;
 }
 
+// ファイルのアイコン。エクスプローラーでは 16px なので小さい版を使い、パッケージとロックのファイルは右下に印を重ねる。
+const badges = {
+  // パッケージのファイル (fxma.ado) は箱。
+  box: `<path d="M0 -62L56 -32L0 -2L-56 -32Z" fill="${color.crimson}"/>
+    <path d="M-56 -32L0 -2V64L-56 34Z" fill="${color.blood}"/>
+    <path d="M56 -32L0 -2V64L56 34Z" fill="${color.ember}"/>
+    <path d="M0 -62L56 -32V34L0 64L-56 34V-32ZM-56 -32L0 -2L56 -32M0 -2V64" fill="none" stroke="${color.night}" stroke-width="10" stroke-linejoin="round"/>`,
+  // ロックファイル (fxma.showroof) は鍵。
+  key: `<g fill="none" stroke="${color.night}" stroke-width="22" stroke-linecap="round">
+      <circle cx="-34" cy="-34" r="30"/>
+      <path d="M-12 -12L56 56M26 26L44 8M44 44L62 26"/>
+    </g>`,
+};
+
+function fileIcon(badge) {
+  const mark = badge
+    ? `<circle cx="392" cy="392" r="120" fill="${color.bone}" stroke="${color.night}" stroke-width="16"/>
+  <g transform="translate(392 392)">${badges[badge]}</g>`
+    : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  ${iconBody(true)}
+  ${mark}
+</svg>
+`;
+}
+
+// VS Code の補助のアイコンテーマ。ほかのファイルには何も付けないので、fxma のファイルだけを見分けたいときに選ぶ。
+function iconTheme(files) {
+  const theme = { iconDefinitions: {}, languageIds: {}, fileExtensions: {}, fileNames: {} };
+  for (const f of files) {
+    theme.iconDefinitions[f.id] = { iconPath: `./${f.id}.svg` };
+    theme.languageIds[f.language] = f.id;
+    for (const ext of f.extensions ?? []) theme.fileExtensions[ext] = f.id;
+    for (const name of f.fileNames ?? []) theme.fileNames[name] = f.id;
+  }
+  return JSON.stringify(theme, null, 2) + "\n";
+}
+
 function png(svg, size) {
   return new Resvg(svg, { fitTo: { mode: "width", value: size } }).render().asPng();
 }
@@ -151,3 +189,15 @@ write("editors/vscode/icon.png", png(iconSvg, 256));
 write("playground/src/favicon.svg", smallIconSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256];
 write("installer/fxma.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
+
+// 言語の ID とファイルの名前は editors/vscode/package.json の languages と合わせる。
+const files = [
+  { id: "fxma", language: "fxma", extensions: ["fxma"] },
+  { id: "fxma", language: "fxmac", extensions: ["fxmac"] },
+  { id: "fxma-ado", language: "fxma-ado", fileNames: ["fxma.ado"], badge: "box" },
+  { id: "fxma-showroof", language: "fxma-showroof", fileNames: ["fxma.showroof"], badge: "key" },
+];
+for (const f of new Map(files.map((f) => [f.id, f])).values()) {
+  write(`editors/vscode/icons/${f.id}.svg`, fileIcon(f.badge));
+}
+write("editors/vscode/icons/fxma-icon-theme.json", iconTheme(files));
