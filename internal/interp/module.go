@@ -79,10 +79,9 @@ func (in *Interp) loadModule(path string, pos token.Pos) (*Module, error) {
 	if pkg, ok := strings.CutPrefix(path, modpath.StdPrefix); ok {
 		return in.loadStd(path, pkg, pos)
 	}
-	name, ok := modpath.Local(in.frame().file, path)
-	if !ok {
-		// 外部パッケージは fxma werer で取ってくる仕組みと一緒に作る
-		return nil, in.errorf(diag.CaNay, pos, path)
+	name, err := in.moduleFile(path, pos)
+	if err != nil {
+		return nil, err
 	}
 	if m, ok := in.modules[name]; ok {
 		return m, nil
@@ -105,6 +104,21 @@ func (in *Interp) loadModule(path string, pos token.Pos) (*Module, error) {
 	}
 	in.modules[name] = m
 	return m, nil
+}
+
+// moduleFile は werer の読み込み先を、読むファイルの名前にする。
+func (in *Interp) moduleFile(path string, pos token.Pos) (string, error) {
+	if name, ok := modpath.Local(in.frame().file, path); ok {
+		return name, nil
+	}
+	if in.opts.External == nil {
+		return "", in.errorf(diag.CaNay, pos, path)
+	}
+	name, err := in.opts.External(path)
+	if u, ok := errors.AsType[*diag.Unplaced](err); ok {
+		return "", in.errorf(u.Kind, pos, u.Target)
+	}
+	return name, err
 }
 
 func (in *Interp) loadStd(path, pkg string, pos token.Pos) (*Module, error) {

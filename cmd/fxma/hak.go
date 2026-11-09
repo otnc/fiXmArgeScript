@@ -18,7 +18,7 @@ import (
 func (s streams) hak(context.Context, *cli.Command) error {
 	// プログラムの zanfession と同じ読み手を使い、先読みした行を取り合わないようにする
 	stdin := bufio.NewReader(s.stdin)
-	opts := s.options(nil)
+	opts := s.options("", nil)
 	opts.Stdin = stdin
 	h := runner.NewHak(opts)
 	var entry strings.Builder

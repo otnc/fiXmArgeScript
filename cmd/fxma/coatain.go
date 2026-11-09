@@ -34,7 +34,7 @@ func (s streams) coatain(_ context.Context, cmd *cli.Command) error {
 		f, err := s.prepare(path)
 		if err == nil {
 			var guilty bool
-			guilty, err = interp.RunTests(f, s.options(nil))
+			guilty, err = interp.RunTests(f, s.options(path, nil))
 			failed = failed || guilty
 		}
 		if exit, ok := errors.AsType[*interp.Exit](err); ok {

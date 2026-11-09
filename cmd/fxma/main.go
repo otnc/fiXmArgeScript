@@ -95,6 +95,16 @@ func (s streams) app() *cli.Command {
 				Flags:   []cli.Flag{&cli.BoolFlag{Name: "curoi", Aliases: []string{"expand", "c", "e"}}},
 				Action:  s.beaukshi,
 			},
+			{Name: "werer", Aliases: []string{"get"}, Action: s.werer},
+			{
+				Name:    "ado",
+				Aliases: []string{"mod"},
+				Action:  s.ado,
+				Commands: []*cli.Command{
+					{Name: "meif", Aliases: []string{"init"}, Action: s.adoMeif},
+					{Name: "saymal", Aliases: []string{"tidy"}, Action: s.adoSaymal},
+				},
+			},
 			{Name: "hak", Aliases: []string{"repl"}, Action: s.hak},
 			{Name: "trench", Aliases: []string{"lsp"}, Action: s.trench},
 			{Name: "neyar", Aliases: []string{"version"}, Action: s.neyar},
@@ -103,6 +113,9 @@ func (s streams) app() *cli.Command {
 	}
 	for _, c := range append([]*cli.Command{app}, app.Commands...) {
 		c.OnUsageError = s.usageError
+		for _, sub := range c.Commands {
+			sub.OnUsageError = s.usageError
+		}
 	}
 	return app
 }
@@ -160,11 +173,16 @@ func (s streams) prepare(path string) (*parser.File, error) {
 }
 
 // options はプログラムに渡す入出力。args は dv no "conwa" になる。
-func (s streams) options(args []string) interp.Options {
+// 外部パッケージは file のあるフォルダ (空なら今いる場所) から上にたどった fxma.mod で探す。
+func (s streams) options(file string, args []string) interp.Options {
 	wd, _ := os.Getwd()
+	dir := wd
+	if file != "" {
+		dir = filepath.Dir(file)
+	}
 	return interp.Options{
 		Stdin: s.stdin, Stdout: s.stdout, Stderr: s.stderr,
-		Load: runner.Loader(os.ReadFile), WorkDir: wd, FS: afero.NewOsFs(),
+		Load: runner.Loader(os.ReadFile), External: external(dir), WorkDir: wd, FS: afero.NewOsFs(),
 		Process: osProcess(args), HTTPClient: http.DefaultClient, Serve: serve, Watch: watch,
 	}
 }
@@ -176,7 +194,7 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 	}
 	f, err := s.prepare(cmd.Args().First())
 	if err == nil {
-		err = interp.Run(f, s.options(cmd.Args().Tail()))
+		err = interp.Run(f, s.options(cmd.Args().First(), cmd.Args().Tail()))
 	}
 	if exit, ok := errors.AsType[*interp.Exit](err); ok {
 		return exitCode(exit.Code)
@@ -247,6 +265,9 @@ func (s streams) usage(w io.Writer) {
   fxma beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
   fxma beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
   fxma lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
+  fxma ado meif <名前>       fxma.mod を作る (mod init)。名前はリポジトリの URL (github.com/alice/strs)
+  fxma werer <パッケージ>[@<版>]  外部パッケージを取ってきて fxma.mod に足す (get)。版を省くといちばん新しい版
+  fxma ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りないものを足し、使っていないものを消す
   fxma hak                   対話モード。1行ずつ打って実行する (repl)
   fxma trench                エディタのための言語サーバーを動かす (lsp)
   fxma nai <エラー名>        エラーや警告の意味を説明する (explain)

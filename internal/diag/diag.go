@@ -66,6 +66,21 @@ func New(kind Kind, file string, pos token.Pos, target string) *Error {
 	return &Error{Kind: kind, File: file, Pos: pos, Target: target}
 }
 
+// Unplaced はソースの位置がないエラー (パッケージの取得など)。表示の形は <エラー名> <対象>。
+type Unplaced struct {
+	Kind   Kind
+	Target string
+}
+
+func (e *Unplaced) Error() string {
+	return e.Kind.Spelling() + " " + e.Target
+}
+
+// NewUnplaced は位置のないエラーを作る。
+func NewUnplaced(kind Kind, target string) *Unplaced {
+	return &Unplaced{Kind: kind, Target: target}
+}
+
 // Warning は実行を止めない知らせ。今は方言の綴りだけ。
 type Warning struct {
 	Kind Kind

@@ -23,3 +23,8 @@ func Local(from, path string) (string, bool) {
 	}
 	return filepath.ToSlash(filepath.Join(filepath.Dir(from), filepath.FromSlash(path))) + ext, true
 }
+
+// External は外部パッケージ (github.com/... のような Git リポジトリ) の読み込み先か。
+func External(path string) bool {
+	return !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") && !strings.HasPrefix(path, StdPrefix)
+}

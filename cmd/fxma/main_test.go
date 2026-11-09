@@ -68,3 +68,28 @@ func TestHak(t *testing.T) {
 		}
 	}
 }
+
+func TestModCommands(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	t.Setenv("FXMA_CACHE", t.TempDir())
+	cases := []struct {
+		args   []string
+		code   int
+		stderr string
+	}{
+		{args: []string{"werer", "github.com/alice/strs"}, code: 1, stderr: "Nii eXi' fxma.mod"},
+		{args: []string{"ado"}, code: 2, stderr: "fiXmArge Script (fxma) の使い方"},
+		{args: []string{"mod", "init", "github.com/me/app"}, code: 0},
+		{args: []string{"ado", "meif", "github.com/me/app"}, code: 1, stderr: "Su·Ready fxma.mod"},
+		{args: []string{"get", "github.com/alice/strs@latest"}, code: 1, stderr: "AyAmis latest"},
+		{args: []string{"ado", "saymal"}, code: 0},
+	}
+	for _, c := range cases {
+		var stdout, stderr strings.Builder
+		code := run(c.args, strings.NewReader(""), &stdout, &stderr)
+		if code != c.code || !strings.HasPrefix(stderr.String(), c.stderr) {
+			t.Errorf("%v: code %d stdout %q stderr %q", c.args, code, stdout.String(), stderr.String())
+		}
+	}
+}

@@ -39,6 +39,8 @@ go run ./cmd/fxma keeon examples/fizzbuzz.fxma
 go run ./cmd/fxma sinruits examples/fizzbuzz.fxma
 ```
 
+外部パッケージは Go と同じく Git のタグから取ってきます。`fxma ado meif github.com/you/app` で `fxma.mod` を作り、`fxma werer github.com/alice/strs` で足し、`fxma ado saymal` でソースの `werer` に合わせてそろえ直します。詳しくは [docs/RFC.md](docs/RFC.md) の「パッケージとモジュール」にあります。
+
 WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fxma`) と [playground/](playground/) (ブラウザのプレイグラウンド) にあります。
 
 VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fxma trench` が行います。

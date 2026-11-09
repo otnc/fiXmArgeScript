@@ -898,11 +898,39 @@ lainei github.com/bob/util ../util
 | `fxma werer <パッケージ>@<版>` | `get` | `go get` | パッケージを追加する |
 | `fxma ado saymal` | `mod tidy` | `go mod tidy` | 使っていないものを消し、足りないものを足す |
 
-- パッケージの場所はGitリポジトリのURL (`github.com/owner/repo/ファイル名`) で、版はGitのタグ (`v1.2.0`) です。
-- ダウンロードするのは `fxma werer` のときだけで、`fxma keeon` の途中ではダウンロードしません。
-- ダウンロードしたものは `~/.cache/fxma/mod` に置き、プロジェクトの間で使い回します。
-- 同じパッケージを別の版で要求されたら、要求の中でいちばん新しい版を1つだけ使います (Goの最小バージョン選択)。
+- パッケージの名前はGitリポジトリのURLから `https://` を除いたもの (`github.com/owner/repo`) で、版はGitのタグ (`v1.2.0`) です。タグは `v` で始まるsemverだけを版として使います。
+- 取ってくるのはfxmaに組み込んだGitの実装 (go-git) なので、`git` コマンドは要りません。タグが指すコミットのファイルを取ってきます。
+- `fxma werer <パッケージ>` のように版を省くと、いちばん新しい正式版を使います。正式版がなければいちばん新しいプレリリースです (Goの `latest` と同じ)。
+- ダウンロードするのは `fxma werer` と `fxma ado saymal` のときだけで、`fxma keeon` の途中ではダウンロードしません。取ってきていないパッケージを読み込むと `Nii eXi'` です。
+- ダウンロードしたものはOSのキャッシュの場所 (Linuxは `~/.cache/fxma/mod`、Windowsは `%LocalAppData%\fxma\mod`、macOSは `~/Library/Caches/fxma/mod`) に置き、プロジェクトの間で使い回します。環境変数 `FXMA_CACHE` を設定すると、その下の `mod` に置きます。
+- 同じパッケージを別の版で要求されたら、要求の中でいちばん新しい版を1つだけ使います (Goの最小バージョン選択)。`unneyo` で使わせない版が選ばれたら、その次に新しい版に上げます。
+- `fxma.mod` の `neyo` には、直接読み込むものだけでなく、間接的に使うものも含めて使うパッケージをすべて並べます (Go 1.17からの `go.mod` と同じ)。`fxma keeon` は `fxma.mod` だけを見て読み込み先を決めます。
+- `fxma.sum` のハッシュはGoの `go.sum` と同じ `h1:` の形です (ファイルごとのSHA-256をまとめたもの)。`fxma keeon` は読み込む前にキャッシュの中身をこのハッシュと比べ、合わないか `fxma.sum` に書かれていなければ `CraeyTA'` です。版を選ぶためにたどった、選ばれなかった版のハッシュも残ります。
+- `lainei` で手元のフォルダに置き換えたパッケージは、ダウンロードもハッシュの確認もしません。
+- `fxma ado saymal` は、パッケージの下書き (`.fxma`) の `werer` を集めて使うパッケージを決め直します。清書 (`.fxmac`)、`.` で始まるフォルダ、別の `fxma.mod` があるフォルダは見ません。`neyo` にない読み込み先は、名前の長い方からリポジトリを探して、いちばん新しい版を足します。読み込み先のファイルがなければ、その `werer` の位置で `Nii eXi'` です。
 - WebAssembly版のプレイグラウンドはGitを使えないので、標準ライブラリと同じ画面で書いたファイルだけを読み込めます。
+
+外部パッケージの読み込みは次のとおりです。
+
+| 書き方 | 読むファイル | JavaScript |
+| --- | --- | --- |
+| `"github.com/alice/strs" aste strs werer` | パッケージの直下の `strs.fxma` (名前の最後と同じ) | `import * as strs from "strs"` |
+| `"github.com/alice/strs/case" aste c werer` | パッケージの直下の `case.fxma` | `import * as c from "strs/case"` |
+
+- 外部パッケージは、清書を実行しているときも下書き (`.fxma`) を読みます。キャッシュの中身は書き換えないためです。
+- 外部パッケージの中の `"./util"` は、そのパッケージの中のファイルを読みます。外部パッケージの中の外部パッケージは、実行しているパッケージの `fxma.mod` で決めた版を読みます。
+
+取ってくるときのエラーは次のとおりです。
+
+| エラー | 起きるとき |
+| --- | --- |
+| `Nii eXi'` | `fxma.mod` が見つからない。リポジトリやタグがない |
+| `AyAmis` | `fxma.mod` の書き方や版の書き方が正しくない。`foryulvu` がSPDXのライセンス式として読めない |
+| `Ca-nay` | 取ってきたパッケージに `fxma.mod` がない。`ado` が取ってきた名前と違う。`foryulvu` か `neyo fxma` がない。手元の fxma が `neyo fxma` の範囲に入らない |
+| `Su·Ready` | `fxma ado meif` で、もう `fxma.mod` がある。`fxma.mod` に同じ項目や同じパッケージを二度書いた |
+| `CraeyTA'` | 取ってきたものが `fxma.sum` と合わない |
+
+開発中の fxma (タグから作っていない版) では、`neyo fxma` の範囲を確かめません。`fxma ado meif` は手元の fxma の版から `neyo fxma >=0.1.0` のように書き、開発中の版なら `neyo fxma *` と書きます。
 
 ## 標準パッケージ
 
