@@ -3,5 +3,5 @@
 return {
   cmd = { 'fxma', 'trench' },
   filetypes = { 'fxma', 'fxmac' },
-  root_markers = { 'fxma.mod', '.git' },
+  root_markers = { 'fxma.ado', '.git' },
 }

@@ -107,7 +107,7 @@ var words = []Word{
 	{"nOzuki", "気付き", Function | Key},
 	{"deFuTai", "絶対に", Function | Part},
 	{"KuwPace", "空間", Function | Part | Installer},
-	{"Ado", "これ", Function | Command | ModField},
+	{"Ado", "これ", Function | Command | ModField | FileName},
 	{"ChiDd", "血", Function | Key},
 	{"eATah·Guy", "お互い", Function},
 	{"Say mAl", "正常", Function | Command},
@@ -171,11 +171,14 @@ var words = []Word{
 	{"Per·SemOn", "見世物", Command},
 	{"Trench", "友達", Command},
 
-	// fxma.mod の項目
+	// fxma.ado の項目
 	{"MokpOSe", "目的", ModField},
 	{"neYO", "必要", ModField},
 	{"UnneYO", "要らない", ModField},
 	{"forYulvu", "許可する", ModField},
+
+	// パッケージのファイル (fxma.ado と fxma.showroof)
+	{"showroof", "証明", FileName},
 
 	// インストーラの文言
 	{"ShiFey", "失敗", Installer},
