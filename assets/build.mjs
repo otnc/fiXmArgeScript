@@ -1,5 +1,6 @@
 // ロゴとアイコンを作り、使う場所へ書き出す。図形はすべてここで描き、公式の素材は使わない。
 // 文字は Almendra Display (SIL Open Font License 1.1) の字形を線に変えて埋め込むので、見る側にフォントは要らない。
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { Resvg } from "@resvg/resvg-js";
@@ -188,6 +189,25 @@ write("editors/vscode/icon.png", png(iconSvg, 256));
 write("playground/src/favicon.svg", smallIconSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256];
 write("installer/fxma.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
+
+// fxma.exe に埋め込むアイコン。go build が cmd/fxma の *_windows_<arch>.syso を拾う。
+// 版は入れない (fxma neyar は Go が埋め込む版を読むので、ここで入れるとリリースのたびに作り直すことになる)。
+// go-winres は版がないと製品名などの文字の情報も書かないので、アイコンだけを入れる。
+// マニフェストも付けない。付けると Windows での動き方が変わりうるため。
+execFileSync(
+  "go",
+  [
+    "run",
+    "github.com/tc-hib/go-winres@v0.3.3",
+    "simply",
+    "--arch=amd64,arm64",
+    "--out=cmd/fxma/rsrc",
+    "--manifest=none",
+    "--icon=installer/fxma.ico",
+  ],
+  { cwd: root, stdio: "inherit" },
+);
+console.log("cmd/fxma/rsrc_windows_{amd64,arm64}.syso");
 
 // 言語の ID とファイルの名前は editors/vscode/package.json の languages と合わせる。
 const files = [

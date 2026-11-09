@@ -49,7 +49,7 @@ Vim と Neovim では、このリポジトリをそのままプラグインと�
 
 コードは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。
 
-ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。作り直すときは `npm --prefix assets install` の後に `npm --prefix assets run build` を実行します。
+ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。作り直すときは `npm --prefix assets install` の後に `npm --prefix assets run build` を実行します (fxma.exe に埋め込むアイコンを作るのに Go も使います)。
 
 ## 問い合わせ
 
