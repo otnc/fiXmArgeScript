@@ -1,4 +1,9 @@
-# fiXmArge Script
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg" />
+    <img src="assets/logo-light.svg" alt="fiXmArge Script" width="560" />
+  </picture>
+</h1>
 
 『魔法少女ノ魔女裁判』の架空言語「フィクスマージ語」の単語をキーワードにした、**非公式のファンメイド**のプログラミング言語です。略称は fxma です。
 
@@ -43,6 +48,8 @@ Vim と Neovim では、このリポジトリをそのままプラグインと�
 ## ライセンス
 
 コードは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。
+
+ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。作り直すときは `npm --prefix assets install` の後に `npm --prefix assets run build` を実行します。
 
 ## 問い合わせ
 

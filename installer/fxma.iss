@@ -34,7 +34,8 @@ ArchitecturesAllowed=x64compatible or arm64
 ArchitecturesInstallIn64BitMode=x64compatible or arm64
 ChangesEnvironment=yes
 LicenseFile=license.txt
-UninstallDisplayIcon={app}\fxma.exe
+SetupIconFile=fxma.ico
+UninstallDisplayIcon={app}\fxma.ico
 OutputDir=..\dist
 OutputBaseFilename=fxma_{#AppVersion}_windows_setup
 SolidCompression=yes
@@ -46,6 +47,7 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 [Files]
 Source: "{#BinDir}\amd64\fxma.exe"; DestDir: "{app}"; Check: not IsArm64; Flags: ignoreversion
 Source: "{#BinDir}\arm64\fxma.exe"; DestDir: "{app}"; Check: IsArm64; Flags: ignoreversion
+Source: "fxma.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE-MIT"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion

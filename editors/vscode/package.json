@@ -6,6 +6,7 @@
   "publisher": "otnc",
   "author": "otoneko.",
   "license": "MIT OR Apache-2.0",
+  "icon": "icon.png",
   "homepage": "https://github.com/otnc/fiXmArgeScript",
   "repository": {
     "type": "git",
