@@ -74,6 +74,22 @@ syntax region fxmaString matchgroup=fxmaStringDelimiter start=/"""/ end=/"""/ co
 	return []byte(b.String())
 }
 
+// VimAdoFiletype は fxma.ado の Vim のファイルタイプの名前。
+const VimAdoFiletype = "fxmaado"
+
+// VimAdoSyntax は fxma.ado の syntax ファイルを返す。TextMate の AdoTextMate と同じく、行の頭の項目名と文字列だけに色を付ける。
+func VimAdoSyntax() []byte {
+	var b strings.Builder
+	b.WriteString(vimHeader)
+	b.WriteString("if exists('b:current_syntax')\n  finish\nendif\n\n")
+	fmt.Fprintf(&b, "syntax match fxmaadoField /^\\s*\\zs%s/\n", vimWords(modFields(), lexer.Draft))
+	b.WriteString("syntax region fxmaadoString start=/\"/ skip=/\\\\./ end=/\"/ oneline\n\n")
+	b.WriteString("highlight default link fxmaadoField Keyword\n")
+	b.WriteString("highlight default link fxmaadoString String\n")
+	fmt.Fprintf(&b, "\nlet b:current_syntax = '%s'\n", VimAdoFiletype)
+	return []byte(b.String())
+}
+
 // VimWords は字下げ (indent/fxma.vim) が使う、ブロックの語の正規表現を下書きと清書の両方について返す。
 func VimWords() []byte {
 	var b strings.Builder

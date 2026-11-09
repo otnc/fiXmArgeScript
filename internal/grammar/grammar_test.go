@@ -19,6 +19,7 @@ func TestUpToDate(t *testing.T) {
 	files := map[string][]byte{
 		filepath.Join("autoload", "fxma", "words.vim"):          VimWords(),
 		filepath.Join("editors", "vscode", "syntaxes", AdoFile): ado,
+		filepath.Join("syntax", VimAdoFiletype+".vim"):          VimAdoSyntax(),
 	}
 	for _, mode := range []lexer.Mode{lexer.Draft, lexer.Fair} {
 		textMate, err := TextMate(mode)

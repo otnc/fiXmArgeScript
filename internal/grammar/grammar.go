@@ -120,12 +120,7 @@ const AdoFile = "fxma-ado.tmLanguage.json"
 
 // AdoTextMate は fxma.ado の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
 func AdoTextMate() ([]byte, error) {
-	var fields []string
-	for _, e := range lexicon.Entries() {
-		if e.Uses&lexicon.ModField != 0 {
-			fields = append(fields, e.Name)
-		}
-	}
+	fields := modFields()
 	return marshal(grammar{
 		Schema:    "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 		Name:      "fiXmArge Script (fxma.ado)",
@@ -142,6 +137,17 @@ func AdoTextMate() ([]byte, error) {
 			},
 		},
 	})
+}
+
+// modFields は fxma.ado の項目名 (キーワードを兼ねる youlugive も含む)。
+func modFields() []string {
+	var out []string
+	for _, e := range lexicon.Entries() {
+		if e.Uses&lexicon.ModField != 0 {
+			out = append(out, e.Name)
+		}
+	}
+	return out
 }
 
 func marshal(g grammar) ([]byte, error) {
