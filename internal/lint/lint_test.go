@@ -54,11 +54,11 @@ func TestRules(t *testing.T) {
 		{"shoubek with choice", "x izu 1 owk 2 mekamo\nx > 1 shoubek\n", nil},
 		{"dialect", "lowhel izu 1\nlowhel redogh\n", []string{"LaVI DowGuil main.fxma:1:1 lowhel", "LaVI DowGuil main.fxma:2:1 lowhel"}},
 		{"silenced by comment", "x izu 1  # lavi: wasda\n", nil},
-		{"silenced by fxma.ado", "x izu 1\n", nil},
+		{"silenced by fxma.mod", "x izu 1\n", nil},
 	}
 	for _, c := range cases {
 		var allowed []string
-		if c.name == "silenced by fxma.ado" {
+		if c.name == "silenced by fxma.mod" {
 			allowed = []string{"wasda"}
 		}
 		got := lint(t, c.src, allowed...)

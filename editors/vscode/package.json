@@ -35,16 +35,16 @@
         "icon": { "light": "./icons/fxma.svg", "dark": "./icons/fxma.svg" }
       },
       {
-        "id": "fxma-ado",
-        "aliases": ["fiXmArge Script (fxma.ado)"],
-        "filenames": ["fxma.ado"],
-        "icon": { "light": "./icons/fxma-ado.svg", "dark": "./icons/fxma-ado.svg" }
+        "id": "fxma-mod",
+        "aliases": ["fiXmArge Script (fxma.mod)"],
+        "filenames": ["fxma.mod"],
+        "icon": { "light": "./icons/fxma-mod.svg", "dark": "./icons/fxma-mod.svg" }
       },
       {
-        "id": "fxma-showroof",
-        "aliases": ["fiXmArge Script (fxma.showroof)"],
-        "filenames": ["fxma.showroof"],
-        "icon": { "light": "./icons/fxma-showroof.svg", "dark": "./icons/fxma-showroof.svg" }
+        "id": "fxma-sum",
+        "aliases": ["fiXmArge Script (fxma.sum)"],
+        "filenames": ["fxma.sum"],
+        "icon": { "light": "./icons/fxma-sum.svg", "dark": "./icons/fxma-sum.svg" }
       }
     ],
     "iconThemes": [
@@ -66,9 +66,9 @@
         "path": "./syntaxes/fxmac.tmLanguage.json"
       },
       {
-        "language": "fxma-ado",
-        "scopeName": "source.fxma-ado",
-        "path": "./syntaxes/fxma-ado.tmLanguage.json"
+        "language": "fxma-mod",
+        "scopeName": "source.fxma-mod",
+        "path": "./syntaxes/fxma-mod.tmLanguage.json"
       }
     ],
     "configuration": {

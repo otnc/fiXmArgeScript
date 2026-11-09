@@ -23,7 +23,7 @@ var entries = []entry{
 	{diag.CoJundic, "矛盾。どの選択肢 (mekamo) でも shoubek を満たせませんでした。praylee で待っているのに、ほかに動ける処理も外から届くものもなく、二度と再開できないとき (自分自身の結果を待つなど) にも出ます。youlugive では捕まえられません。"},
 	{diag.KeItion, "処刑。accuhearts で投げた例外が、誰にも許されませんでした (youlugive で捕まりませんでした)。"},
 	{diag.SuReady, "既に。同じ名前を二重に定義したか、関数の中から外の変数に izu したか、読み込みが循環しました。\n外の値を変えたいときは、戻り値か、配列や辞書を使います。"},
-	{diag.CraeyTA, "壊れた。ダウンロードしたパッケージが fxma.showroof と合いません。"},
+	{diag.CraeyTA, "壊れた。ダウンロードしたパッケージが fxma.sum と合いません。"},
 	{diag.SaiVI, "災い。インタプリタ自体のバグです。起きたら報告してください。"},
 	{diag.CaNay, "できない。その場所では使えない書き方か、まだ作られていない機能です。\npraylee は itsver の関数とファイルの一番外側で、sentky は _coatain.fxma のファイルで使えます。"},
 	{diag.AccUhEarts, "告発。accuhearts で投げた例外の種類です。e no \"chidd\" で読むとこの名前になります。"},

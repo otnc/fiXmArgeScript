@@ -28,7 +28,6 @@ const (
 	ModField
 	Installer
 	Compound
-	FileName // fxma.ado のような、パッケージのファイルの拡張子
 )
 
 // Word は辞書の1語。

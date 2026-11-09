@@ -74,19 +74,19 @@ syntax region fxmaString matchgroup=fxmaStringDelimiter start=/"""/ end=/"""/ co
 	return []byte(b.String())
 }
 
-// VimAdoFiletype は fxma.ado の Vim のファイルタイプの名前。
-const VimAdoFiletype = "fxmaado"
+// VimModFiletype は fxma.mod の Vim のファイルタイプの名前。
+const VimModFiletype = "fxmamod"
 
-// VimAdoSyntax は fxma.ado の syntax ファイルを返す。TextMate の AdoTextMate と同じく、行の頭の項目名と文字列だけに色を付ける。
-func VimAdoSyntax() []byte {
+// VimModSyntax は fxma.mod の syntax ファイルを返す。TextMate の ModTextMate と同じく、行の頭の項目名と文字列だけに色を付ける。
+func VimModSyntax() []byte {
 	var b strings.Builder
 	b.WriteString(vimHeader)
 	b.WriteString("if exists('b:current_syntax')\n  finish\nendif\n\n")
-	fmt.Fprintf(&b, "syntax match fxmaadoField /^\\s*\\zs%s/\n", vimWords(modFields(), lexer.Draft))
-	b.WriteString("syntax region fxmaadoString start=/\"/ skip=/\\\\./ end=/\"/ oneline\n\n")
-	b.WriteString("highlight default link fxmaadoField Keyword\n")
-	b.WriteString("highlight default link fxmaadoString String\n")
-	fmt.Fprintf(&b, "\nlet b:current_syntax = '%s'\n", VimAdoFiletype)
+	fmt.Fprintf(&b, "syntax match fxmamodField /^\\s*\\zs%s/\n", vimWords(modFields(), lexer.Draft))
+	b.WriteString("syntax region fxmamodString start=/\"/ skip=/\\\\./ end=/\"/ oneline\n\n")
+	b.WriteString("highlight default link fxmamodField Keyword\n")
+	b.WriteString("highlight default link fxmamodString String\n")
+	fmt.Fprintf(&b, "\nlet b:current_syntax = '%s'\n", VimModFiletype)
 	return []byte(b.String())
 }
 

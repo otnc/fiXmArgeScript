@@ -115,31 +115,31 @@ func TextMate(mode lexer.Mode) ([]byte, error) {
 	return marshal(g)
 }
 
-// AdoFile は fxma.ado の文法のファイルの名前。
-const AdoFile = "fxma-ado.tmLanguage.json"
+// ModFile は fxma.mod の文法のファイルの名前。
+const ModFile = "fxma-mod.tmLanguage.json"
 
-// AdoTextMate は fxma.ado の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
-func AdoTextMate() ([]byte, error) {
+// ModTextMate は fxma.mod の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
+func ModTextMate() ([]byte, error) {
 	fields := modFields()
 	return marshal(grammar{
 		Schema:    "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-		Name:      "fiXmArge Script (fxma.ado)",
-		ScopeName: "source.fxma-ado",
+		Name:      "fiXmArge Script (fxma.mod)",
+		ScopeName: "source.fxma-mod",
 		Patterns:  []rule{include("field"), include("string")},
 		Repository: map[string]rule{
 			"field": {
 				Match:    `^\s*` + words(fields, lexer.Draft),
-				Captures: map[string]capture{"1": {"keyword.other.fxma-ado"}},
+				Captures: map[string]capture{"1": {"keyword.other.fxma-mod"}},
 			},
 			"string": {
-				Name:  "string.quoted.double.fxma-ado",
+				Name:  "string.quoted.double.fxma-mod",
 				Match: `"(?:[^"\\]|\\.)*"`,
 			},
 		},
 	})
 }
 
-// modFields は fxma.ado の項目名 (キーワードを兼ねる youlugive も含む)。
+// modFields は fxma.mod の項目名 (キーワードを兼ねる youlugive も含む)。
 func modFields() []string {
 	var out []string
 	for _, e := range lexicon.Entries() {

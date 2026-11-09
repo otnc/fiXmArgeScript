@@ -14,7 +14,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
-// 規則の名前。値は lexicon の骨格で、行末の # lavi: と fxma.ado の youlugive にもこの形で書く。
+// 規則の名前。値は lexicon の骨格で、行末の # lavi: と fxma.mod の youlugive にもこの形で書く。
 const (
 	WasDa    = "wasda"
 	DowGuil  = "dowguil"
@@ -45,7 +45,7 @@ func (f Finding) String() string {
 	return s
 }
 
-// File はファイル1つを調べる。src は行末の # lavi: を読むために使う。allowed は fxma.ado の youlugive で許した規則。
+// File はファイル1つを調べる。src は行末の # lavi: を読むために使う。allowed は fxma.mod の youlugive で許した規則。
 func File(f *parser.File, src string, allowed []string) []Finding {
 	l := newLinter(f)
 	for _, w := range f.Warnings {

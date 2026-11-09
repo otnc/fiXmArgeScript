@@ -859,11 +859,9 @@ import * as util from "./util.js";
 console.log(util.double(21)); // 42
 ```
 
-### fxma.ado と fxma.showroof
+### fxma.mod と fxma.sum
 
-Goの `go.mod` と `go.sum` (JavaScriptの `package.json` と `package-lock.json`) と同じ役割のファイルです。`fxma.ado` の項目名は辞書の語で、下書きと同じく記号なしの小文字で書きます。
-
-拡張子も辞書の語です。`ado` は「これ」(このパッケージ)、`showroof` は「証明」(ダウンロードしたものが本物だと確かめるハッシュ) です。`.mod` や `.sum` にしないのは、エディタがほかの言語のファイルと取り違えて、別のアイコンや色分けを付けないようにするためです。
+Goの `go.mod` と `go.sum` と同じ役割のファイルです。`fxma.mod` の項目名は辞書の語で、下書きと同じく記号なしの小文字で書きます。
 
 ```
 ado github.com/alice/strs
@@ -890,13 +888,13 @@ lainei github.com/bob/util ../util
 - `foryulvu` の `MIT OR Apache-2.0` は、`OR`・`AND`・`WITH` まで含めてSPDXの1つの表記なので、フィクスマージ語に置き換えません。識別子がSPDXの一覧になければエラーです。
 - `foryulvu` と `neyo fxma` は必須です。どちらかがないパッケージは `fxma werer` で取り込めません (`Ca-nay`)。
 - 手元の fxma が `neyo fxma` の範囲に入っていなければ、`fxma werer` の時点でエラーです。
-- `fxma.showroof` は人が書かないファイルなので、語は入れません。`go.sum` と同じく「パッケージ名、版、ハッシュ」を並べます。
+- `fxma.sum` は人が書かないファイルなので、語は入れません。`go.sum` と同じく「パッケージ名、版、ハッシュ」を並べます。
 
 ### 外部パッケージの取得
 
 | コマンド | 英語の別名 | Go | すること |
 | --- | --- | --- | --- |
-| `fxma ado meif <名前>` | `mod init` | `go mod init` | `fxma.ado` を作る |
+| `fxma ado meif <名前>` | `mod init` | `go mod init` | `fxma.mod` を作る |
 | `fxma werer <パッケージ>@<版>` | `get` | `go get` | パッケージを追加する |
 | `fxma ado saymal` | `mod tidy` | `go mod tidy` | 使っていないものを消し、足りないものを足す |
 
@@ -946,7 +944,7 @@ lainei github.com/bob/util ../util
 | `DowGuil` | 疑惑 | 警告 | 方言の綴りを使った。`fxma keeon`・`fxma sinruits`・`fxma lavi` で出る |
 | `LaVI` | 法の悪魔 | 指摘 | `fxma lavi` が規則違反を見つけた。規則は「法の悪魔」の節 |
 | `Su·Ready` | 既に | エラー | 同じ名前を二重に定義した。関数の中から外の変数に `izu` した。読み込みが循環した |
-| `CraeyTA'` | 壊れた | エラー | ダウンロードしたパッケージが `fxma.showroof` と合わない (改ざん・破損) |
+| `CraeyTA'` | 壊れた | エラー | ダウンロードしたパッケージが `fxma.sum` と合わない (改ざん・破損) |
 | `SaiVI` | 災い | エラー | インタプリタ自体のバグ (起きてはいけない内部エラー) |
 
 指摘の表示例: `LaVI Was·Da main.fxma:4:1 tmp`
@@ -1014,7 +1012,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `fxma nai`、`fxma --nai` | なぜ | `help`、`--help` | 使い方を表示する | `go help` |
 | `fxma persemon main.fxma` | 見世物 | `bench` | 関数の速さを測る | `go test -bench` |
 | `fxma werer <パッケージ>@<版>` | 迎える | `get` | パッケージを追加する | `go get` |
-| `fxma ado meif <名前>` | これ、命 | `mod init` | `fxma.ado` を作る | `go mod init` |
+| `fxma ado meif <名前>` | これ、命 | `mod init` | `fxma.mod` を作る | `go mod init` |
 | `fxma ado saymal` | これ、正常 | `mod tidy` | 使っていないものを消し、足りないものを足す | `go mod tidy` |
 | `fxma neyar`、`fxma --neyar` | 年 | `version`、`--version` | 版と、非公式のファンメイド作品であることを表示する | `go version` |
 | `fxma trench` | 友達 | `lsp` | エディタのための言語サーバーを動かす | `gopls` |
@@ -1084,7 +1082,7 @@ Nii eXi' main.fxma:3:5 cnt
 - `dEs·lee` は、ファイルに `mekamo` が1つもなく、`mekamo` を持つかもしれないファイル (`./` で読み込むもの) も読み込んでいないときだけ指摘します。`sentky` の本体の `shoubek` はテストなので指摘しません。
 - 指摘が1つでもあれば、終了コード1で終わります。CIに入れると、指摘が残っているときに落ちます。
 - わざとそう書いているときは、行の終わりに `# lavi: mehberac` のように規則の骨格を書くと、その行のその規則だけ止まります。悪魔に「これは見逃して」と頼むという見立てです。
-- パッケージ全体で止めるときは、`fxma.ado` に `youlugive mehberac suzai` のように許す規則を並べます。
+- パッケージ全体で止めるときは、`fxma.mod` に `youlugive mehberac suzai` のように許す規則を並べます。
 
 ### 巻き戻しの実現方法
 
