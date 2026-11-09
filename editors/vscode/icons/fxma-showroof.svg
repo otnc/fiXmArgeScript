@@ -21,9 +21,8 @@
     <path d="M-4 -38C-14 -70 -30 -92 -50 -102M4 -38C14 -70 30 -92 50 -102" fill="none" stroke="#f2ecec" stroke-width="5" stroke-linecap="round"/>
     <path d="M-50 -110L-42 -102L-50 -94L-58 -102ZM50 -110L58 -102L50 -94L42 -102Z" fill="#f2ecec"/>
   </g>
-  <circle cx="392" cy="392" r="120" fill="#f2ecec" stroke="#0d0a0c" stroke-width="16"/>
-  <g transform="translate(392 392)"><g fill="none" stroke="#0d0a0c" stroke-width="22" stroke-linecap="round">
-      <circle cx="-34" cy="-34" r="30"/>
-      <path d="M-12 -12L56 56M26 26L44 8M44 44L62 26"/>
+  <g transform="translate(384 384) scale(1.75)"><g fill="none" stroke-linecap="round" transform="translate(-12 0) scale(0.83)">
+      <g stroke="#0d0a0c" stroke-width="36"><circle cx="-50" cy="0" r="30"/><path d="M-28 0H76M46 0V28M70 0V22"/></g>
+      <g stroke="#f2ecec" stroke-width="18"><circle cx="-50" cy="0" r="30"/><path d="M-28 0H76M46 0V28M70 0V22"/></g>
     </g></g>
 </svg>

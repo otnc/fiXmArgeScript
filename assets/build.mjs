@@ -130,25 +130,24 @@ function logo(ink) {
 `;
 }
 
-// ファイルのアイコン。エクスプローラーでは 16px なので小さい版を使い、パッケージとロックのファイルは右下に印を重ねる。
+// ファイルのアイコン。エクスプローラーでは 16px なので小さい版を使い、パッケージとロックのファイルは右下に印を大きく重ねる。
+// 印は白で塗り、黒い縁で囲んで、赤い蝶の上でも形が分かるようにする。
 const badges = {
   // パッケージのファイル (fxma.ado) は箱。
-  box: `<path d="M0 -62L56 -32L0 -2L-56 -32Z" fill="${color.crimson}"/>
-    <path d="M-56 -32L0 -2V64L-56 34Z" fill="${color.blood}"/>
-    <path d="M56 -32L0 -2V64L56 34Z" fill="${color.ember}"/>
-    <path d="M0 -62L56 -32V34L0 64L-56 34V-32ZM-56 -32L0 -2L56 -32M0 -2V64" fill="none" stroke="${color.night}" stroke-width="10" stroke-linejoin="round"/>`,
-  // ロックファイル (fxma.showroof) は鍵。
-  key: `<g fill="none" stroke="${color.night}" stroke-width="22" stroke-linecap="round">
-      <circle cx="-34" cy="-34" r="30"/>
-      <path d="M-12 -12L56 56M26 26L44 8M44 44L62 26"/>
+  box: `<path d="M0 -62L56 -32V34L0 64L-56 34V-32Z" fill="none" stroke="${color.night}" stroke-width="24" stroke-linejoin="round"/>
+    <path d="M0 -62L56 -32L0 -2L-56 -32Z" fill="${color.bone}"/>
+    <path d="M-56 -32L0 -2V64L-56 34Z" fill="#c9bfc2"/>
+    <path d="M56 -32L0 -2V64L56 34Z" fill="#978b90"/>
+    <path d="M-56 -32L0 -2L56 -32M0 -2V64" fill="none" stroke="${color.night}" stroke-width="6" stroke-linejoin="round"/>`,
+  // ロックファイル (fxma.showroof) は鍵。斜めにすると先がタイルの丸い角からはみ出すので横に寝かせる。
+  key: `<g fill="none" stroke-linecap="round" transform="translate(-12 0) scale(0.83)">
+      <g stroke="${color.night}" stroke-width="36"><circle cx="-50" cy="0" r="30"/><path d="M-28 0H76M46 0V28M70 0V22"/></g>
+      <g stroke="${color.bone}" stroke-width="18"><circle cx="-50" cy="0" r="30"/><path d="M-28 0H76M46 0V28M70 0V22"/></g>
     </g>`,
 };
 
 function fileIcon(badge) {
-  const mark = badge
-    ? `<circle cx="392" cy="392" r="120" fill="${color.bone}" stroke="${color.night}" stroke-width="16"/>
-  <g transform="translate(392 392)">${badges[badge]}</g>`
-    : "";
+  const mark = badge ? `<g transform="translate(384 384) scale(1.75)">${badges[badge]}</g>` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   ${iconBody(true)}
   ${mark}
