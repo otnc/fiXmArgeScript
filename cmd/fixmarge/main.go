@@ -1,4 +1,4 @@
-// fxma は fiXmArge Script のコマンド。
+// fixmarge は fiXmArge Script のコマンド。
 package main
 
 import (
@@ -25,7 +25,7 @@ import (
 )
 
 // urfave/cli は help という名前のオプションを見ると英語の help を出すので、その仕組みを外す。
-// fxma の --help は --nai の別名で、使い方は自分で出す。
+// fixmarge の --help は --nai の別名で、使い方は自分で出す。
 func init() { cli.HelpFlag = nil }
 
 func main() {
@@ -45,7 +45,7 @@ type streams struct {
 
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	s := streams{stdin, stdout, stderr}
-	err := s.app().Run(context.Background(), append([]string{"fxma"}, args...))
+	err := s.app().Run(context.Background(), append([]string{"fixmarge"}, args...))
 	if code, ok := errors.AsType[exitCode](err); ok {
 		return int(code)
 	}
@@ -64,7 +64,7 @@ var firstArg = 1
 // 短いオプションは辞書の語と英語の両方の頭文字で、ぶつかったら辞書の語の側に付けない。
 func (s streams) app() *cli.Command {
 	app := &cli.Command{
-		Name:            "fxma",
+		Name:            "fixmarge",
 		HideHelp:        true,
 		HideHelpCommand: true,
 		HideVersion:     true,
@@ -126,7 +126,7 @@ func (s streams) usageError(context.Context, *cli.Command, error, bool) error {
 	return exitCode(2)
 }
 
-// root はコマンドを省いたとき。ファイルだけ渡すと keeon と同じ (清書の1行目の #!/usr/bin/env fxma のため)。
+// root はコマンドを省いたとき。ファイルだけ渡すと keeon と同じ (清書の1行目の #!/usr/bin/env fixmarge のため)。
 func (s streams) root(ctx context.Context, cmd *cli.Command) error {
 	switch {
 	case cmd.Bool("neyar"):
@@ -173,7 +173,7 @@ func (s streams) prepare(path string) (*parser.File, error) {
 }
 
 // options はプログラムに渡す入出力。args は dv no "conwa" になる。
-// 外部パッケージは file のあるフォルダ (空なら今いる場所) から上にたどった fxma.mod で探す。
+// 外部パッケージは file のあるフォルダ (空なら今いる場所) から上にたどった fixmarge.mod で探す。
 func (s streams) options(file string, args []string) interp.Options {
 	wd, _ := os.Getwd()
 	dir := wd
@@ -233,7 +233,7 @@ func (s streams) sinruits(_ context.Context, cmd *cli.Command) error {
 }
 
 func (s streams) neyar(context.Context, *cli.Command) error {
-	fmt.Fprintln(s.stdout, "fxma", versionString())
+	fmt.Fprintln(s.stdout, "fixmarge", versionString())
 	// ガイドラインが「分かりやすい位置に明記」を求めているので、ここだけ日本語で出す
 	fmt.Fprintln(s.stdout, "「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。Acacia および合同会社Re,AER とは関係がなく、公認・監修を受けていません。")
 	fmt.Fprintln(s.stdout, "AI利用：生成AIを使って制作しています。")
@@ -255,23 +255,23 @@ func (s streams) nai(_ context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-// usage は使い方。urfave/cli の help は英語なので使わず、fxma nai の説明として日本語で書く。
+// usage は使い方。urfave/cli の help は英語なので使わず、fixmarge nai の説明として日本語で書く。
 func (s streams) usage(w io.Writer) {
 	fmt.Fprint(w, `fiXmArge Script (fxma) の使い方
 
-  fxma keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
-  fxma sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
-  fxma coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
-  fxma beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
-  fxma beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
-  fxma lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
-  fxma ado meif <名前>       fxma.mod を作る (mod init)。名前はリポジトリの URL (github.com/alice/strs)
-  fxma werer <パッケージ>[@<版>]  外部パッケージを取ってきて fxma.mod に足す (get)。版を省くといちばん新しい版
-  fxma ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りないものを足し、使っていないものを消す
-  fxma hak                   対話モード。1行ずつ打って実行する (repl)
-  fxma trench                エディタのための言語サーバーを動かす (lsp)
-  fxma nai <エラー名>        エラーや警告の意味を説明する (explain)
-  fxma nai                   この使い方を出す (help)
-  fxma neyar                 版を出す (version)
+  fixmarge keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
+  fixmarge sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
+  fixmarge coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
+  fixmarge beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
+  fixmarge beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
+  fixmarge lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
+  fixmarge ado meif <名前>       fixmarge.mod を作る (mod init)。名前はリポジトリの URL (github.com/alice/strs)
+  fixmarge werer <パッケージ>[@<版>]  外部パッケージを取ってきて fixmarge.mod に足す (get)。版を省くといちばん新しい版
+  fixmarge ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りないものを足し、使っていないものを消す
+  fixmarge hak                   対話モード。1行ずつ打って実行する (repl)
+  fixmarge trench                エディタのための言語サーバーを動かす (lsp)
+  fixmarge nai <エラー名>        エラーや警告の意味を説明する (explain)
+  fixmarge nai                   この使い方を出す (help)
+  fixmarge neyar                 版を出す (version)
 `)
 }

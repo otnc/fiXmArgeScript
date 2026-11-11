@@ -20,8 +20,8 @@ jobs:
         env:
           FXMA_DICT_CHECK: "1"
       # サンプルを fxma 自身で検査し、テストする
-      - run: go run ./cmd/fxma lavi examples
-      - run: go run ./cmd/fxma coatain examples
+      - run: go run ./cmd/fixmarge lavi examples
+      - run: go run ./cmd/fixmarge coatain examples
       - run: shellcheck installer/public/install.sh scripts/*.sh
       # リリースのときに初めて設定の誤りに気付かないように
       - uses: goreleaser/goreleaser-action@v7
@@ -40,9 +40,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: GOOS=js GOARCH=wasm go vet ./cmd/fxma-wasm/
+      - run: GOOS=js GOARCH=wasm go vet ./cmd/fixmarge-wasm/
       - run: node npm/build.mjs
-      - run: node --test npm/test/fxma.test.js
+      - run: node --test npm/test/fixmarge.test.js
       - run: npm ci --prefix playground
       # Cloudflare に送る形まで作り、送らずに確かめる
       - run: npx cf build
@@ -58,27 +58,27 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
-      - name: Build fxma.exe
+      - name: Build fixmarge.exe
         shell: bash
         run: |
           for arch in amd64 arm64; do
-            GOOS=windows GOARCH=$arch go build -trimpath -ldflags="-s -w" -o dist/windows/$arch/fxma.exe ./cmd/fxma
+            GOOS=windows GOARCH=$arch go build -trimpath -ldflags="-s -w" -o dist/windows/$arch/fixmarge.exe ./cmd/fixmarge
           done
           sh scripts/third-party-licenses.sh
       - name: Build setup
-        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci installer\fxma.iss'
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci installer\fixmarge.iss'
       - name: Install and uninstall
         run: |
-          $app = "$env:LOCALAPPDATA\Programs\fxma"
+          $app = "$env:LOCALAPPDATA\Programs\fixmarge"
           function UserPath { [Environment]::GetEnvironmentVariable("Path", "User") }
-          Start-Process dist\fxma_0.0.0-ci_windows_setup.exe -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/CURRENTUSER" -Wait
-          & "$app\fxma.exe" neyar
-          if ($LASTEXITCODE -ne 0) { throw "fxma neyar failed" }
+          Start-Process dist\fixmarge_0.0.0-ci_windows_setup.exe -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/CURRENTUSER" -Wait
+          & "$app\fixmarge.exe" neyar
+          if ($LASTEXITCODE -ne 0) { throw "fixmarge neyar failed" }
           if ((UserPath) -split ";" -notcontains $app) { throw "PATH does not contain $app" }
           Start-Process "$app\unins000.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES" -Wait
           Start-Sleep -Seconds 3
           if ((UserPath) -split ";" -contains $app) { throw "PATH still contains $app" }
-          if (Test-Path "$app\fxma.exe") { throw "fxma.exe was not removed" }
+          if (Test-Path "$app\fixmarge.exe") { throw "fixmarge.exe was not removed" }
 
   # VS Code 拡張を VSIX にまとめられるか確かめる (文法が語の表と合っているかは go test が見る)
   vscode:
@@ -89,5 +89,5 @@ jobs:
         with:
           node-version: 24
       - run: npm ci --prefix editors/vscode
-      - run: npx vsce package --out fxma.vsix
+      - run: npx vsce package --out fixmarge.vsix
         working-directory: editors/vscode

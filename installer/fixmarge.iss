@@ -1,5 +1,5 @@
-﻿; Windows のセットアップ fxma_<版>_windows_setup.exe を作る。
-; iscc /DAppVersion=0.2.0 installer\fxma.iss で動かす。BinDir の amd64\ と arm64\ に fxma.exe を置いておく。
+﻿; Windows のセットアップ fixmarge_<版>_windows_setup.exe を作る。
+; iscc /DAppVersion=0.2.0 installer\fixmarge.iss で動かす。BinDir の amd64\ と arm64\ に fixmarge.exe を置いておく。
 ; 1つの exe に両方の CPU 向けを入れ、入れるときに選ぶ。
 
 #ifndef AppVersion
@@ -25,19 +25,19 @@ AppPublisher=otoneko.
 AppPublisherURL=https://github.com/otnc/fiXmArgeScript
 AppSupportURL=https://github.com/otnc/fiXmArgeScript/issues
 VersionInfoVersion={#NumericVersion}
-DefaultDirName={autopf}\fxma
+DefaultDirName={autopf}\fixmarge
 DisableProgramGroupPage=yes
-; 既定は管理者権限なしで自分だけ ({localappdata}\Programs\fxma)。起動時に全員向けも選べる
+; 既定は管理者権限なしで自分だけ ({localappdata}\Programs\fixmarge)。起動時に全員向けも選べる
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible or arm64
 ArchitecturesInstallIn64BitMode=x64compatible or arm64
 ChangesEnvironment=yes
 LicenseFile=license.txt
-SetupIconFile=fxma.ico
-UninstallDisplayIcon={app}\fxma.ico
+SetupIconFile=fixmarge.ico
+UninstallDisplayIcon={app}\fixmarge.ico
 OutputDir=..\dist
-OutputBaseFilename=fxma_{#AppVersion}_windows_setup
+OutputBaseFilename=fixmarge_{#AppVersion}_windows_setup
 SolidCompression=yes
 WizardStyle=modern
 
@@ -45,9 +45,9 @@ WizardStyle=modern
 Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 
 [Files]
-Source: "{#BinDir}\amd64\fxma.exe"; DestDir: "{app}"; Check: not IsArm64; Flags: ignoreversion
-Source: "{#BinDir}\arm64\fxma.exe"; DestDir: "{app}"; Check: IsArm64; Flags: ignoreversion
-Source: "fxma.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BinDir}\amd64\fixmarge.exe"; DestDir: "{app}"; Check: not IsArm64; Flags: ignoreversion
+Source: "{#BinDir}\arm64\fixmarge.exe"; DestDir: "{app}"; Check: IsArm64; Flags: ignoreversion
+Source: "fixmarge.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE-MIT"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion

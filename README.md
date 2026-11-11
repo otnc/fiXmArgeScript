@@ -22,28 +22,28 @@
 
 ## インストール
 
-macOS と Linux では、次のコマンドで `~/.fxma/bin` に入ります。シェルの設定ファイルに `PATH` を足す行も書きます。
+macOS と Linux では、次のコマンドで `~/.fixmarge/bin` に入ります。シェルの設定ファイルに `PATH` を足す行も書きます。
 
 ```
 curl -fsSL https://fixmargescript.oto.im/install.sh | sh
 ```
 
-Windows では、[Releases](https://github.com/otnc/fiXmArgeScript/releases) の `fxma_<版>_windows_setup.exe` を実行します。セットアップには署名がないので、初めて開くと「Windows によって PC が保護されました」(SmartScreen) と出ます。「詳細情報」を押し、「実行」を押すと進めます。
+Windows では、[Releases](https://github.com/otnc/fiXmArgeScript/releases) の `fixmarge_<版>_windows_setup.exe` を実行します。セットアップには署名がないので、初めて開くと「Windows によって PC が保護されました」(SmartScreen) と出ます。「詳細情報」を押し、「実行」を押すと進めます。
 
-どの OS でも、Releases の圧縮ファイルを展開して `PATH` の通った場所に置くか、Go があれば `go install github.com/otnc/fiXmArgeScript/cmd/fxma@latest` でも入れられます。
+どの OS でも、Releases の圧縮ファイルを展開して `PATH` の通った場所に置くか、Go があれば `go install github.com/otnc/fiXmArgeScript/cmd/fixmarge@latest` でも入れられます。
 
 ## 使い方
 
 ```
-go run ./cmd/fxma keeon examples/fizzbuzz.fxma
-go run ./cmd/fxma sinruits examples/fizzbuzz.fxma
+go run ./cmd/fixmarge keeon examples/fizzbuzz.fxma
+go run ./cmd/fixmarge sinruits examples/fizzbuzz.fxma
 ```
 
-外部パッケージは Go と同じく Git のタグから取ってきます。`fxma ado meif github.com/you/app` で `fxma.mod` を作り、`fxma werer github.com/alice/strs` で足し、`fxma ado saymal` でソースの `werer` に合わせてそろえ直します。詳しくは [docs/RFC.md](docs/RFC.md) の「パッケージとモジュール」にあります。
+外部パッケージは Go と同じく Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs` で足し、`fixmarge ado saymal` でソースの `werer` に合わせてそろえ直します。詳しくは [docs/RFC.md](docs/RFC.md) の「パッケージとモジュール」にあります。
 
-WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fxma`) と [playground/](playground/) (ブラウザのプレイグラウンド) にあります。
+WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と [playground/](playground/) (ブラウザのプレイグラウンド) にあります。
 
-VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fxma trench` が行います。
+VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
 
 Vim と Neovim では、このリポジトリをそのままプラグインとして入れられます (lazy.nvim なら `{ 'otnc/fiXmArgeScript' }`)。Neovim 0.11 からは `vim.lsp.enable('fxma')` で言語サーバーにつながります。詳しくは [doc/fxma.txt](doc/fxma.txt) (`:help fxma`) にあります。
 
@@ -51,7 +51,7 @@ Vim と Neovim では、このリポジトリをそのままプラグインと�
 
 コードは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。
 
-ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。作り直すときは `npm --prefix assets install` の後に `npm --prefix assets run build` を実行します (fxma.exe に埋め込むアイコンを作るのに Go も使います)。
+ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。作り直すときは `npm --prefix assets install` の後に `npm --prefix assets run build` を実行します (fixmarge.exe に埋め込むアイコンを作るのに Go も使います)。
 
 ## 問い合わせ
 

@@ -7,7 +7,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// Session は fxma hak の対話の状態。入力を1つずつ実行し、前の入力で作った変数を引き継ぐ。
+// Session は fixmarge hak の対話の状態。入力を1つずつ実行し、前の入力で作った変数を引き継ぐ。
 //
 // 普段は前の入力が残した状態の続きで実行する。shoubek で巻き戻すときと、エラーになった入力をなかったことにするときだけ、
 // 前の入力を頭から実行し直して状態を作り直す (やり直し方式)。前の入力の選択肢は確定していて記録もあるので、
@@ -30,7 +30,7 @@ type checkpoint struct {
 }
 
 // Eval は入力1つを実行する。入力が式の文で終わっていたら、その値を出す (vanita は出さない)。
-// 後の入力の shoubek が偽になっても前の入力には戻らず、Co-Jundic になる (RFC の fxma hak)。
+// 後の入力の shoubek が偽になっても前の入力には戻らず、Co-Jundic になる (RFC の fixmarge hak)。
 // エラーになった入力はなかったことにする。ただし、もう出した出力と外の世界への操作は残る。
 func (s *Session) Eval(stmts []ast.Stmt) error {
 	in := s.in

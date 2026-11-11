@@ -1,6 +1,6 @@
 //go:build js && wasm
 
-// fxma-wasm は WebAssembly 版の入口。JavaScript に run・build・words を出す。npm の fxma パッケージ (npm/) がこれを包む。
+// fixmarge-wasm は WebAssembly 版の入口。JavaScript に run・build・words を出す。npm の fixmarge パッケージ (npm/) がこれを包む。
 // ブラウザでもNode.jsでも動くので、ファイルはメモリ上に置き、通信はホストの fetch を使う (Go の net/http が GOOS=js でそうする)。
 package main
 

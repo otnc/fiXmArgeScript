@@ -1,5 +1,5 @@
 // fiXmArge Script の WebAssembly 版。Node.js でもブラウザでも動く。
-// fxma.wasm は最初に呼ばれたときに1回だけ読み込み、後の呼び出しで使い回す。
+// fixmarge.wasm は最初に呼ばれたときに1回だけ読み込み、後の呼び出しで使い回す。
 import "./wasm_exec.js";
 
 let loading;
@@ -11,7 +11,7 @@ function load() {
       globalThis.__fxmaReady = resolve;
     });
     const go = new globalThis.Go();
-    const bytes = await readWasm(new URL("./fxma.wasm", import.meta.url));
+    const bytes = await readWasm(new URL("./fixmarge.wasm", import.meta.url));
     const { instance } = await WebAssembly.instantiate(bytes, go.importObject);
     go.run(instance);
     await ready;

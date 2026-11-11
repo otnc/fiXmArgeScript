@@ -1,5 +1,5 @@
 // fiXmArge Script の VS Code 拡張。色分けの土台は TextMate 文法 (syntaxes/、Go の internal/grammar から生成) で、
-// 診断・補完・ホバー・定義へ移動・整形・色分けの上書きは言語サーバー (fxma trench) に任せる。
+// 診断・補完・ホバー・定義へ移動・整形・色分けの上書きは言語サーバー (fixmarge trench) に任せる。
 const vscode = require("vscode");
 const { LanguageClient } = require("vscode-languageclient/node");
 
@@ -7,7 +7,7 @@ const { LanguageClient } = require("vscode-languageclient/node");
 let client;
 
 async function start() {
-  const command = vscode.workspace.getConfiguration("fxma").get("path") || "fxma";
+  const command = vscode.workspace.getConfiguration("fxma").get("path") || "fixmarge";
   client = new LanguageClient(
     "fxma",
     "fiXmArge Script",

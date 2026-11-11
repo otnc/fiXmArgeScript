@@ -1,9 +1,9 @@
 {
-  "name": "fxma",
+  "name": "fixmarge",
   "displayName": "fiXmArge Script",
   "description": "fiXmArge Script (fxma) の色分け、診断、補完、整形。「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。",
   "version": "0.0.0",
-  "publisher": "otnc",
+  "publisher": "otoneko1102",
   "author": "otoneko.",
   "license": "MIT OR Apache-2.0",
   "icon": "icon.png",
@@ -36,14 +36,14 @@
       },
       {
         "id": "fxma-mod",
-        "aliases": ["fiXmArge Script (fxma.mod)"],
-        "filenames": ["fxma.mod"],
+        "aliases": ["fiXmArge Script (fixmarge.mod)"],
+        "filenames": ["fixmarge.mod"],
         "icon": { "light": "./icons/fxma-mod.svg", "dark": "./icons/fxma-mod.svg" }
       },
       {
         "id": "fxma-sum",
-        "aliases": ["fiXmArge Script (fxma.sum)"],
-        "filenames": ["fxma.sum"],
+        "aliases": ["fiXmArge Script (fixmarge.sum)"],
+        "filenames": ["fixmarge.sum"],
         "icon": { "light": "./icons/fxma-sum.svg", "dark": "./icons/fxma-sum.svg" }
       }
     ],
@@ -76,8 +76,8 @@
       "properties": {
         "fxma.path": {
           "type": "string",
-          "default": "fxma",
-          "markdownDescription": "言語サーバー (`fxma trench`) として動かす `fxma` の場所。既定では `PATH` から探します。"
+          "default": "fixmarge",
+          "markdownDescription": "言語サーバー (`fixmarge trench`) として動かす `fixmarge` の場所。既定では `PATH` から探します。"
         }
       }
     }

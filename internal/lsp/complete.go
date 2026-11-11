@@ -151,7 +151,7 @@ func kindLabel(b *scope.Binding) string {
 	return "変数"
 }
 
-// hover は位置の語の説明を返す。ファイルの中の名前なら定義の種類、辞書の語なら訳、エラー名なら fxma nai と同じ説明。
+// hover は位置の語の説明を返す。ファイルの中の名前なら定義の種類、辞書の語なら訳、エラー名なら fixmarge nai と同じ説明。
 func (d *document) hover(p protocol.Position) (string, protocol.Range, bool) {
 	t, ok := d.tokenAt(p)
 	if !ok || (t.Kind != token.Ident && t.Kind != token.Keyword) {

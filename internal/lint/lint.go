@@ -1,4 +1,4 @@
-// Package lint は、エラーにはならないけれど間違いのもとになる書き方を見つける (fxma lavi、法の悪魔)。
+// Package lint は、エラーにはならないけれど間違いのもとになる書き方を見つける (fixmarge lavi、法の悪魔)。
 // 規則は docs/RFC.md の「法の悪魔」の10個。実行せずに構文木を調べ、確かにそうだと言えるときだけ指摘する。
 package lint
 
@@ -14,7 +14,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
-// 規則の名前。値は lexicon の骨格で、行末の # lavi: と fxma.mod の youlugive にもこの形で書く。
+// 規則の名前。値は lexicon の骨格で、行末の # lavi: と fixmarge.mod の youlugive にもこの形で書く。
 const (
 	WasDa    = "wasda"
 	DowGuil  = "dowguil"
@@ -45,7 +45,7 @@ func (f Finding) String() string {
 	return s
 }
 
-// File はファイル1つを調べる。src は行末の # lavi: を読むために使う。allowed は fxma.mod の youlugive で許した規則。
+// File はファイル1つを調べる。src は行末の # lavi: を読むために使う。allowed は fixmarge.mod の youlugive で許した規則。
 func File(f *parser.File, src string, allowed []string) []Finding {
 	l := newLinter(f)
 	for _, w := range f.Warnings {

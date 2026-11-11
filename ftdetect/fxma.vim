@@ -2,5 +2,5 @@
 autocmd BufRead,BufNewFile *.fxma setfiletype fxma
 autocmd BufRead,BufNewFile *.fxmac setfiletype fxmac
 " パッケージのファイルとロックファイル。Vim は *.mod を modsim3、*.sum を hercules として見分けるので、setfiletype ではなく上書きする。
-autocmd BufRead,BufNewFile fxma.mod set filetype=fxmamod
-autocmd BufRead,BufNewFile fxma.sum set filetype=fxmasum
+autocmd BufRead,BufNewFile fixmarge.mod set filetype=fxmamod
+autocmd BufRead,BufNewFile fixmarge.sum set filetype=fxmasum

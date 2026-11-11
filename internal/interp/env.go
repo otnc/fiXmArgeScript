@@ -6,7 +6,7 @@ type Env struct {
 	parent *Env
 	// funcTop は関数の一番外側のブロックか。ここより外の変数には izu できない (RFC の変数のスコープ)。
 	funcTop bool
-	// inherited は fxma hak の前の入力で作った名前。weho、showence、werer で作り直せる (Chrome のコンソールと同じ)。
+	// inherited は fixmarge hak の前の入力で作った名前。weho、showence、werer で作り直せる (Chrome のコンソールと同じ)。
 	inherited map[string]bool
 }
 
@@ -65,7 +65,7 @@ func (e *Env) declared(name string) bool {
 	return ok && !e.inherited[name]
 }
 
-// inheritAll は今ある名前を全部、前の入力から引き継いだものにする。fxma hak で入力を1つ実行する前に呼ぶ。
+// inheritAll は今ある名前を全部、前の入力から引き継いだものにする。fixmarge hak で入力を1つ実行する前に呼ぶ。
 func (e *Env) inheritAll() {
 	e.inherited = map[string]bool{}
 	for name := range e.vars {

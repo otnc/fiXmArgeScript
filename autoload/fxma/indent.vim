@@ -1,4 +1,4 @@
-" fxma beaukshi と同じ字下げを、前の行だけを見て決める。
+" fixmarge beaukshi と同じ字下げを、前の行だけを見て決める。
 " ブロックを開く語が多ければ1段深く、finend が多ければ1段浅くする。区切りと終わりの語で始まる行は1段浅く書く。
 function! fxma#indent#Expr() abort
   let words = fxma#words#Block(&filetype)

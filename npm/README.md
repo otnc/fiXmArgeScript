@@ -1,4 +1,4 @@
-# fxma
+# fixmarge
 
 [fiXmArge Script](https://github.com/otnc/fiXmArgeScript) の WebAssembly 版です。fiXmArge Script は、『魔法少女ノ魔女裁判』の架空言語「フィクスマージ語」の単語をキーワードにした、**非公式のファンメイド**のプログラミング言語です。
 
@@ -15,11 +15,11 @@
 Node.js 20.16 以降とブラウザで動きます。
 
 ```
-npm install fxma
+npm install fixmarge
 ```
 
 ```javascript
-import { run, build } from "fxma";
+import { run, build } from "fixmarge";
 
 const r = await run('name izu zanfession\n"weRer, " + name redogh\n', { stdin: "fxma\n" });
 console.log(r.stdout); // weRer, fxma
@@ -43,4 +43,4 @@ console.log(b.output); // x Iz'u TadACt
 
 ## ライセンス
 
-コードは MIT と Apache-2.0 のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。`wasm_exec.js` と `fxma.wasm` には Go のコード (BSD 3条項ライセンス) が含まれます。
+コードは MIT と Apache-2.0 のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。`wasm_exec.js` と `fixmarge.wasm` には Go のコード (BSD 3条項ライセンス) が含まれます。

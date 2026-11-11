@@ -1,4 +1,4 @@
-// Package format は下書きを整える (fxma beaukshi)。
+// Package format は下書きを整える (fixmarge beaukshi)。
 // 字句の並びを1行ずつ並べ直し、字句のすき間からはコメントだけを拾う。字句そのものは書き換えない。
 package format
 
@@ -28,7 +28,7 @@ func Format(src, file string) (string, error) {
 	return out, nil
 }
 
-// Expand は呪いを展開した結果を返す (fxma beaukshi --curoi)。見るためのもので、コメントは残らない。
+// Expand は呪いを展開した結果を返す (fixmarge beaukshi --curoi)。見るためのもので、コメントは残らない。
 // 呪いの中で作った名前は、付け替えた名前 (tmp·1) のまま出す。
 func Expand(src, file string) (string, error) {
 	tokens, err := parser.Expand(src, file)

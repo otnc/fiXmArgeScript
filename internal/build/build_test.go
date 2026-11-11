@@ -16,7 +16,7 @@ func TestBuild(t *testing.T) {
 		{"\"x は #{x exi} です、mof\"\n", "\"x は #{x eXi'} です、mof\"\n"},
 		{"e no \"lyuzun\" canosiri\n", "e N'o \"lyuzun\" CaNoSiri\n"},
 		{"izanavited no izuDefutai(p)\n", "i·zana-vited N'o Iz'udeFuTai(p)\n"},
-		{"#!/usr/bin/env fxma\nsiva mof tadact\n", "#!/usr/bin/env fxma\nSiVa Mof TadACt\n"},
+		{"#!/usr/bin/env fixmarge\nsiva mof tadact\n", "#!/usr/bin/env fixmarge\nSiVa Mof TadACt\n"},
 	}
 	for _, c := range cases {
 		got, _, err := Build(c.draft, "main.fxma")

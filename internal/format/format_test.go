@@ -13,7 +13,7 @@ func TestFormat(t *testing.T) {
 		{"unary and ranges", "y izu xs no -1\nz izu 2 ** -1\nxs no 2 .. 4 redogh\nxs no .. 1 redogh\nxs no 4.. redogh\n0..10 batte 5 aste i azagara\nfinend\n", "y izu xs no -1\nz izu 2 ** -1\nxs no 2..4 redogh\nxs no ..1 redogh\nxs no 4.. redogh\n0..10 batte 5 aste i azagara\nfinend\n"},
 		{"compound assign", "x + izu 1\nx *izu 2\n", "x +izu 1\nx *izu 2\n"},
 		{"calls and keywords", "weho(n) n itswa finend\ndv no \"murm\" (w)\nnii(x) redogh\n", "weho (n) n itswa finend\ndv no \"murm\"(w)\nnii (x) redogh\n"},
-		{"comments and blank lines", "#!/usr/bin/env fxma\n\n\n\n# a\nx izu 1   # b   \n\n\n", "#!/usr/bin/env fxma\n\n# a\nx izu 1  # b\n"},
+		{"comments and blank lines", "#!/usr/bin/env fixmarge\n\n\n\n# a\nx izu 1   # b   \n\n\n", "#!/usr/bin/env fixmarge\n\n# a\nx izu 1  # b\n"},
 		{"comment inside block", "mof x\n# c\ny redogh\nfinend\n", "mof x\n  # c\n  y redogh\nfinend\n"},
 		{"multiline brackets", "xs izu [\n1, # one\n\n  2\n]\n", "xs izu [\n  1,  # one\n  2\n]\n"},
 		{"callback", "f(1, weho (req)\nreq itswa\nfinend)\n", "f(1, weho (req)\n  req itswa\nfinend)\n"},

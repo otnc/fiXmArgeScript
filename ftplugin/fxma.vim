@@ -9,7 +9,7 @@ setlocal formatoptions-=t formatoptions+=croql
 let &l:suffixesadd = '.' . &filetype
 let b:undo_ftplugin = 'setlocal comments< commentstring< formatoptions< suffixesadd<'
 
-" fxma beaukshi と同じ字下げ (空白2つ)。
+" fixmarge beaukshi と同じ字下げ (空白2つ)。
 if get(g:, 'fxma_recommended_style', 1)
   setlocal expandtab shiftwidth=2 softtabstop=2
   let b:undo_ftplugin .= ' | setlocal expandtab< shiftwidth< softtabstop<'

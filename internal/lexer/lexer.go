@@ -119,7 +119,7 @@ func (l *lexer) errorf(kind diag.Kind, pos token.Pos, target string) error {
 }
 
 // Unfinished は、ソースが途中で終わっているので読めなかったエラー。続きを書けば読める見込みがある。
-// fxma hak は、これなら次の行を待つ。
+// fixmarge hak は、これなら次の行を待つ。
 type Unfinished struct{ Err *diag.Error }
 
 func (u *Unfinished) Error() string { return u.Err.Error() }

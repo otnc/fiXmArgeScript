@@ -1,4 +1,4 @@
-// 下書きの色分け。語の一覧は fxma の words() (Go の語の表) から受け取り、ここには書かない。
+// 下書きの色分け。語の一覧は fixmarge の words() (Go の語の表) から受け取り、ここには書かない。
 import { StreamLanguage } from "@codemirror/language";
 
 // 語の使い道 → CodeMirror の字句の種類。先にあるものを優先する

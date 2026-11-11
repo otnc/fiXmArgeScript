@@ -1,4 +1,4 @@
-// fxma.wasm を作り、Go 付属の wasm_exec.js とライセンスをこのフォルダに写す。どちらもコミットしない (.gitignore)。
+// fixmarge.wasm を作り、Go 付属の wasm_exec.js とライセンスをこのフォルダに写す。どちらもコミットしない (.gitignore)。
 import { execFileSync } from "node:child_process";
 import { copyFileSync } from "node:fs";
 import { join } from "node:path";
@@ -6,7 +6,7 @@ import { join } from "node:path";
 const here = import.meta.dirname;
 const root = join(here, "..");
 
-execFileSync("go", ["build", "-trimpath", "-ldflags=-s -w", "-o", join(here, "fxma.wasm"), "./cmd/fxma-wasm"], {
+execFileSync("go", ["build", "-trimpath", "-ldflags=-s -w", "-o", join(here, "fixmarge.wasm"), "./cmd/fixmarge-wasm"], {
   cwd: root,
   env: { ...process.env, GOOS: "js", GOARCH: "wasm" },
   stdio: "inherit",

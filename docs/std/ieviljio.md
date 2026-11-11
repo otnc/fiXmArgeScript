@@ -21,7 +21,7 @@ dv izu ieviljio no diviljio()
 | `dv no "shid"(番号, 道連れ)` | `shid` | 死んだ | 終了コードを付けて終了する。`道連れ` は省ける | `process.exit()` |
 | `dv no "ieviljio"` | `ievil JIO` | 魔女 | プロセス番号 (魔女の番号) | `process.pid` |
 | `dv no "wid"` | `WiD` | 世界 | 動いている環境の名前。値は下の表 | `process.platform` |
-| `dv no "neyar"` | `nEYar` | 年 | fxmaの版 (`fxma neyar` と同じ語) | `process.version` |
+| `dv no "neyar"` | `nEYar` | 年 | fxmaの版 (`fixmarge neyar` と同じ語) | `process.version` |
 
 ## 動いている環境
 
@@ -93,7 +93,7 @@ cleanup(dv no "alte", dv no "murm")
 ## そのほかの決まり
 
 - `diviljio` は辞書の `Divil JIO` (大魔女) です。清書では `Divil JIO` と書きます。
-- `dv no "conwa"` は、実行するファイルより後ろの引数だけを並べた配列です (Denoの `Deno.args` と同じ)。`fxma keeon main.fxma -x a` なら `["-x", "a"]` で、`-x` のようなオプションもfxmaは読まずにそのまま渡します。Node.jsの `process.argv` と違い、実行ファイルとスクリプトのパスは入れません。
+- `dv no "conwa"` は、実行するファイルより後ろの引数だけを並べた配列です (Denoの `Deno.args` と同じ)。`fixmarge keeon main.fxma -x a` なら `["-x", "a"]` で、`-x` のようなオプションもfxmaは読まずにそのまま渡します。Node.jsの `process.argv` と違い、実行ファイルとスクリプトのパスは入れません。
 - `meif` の2つ目の引数 (引数の配列) は省けません。引数がなければ `[]` を渡します。
 - 魔女が0以外の終了コードで終わっても、エラーではなく `"shid"` に入ります (Node.jsの `spawn` と同じ)。コマンドが見つからなければ `Nii eXi'`、ほかの理由で生めなければ `Ca-nay` エラーです。
 - `meif` の3つ目の引数に知らないキーがあると `Nii eXi'` エラーです。

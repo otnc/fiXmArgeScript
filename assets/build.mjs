@@ -134,13 +134,13 @@ function logo(ink) {
 // ファイルのアイコン。エクスプローラーでは 16px なので小さい版を使い、パッケージとロックのファイルは右下に印を大きく重ねる。
 // 印は白で塗り、黒い縁で囲んで、赤い蝶の上でも形が分かるようにする。
 const badges = {
-  // パッケージのファイル (fxma.mod) は箱。
+  // パッケージのファイル (fixmarge.mod) は箱。
   box: `<path d="M0 -62L56 -32V34L0 64L-56 34V-32Z" fill="none" stroke="${color.night}" stroke-width="24" stroke-linejoin="round"/>
     <path d="M0 -62L56 -32L0 -2L-56 -32Z" fill="${color.bone}"/>
     <path d="M-56 -32L0 -2V64L-56 34Z" fill="#c9bfc2"/>
     <path d="M56 -32L0 -2V64L56 34Z" fill="#978b90"/>
     <path d="M-56 -32L0 -2L56 -32M0 -2V64" fill="none" stroke="${color.night}" stroke-width="6" stroke-linejoin="round"/>`,
-  // ロックファイル (fxma.sum) は鍵。斜めにすると先がタイルの丸い角からはみ出すので横に寝かせる。
+  // ロックファイル (fixmarge.sum) は鍵。斜めにすると先がタイルの丸い角からはみ出すので横に寝かせる。
   key: `<g fill="none" stroke-linecap="round" transform="translate(-12 0) scale(0.83)">
       <g stroke="${color.night}" stroke-width="36"><circle cx="-50" cy="0" r="30"/><path d="M-28 0H76M46 0V28M70 0V22"/></g>
       <g stroke="${color.bone}" stroke-width="18"><circle cx="-50" cy="0" r="30"/><path d="M-28 0H76M46 0V28M70 0V22"/></g>
@@ -188,10 +188,10 @@ write("assets/logo-light.svg", logo(color.ink));
 write("editors/vscode/icon.png", png(iconSvg, 256));
 write("playground/src/favicon.svg", smallIconSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256];
-write("installer/fxma.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
+write("installer/fixmarge.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
 
-// fxma.exe に埋め込むアイコン。go build が cmd/fxma の *_windows_<arch>.syso を拾う。
-// 版は入れない (fxma neyar は Go が埋め込む版を読むので、ここで入れるとリリースのたびに作り直すことになる)。
+// fixmarge.exe に埋め込むアイコン。go build が cmd/fixmarge の *_windows_<arch>.syso を拾う。
+// 版は入れない (fixmarge neyar は Go が埋め込む版を読むので、ここで入れるとリリースのたびに作り直すことになる)。
 // go-winres は版がないと製品名などの文字の情報も書かないので、アイコンだけを入れる。
 // マニフェストも付けない。付けると Windows での動き方が変わりうるため。
 execFileSync(
@@ -201,20 +201,20 @@ execFileSync(
     "github.com/tc-hib/go-winres@v0.3.3",
     "simply",
     "--arch=amd64,arm64",
-    "--out=cmd/fxma/rsrc",
+    "--out=cmd/fixmarge/rsrc",
     "--manifest=none",
-    "--icon=installer/fxma.ico",
+    "--icon=installer/fixmarge.ico",
   ],
   { cwd: root, stdio: "inherit" },
 );
-console.log("cmd/fxma/rsrc_windows_{amd64,arm64}.syso");
+console.log("cmd/fixmarge/rsrc_windows_{amd64,arm64}.syso");
 
 // 言語の ID とファイルの名前は editors/vscode/package.json の languages と合わせる。
 const files = [
   { id: "fxma", language: "fxma", extensions: ["fxma"] },
   { id: "fxma", language: "fxmac", extensions: ["fxmac"] },
-  { id: "fxma-mod", language: "fxma-mod", fileNames: ["fxma.mod"], badge: "box" },
-  { id: "fxma-sum", language: "fxma-sum", fileNames: ["fxma.sum"], badge: "key" },
+  { id: "fxma-mod", language: "fxma-mod", fileNames: ["fixmarge.mod"], badge: "box" },
+  { id: "fxma-sum", language: "fxma-sum", fileNames: ["fixmarge.sum"], badge: "key" },
 ];
 for (const f of new Map(files.map((f) => [f.id, f])).values()) {
   write(`editors/vscode/icons/${f.id}.svg`, fileIcon(f.badge));

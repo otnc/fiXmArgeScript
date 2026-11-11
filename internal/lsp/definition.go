@@ -106,8 +106,8 @@ func topLevel(stmts []ast.Stmt, b *scope.Binding) bool {
 	return false
 }
 
-// importFile は werer の読み込み先を、読むファイルの名前にする。外部パッケージは from から上にたどった fxma.mod で探す。
-// 中身が fxma.sum と合うかは確かめない (それは実行するときに見る)。
+// importFile は werer の読み込み先を、読むファイルの名前にする。外部パッケージは from から上にたどった fixmarge.mod で探す。
+// 中身が fixmarge.sum と合うかは確かめない (それは実行するときに見る)。
 func importFile(from, path string) (string, bool) {
 	if name, ok := modpath.Local(from, path); ok {
 		return name, true

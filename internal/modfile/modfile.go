@@ -1,4 +1,4 @@
-// Package modfile は fxma.mod を読み書きする。CLI・LSP・パッケージの取得で同じ規則を使うためにここに置く。
+// Package modfile は fixmarge.mod を読み書きする。CLI・LSP・パッケージの取得で同じ規則を使うためにここに置く。
 package modfile
 
 import (
@@ -19,8 +19,8 @@ import (
 
 // Name はパッケージのファイル (npm の package.json、Go の go.mod) の名前。Sum はロックファイル (go.sum) の名前。
 const (
-	Name = "fxma.mod"
-	Sum  = "fxma.sum"
+	Name = "fixmarge.mod"
+	Sum  = "fixmarge.sum"
 )
 
 // 項目名。語の表 (ModField) にあるものだけを使う。
@@ -45,7 +45,7 @@ func field(skel string) string {
 	return e.Name
 }
 
-// File は fxma.mod の中身。
+// File は fixmarge.mod の中身。
 type File struct {
 	Module   string    // ado
 	Purpose  string    // mokpose
@@ -54,7 +54,7 @@ type File struct {
 	Require  []Version // neyo。間接的に使うものも含めて、使うパッケージをすべて並べる
 	Exclude  []Version // unneyo
 	Replace  []Replace // lainei
-	Allowed  []string  // youlugive (fxma lavi で指摘しない規則)
+	Allowed  []string  // youlugive (fixmarge lavi で指摘しない規則)
 	FxmaLine int       // neyo fxma の行。範囲の外のときのエラーの位置に使う
 }
 
@@ -66,13 +66,13 @@ type Version struct {
 
 func (v Version) String() string { return v.Path + "@" + v.Version }
 
-// Replace は lainei。パッケージを手元のフォルダ (fxma.mod からの相対パス) のもので置き換える。
+// Replace は lainei。パッケージを手元のフォルダ (fixmarge.mod からの相対パス) のもので置き換える。
 type Replace struct {
 	Path string
 	Dir  string
 }
 
-// Parse は fxma.mod を読む。name はエラーに出すファイル名。
+// Parse は fixmarge.mod を読む。name はエラーに出すファイル名。
 func Parse(name string, data []byte) (*File, error) {
 	f := &File{}
 	seen := map[string]bool{}
@@ -167,7 +167,7 @@ func (f *File) ReplaceDir(path string) string {
 	return ""
 }
 
-// Format は fxma.mod の書き方にそろえて返す。並びは RFC の例と同じで、パッケージは名前の順。
+// Format は fixmarge.mod の書き方にそろえて返す。並びは RFC の例と同じで、パッケージは名前の順。
 func (f *File) Format() []byte {
 	var b strings.Builder
 	line := func(format string, args ...any) { fmt.Fprintf(&b, format+"\n", args...) }
@@ -208,7 +208,7 @@ func (f *File) Format() []byte {
 	return []byte(b.String())
 }
 
-// Find は dir から上にたどって最初に見つけた fxma.mod のフォルダを返す。なければ空。
+// Find は dir から上にたどって最初に見つけた fixmarge.mod のフォルダを返す。なければ空。
 func Find(dir string) string {
 	for {
 		if _, err := os.Stat(filepath.Join(dir, Name)); err == nil {
@@ -222,8 +222,8 @@ func Find(dir string) string {
 	}
 }
 
-// AllowedRules は、dir から上にたどって最初に見つけた fxma.mod の youlugive に並べた規則を返す。
-// 読めない fxma.mod は、規則がないものとして扱う (fxma lavi の指摘を止めないため)。
+// AllowedRules は、dir から上にたどって最初に見つけた fixmarge.mod の youlugive に並べた規則を返す。
+// 読めない fixmarge.mod は、規則がないものとして扱う (fixmarge lavi の指摘を止めないため)。
 func AllowedRules(dir string) []string {
 	root := Find(dir)
 	if root == "" {

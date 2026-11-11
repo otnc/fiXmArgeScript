@@ -1,7 +1,7 @@
 notes/
 CLAUDE.local.md
-/fxma
-/fxma.exe
+/fixmarge
+/fixmarge.exe
 *.fxmac
 !testdata/**/*.fxmac
 .claude/

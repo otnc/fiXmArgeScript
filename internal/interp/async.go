@@ -241,7 +241,7 @@ func (in *Interp) nextEvent() event {
 	return v.(event)
 }
 
-// deliver は知らせを Promise か listener に届ける。fxma hak でなかったことにした入力が始めた処理の知らせは、届け先がないので捨てる。
+// deliver は知らせを Promise か listener に届ける。fixmarge hak でなかったことにした入力が始めた処理の知らせは、届け先がないので捨てる。
 func (in *Interp) deliver(e event) {
 	if handle, ok := in.listeners[e.op]; ok {
 		handle(e.v)

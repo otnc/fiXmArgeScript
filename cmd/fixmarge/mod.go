@@ -13,7 +13,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/modload"
 )
 
-// external は werer の外部パッケージを、dir から上にたどった fxma.mod で解決する。fxma.mod は初めて使うときに一度だけ読む。
+// external は werer の外部パッケージを、dir から上にたどった fixmarge.mod で解決する。fixmarge.mod は初めて使うときに一度だけ読む。
 func external(dir string) func(path string) (string, error) {
 	load := sync.OnceValues(func() (*modload.Module, error) { return loadModule(dir) })
 	return func(path string) (string, error) {
@@ -38,7 +38,7 @@ func loadModule(dir string) (*modload.Module, error) {
 	return m, nil
 }
 
-// werer は fxma werer <パッケージ>[@<版>]。取ってきて fxma.mod と fxma.sum に書く。
+// werer は fixmarge werer <パッケージ>[@<版>]。取ってきて fixmarge.mod と fixmarge.sum に書く。
 func (s streams) werer(_ context.Context, cmd *cli.Command) error {
 	if cmd.Args().Len() != 1 {
 		s.usage(s.stderr)
@@ -58,7 +58,7 @@ func (s streams) ado(context.Context, *cli.Command) error {
 	return exitCode(2)
 }
 
-// adoMeif は fxma ado meif <名前>。今いる場所に fxma.mod を作る。
+// adoMeif は fixmarge ado meif <名前>。今いる場所に fixmarge.mod を作る。
 func (s streams) adoMeif(_ context.Context, cmd *cli.Command) error {
 	if cmd.Args().Len() != 1 {
 		s.usage(s.stderr)
@@ -71,7 +71,7 @@ func (s streams) adoMeif(_ context.Context, cmd *cli.Command) error {
 	return s.report(err)
 }
 
-// adoSaymal は fxma ado saymal。ソースの werer に合わせて fxma.mod と fxma.sum をそろえ直す。
+// adoSaymal は fixmarge ado saymal。ソースの werer に合わせて fixmarge.mod と fixmarge.sum をそろえ直す。
 func (s streams) adoSaymal(context.Context, *cli.Command) error {
 	m, err := s.workModule()
 	if err == nil {
@@ -80,7 +80,7 @@ func (s streams) adoSaymal(context.Context, *cli.Command) error {
 	return s.report(err)
 }
 
-// workModule は今いる場所から上にたどった fxma.mod のパッケージ。
+// workModule は今いる場所から上にたどった fixmarge.mod のパッケージ。
 func (s streams) workModule() (*modload.Module, error) {
 	wd, err := os.Getwd()
 	if err != nil {

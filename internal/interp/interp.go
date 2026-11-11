@@ -99,7 +99,7 @@ type Interp struct {
 	events     chan event
 	closed     chan struct{} // 実行を終えたら閉じ、届け先のない知らせを送ろうとしている goroutine を終わらせる
 
-	// testing は fxma coatain で動かしているか。failed は有罪になった sentky の数で、やり直しのたびに数え直す
+	// testing は fixmarge coatain で動かしているか。failed は有罪になった sentky の数で、やり直しのたびに数え直す
 	testing bool
 	failed  int
 

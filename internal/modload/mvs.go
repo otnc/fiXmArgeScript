@@ -19,7 +19,7 @@ import (
 )
 
 // buildList は roots から始めて、使うパッケージの版を最小バージョン選択 (Go と同じ) で決める。
-// たどった版の要求をすべて集め、パッケージごとにいちばん新しい版を1つ選ぶ。取ってきたものは fxma.sum に足す。
+// たどった版の要求をすべて集め、パッケージごとにいちばん新しい版を1つ選ぶ。取ってきたものは fixmarge.sum に足す。
 func (m *Module) buildList(roots []modfile.Version) ([]modfile.Version, error) {
 	selected := map[string]string{}
 	visited := map[modfile.Version]bool{}
@@ -69,8 +69,8 @@ func (m *Module) notExcluded(v modfile.Version) (modfile.Version, error) {
 	return v, diag.NewUnplaced(diag.NiiExi, v.String())
 }
 
-// requirements は版 v の fxma.mod を読み、そのパッケージが使うものを返す。
-// 取り込めるのは、foryulvu と neyo fxma があって、手元の fxma が範囲に入るパッケージだけ (RFC の fxma.mod の節)。
+// requirements は版 v の fixmarge.mod を読み、そのパッケージが使うものを返す。
+// 取り込めるのは、foryulvu と neyo fxma があって、手元の fxma が範囲に入るパッケージだけ (RFC の fixmarge.mod の節)。
 func (m *Module) requirements(v modfile.Version) ([]modfile.Version, error) {
 	dir, err := m.fetch(v)
 	if err != nil {
@@ -99,7 +99,7 @@ func (m *Module) requirements(v modfile.Version) ([]modfile.Version, error) {
 	return f.Require, nil
 }
 
-// fetch はパッケージを手元に置き、fxma.sum と照らし合わせる。初めて取ったものは fxma.sum に足す。
+// fetch はパッケージを手元に置き、fixmarge.sum と照らし合わせる。初めて取ったものは fixmarge.sum に足す。
 func (m *Module) fetch(v modfile.Version) (string, error) {
 	if m.File.ReplaceDir(v.Path) != "" {
 		return m.dir(v)
@@ -146,7 +146,7 @@ func released(v string) bool {
 	return gosemver.IsValid(v) && !module.IsPseudoVersion(v) && gosemver.Build(v) == ""
 }
 
-// positionOf は fxma.mod の中で text が最初に出てくる行。
+// positionOf は fixmarge.mod の中で text が最初に出てくる行。
 func positionOf(data []byte, text string) token.Pos {
 	for i, line := range strings.Split(string(data), "\n") {
 		if strings.Contains(line, text) {

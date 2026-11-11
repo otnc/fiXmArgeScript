@@ -9,10 +9,10 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/lexer"
 )
 
-// HakFile は fxma hak のエラーの場所に出す名前。行番号は始めてからの通し番号 (hak:12:5)。
+// HakFile は fixmarge hak のエラーの場所に出す名前。行番号は始めてからの通し番号 (hak:12:5)。
 const HakFile = "hak"
 
-// Hak は fxma hak の対話。入力を1つずつ受け取り、前の入力の続きとして読んで実行する。
+// Hak は fixmarge hak の対話。入力を1つずつ受け取り、前の入力の続きとして読んで実行する。
 //
 // 前の入力のソースをとっておき、新しい入力をつなげて読み直す。呪いと実行前の検査 (showence への再代入など) を
 // 前の入力にまたがって効かせるためと、行番号を通し番号にするため。実行するのは新しい入力の文だけ。

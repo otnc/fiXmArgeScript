@@ -4,7 +4,7 @@
 
 fiXmArge Script (略称 fxma) は、『魔法少女ノ魔女裁判』 (まのさば) の架空言語「フィクスマージ語」の単語だけでキーワードを作った、小さなインタプリタ言語です。目標は、FizzBuzzと簡単な推理パズルが書けることです。
 
-名前は、元にした架空言語の名前「fiXmArge (フィクスマージ語)」から取りました。略称の fxma は、**f**i**XmA**rge の f・X・m・A です。コマンドは `fxma`、ファイルの拡張子は下書きが `.fxma`、清書が `.fxmac` です。
+名前は、元にした架空言語の名前「fiXmArge (フィクスマージ語)」から取りました。略称の fxma は、**f**i**XmA**rge の f・X・m・A です。コマンドは `fixmarge` (npm のパッケージと VS Code 拡張も同じ名前)、ファイルの拡張子は下書きが `.fxma`、清書が `.fxmac`、パッケージのファイルは `fixmarge.mod` と `fixmarge.sum` です。
 
 架空言語そのものや公式の作品と混同されないよう、「非公式のファンメイド作品」であることを名前の近くに必ず書きます。また、「Script」を省いて「fiXmArge」だけでこの言語を呼ばないようにします。
 
@@ -34,7 +34,7 @@ fiXmArge Script (略称 fxma) は、『魔法少女ノ魔女裁判』 (まのさ
 1. ソースに使えるのは、英数字、`_`、演算子の記号、コメントの #、`"` で囲む文字列です。文字列とコメントの中は、日本語も含めて自由に書けます。
 2. 下書きのキーワードは小文字だけで書きます。`IZU` のように大文字を含むと `AyAmis` (構文エラー) です。清書では、辞書どおりの大文字小文字 (`Iz'u`、`AccUhEarts` など) に戻します。
 3. 変数名や関数名に、キーワードの骨格と同じ名前は使えません。大文字を混ぜただけの名前 (Izu など) も、紛らわしいので使えません。
-4. 下書き (ソース) と清書は拡張子で分けます。下書きが `.fxma`、清書が `.fxmac` です。インタプリタが実行するのは清書です。下書きは必ずビルドを通してから実行されます (`fxma keeon` はメモリ上でビルドして実行する)。清書の読み込みは厳密で、正式な綴り以外 (方言や骨格) は受け付けません。
+4. 下書き (ソース) と清書は拡張子で分けます。下書きが `.fxma`、清書が `.fxmac` です。インタプリタが実行するのは清書です。下書きは必ずビルドを通してから実行されます (`fixmarge keeon` はメモリ上でビルドして実行する)。清書の読み込みは厳密で、正式な綴り以外 (方言や骨格) は受け付けません。
 5. ビルドは何度かけても同じ結果になります。
 6. 標準パッケージの関数名や辞書のキーで、JavaScriptでは複数の語からなる名前 (`isAbsolute` など) は、辞書の語をJavaScriptと同じ順に並べて組みます。2語目から頭を大文字にしてつなぎます (`izuDefutai`)。部品にはキーワードの語も使えます。清書では、各部品を正式な綴りに戻してそのままつなぎます (`Iz'udeFuTai`)。部品に分けられるので、同じ語を別の名前でも使い回せます。
 
@@ -669,9 +669,9 @@ hung gement parse: Guil-me
 - `shoubek` が1つ落ちたら、JestやPythonの `assert` と同じく、その `sentky` はそこで止めて有罪にし、次の `sentky` に進みます。
 - テストとして扱う `shoubek` は、`sentky` の本体に直接書いたものだけです。本体から呼んだ関数の中の `shoubek` は、いつもどおり巻き戻しに使います。
 - 落ちた `shoubek` は `youlugive` では捕まえられません。例外や実行時エラーが捕まらずに `sentky` の外に出たときも有罪で、そのエラーを出します。
-- 有罪が1つでもあれば、`fxma coatain` は終了コード1で終わります。
+- 有罪が1つでもあれば、`fixmarge coatain` は終了コード1で終わります。
 
-テストは、名前が `_coatain.fxma` で終わるファイルに書きます。Goの `_test.go` と同じです。`Coa Tain` (法廷) は裁き (`sentky`) を開く場所なので、この名前にしました。テストするファイルは `werer` で読み込みます。`sentky` を書けるのはこのファイルだけで、`fxma keeon` はこのファイルを読み込みません。
+テストは、名前が `_coatain.fxma` で終わるファイルに書きます。Goの `_test.go` と同じです。`Coa Tain` (法廷) は裁き (`sentky`) を開く場所なので、この名前にしました。テストするファイルは `werer` で読み込みます。`sentky` を書けるのはこのファイルだけで、`fixmarge keeon` はこのファイルを読み込みません。
 
 ```
 # util_coatain.fxma
@@ -806,7 +806,7 @@ twice("Mof" redogh)  # Mof を2回出力する
 - 呪いはファイルのどこで定義しても、そのファイル全体で使えます (`weho` の巻き上げと同じ)。同じ名前の呪いを2つ定義すると `Su·Ready` エラーです。ほかのファイルからは使えません (`oqun` は付けられません)。
 - 呼び出しの引数の数が合わないと `AyAmis` エラーです。`util no twice(...)` のようにモジュールの中の名前として書いたものは、呪いとして扱いません。
 - 最初の版では、呪いの本体の文字列の `#{}` の中に書いた引数の名前は置き換えません。`#{}` の中で呪いを呼ぶことはできます。
-- 清書 (`.fxmac`) には展開する前の形が残ります。展開した結果は `fxma beaukshi --curoi` で確かめられます。
+- 清書 (`.fxmac`) には展開する前の形が残ります。展開した結果は `fixmarge beaukshi --curoi` で確かめられます。
 - 構文そのものを組み立てる本格的なマクロ (LispやRustの手続きマクロ) は、後の版で検討します。
 
 ## パッケージとモジュール
@@ -826,11 +826,11 @@ twice("Mof" redogh)  # Mof を2回出力する
 - `werer` (迎える) は動詞なので文の後ろ、`oqun` (開く) は見出しに付く語なので前に置きます。
 - `"./util"` は `./util.fxma` を読みます。`"./util" werer` だけの書き方は `AyAmis` (構文エラー) です。
 - 公開できるのは `oqun` を付けた関数と定数 (`showence`) だけです。付いていないものを外から使うと `Ca-nay` (できない) エラーです。
-- 読み込まれるファイルには、定義 (`weho` と `showence`) と `werer` だけを書けます。処理を実行する文は、`fxma keeon` で直接動かすファイルにだけ書けます。それ以外の文があると `Ca-nay` エラーです。
+- 読み込まれるファイルには、定義 (`weho` と `showence`) と `werer` だけを書けます。処理を実行する文は、`fixmarge keeon` で直接動かすファイルにだけ書けます。それ以外の文があると `Ca-nay` エラーです。
 - 読み込まれるファイルの一番外側は `abiryoku` の外として扱います。`showence` の右で入出力をする関数を呼ぶと `kiNbOO` エラーです。
 - 読み込んだ名前は、JavaScriptの `import` と同じく書き換えられません。`double izu 1` や `util no limit izu 1` は `blasTOac` エラーです。
 - 同じ名前を2回読み込むと `Su·Ready` エラーです。`aste` で別名を付けます。
-- 清書 (`.fxmac`) を実行しているときは、読み込み先も清書を読みます。`fxma sinruits` は読み込み先の下書きもまとめて清書するので、そのまま動きます。
+- 清書 (`.fxmac`) を実行しているときは、読み込み先も清書を読みます。`fixmarge sinruits` は読み込み先の下書きもまとめて清書するので、そのまま動きます。
 - 読み込みが循環すると `Su·Ready` (既に)、読み込み先がないと `Nii eXi'` エラーです。
 
 フィクスマージ語 (ソース):
@@ -859,9 +859,9 @@ import * as util from "./util.js";
 console.log(util.double(21)); // 42
 ```
 
-### fxma.mod と fxma.sum
+### fixmarge.mod と fixmarge.sum
 
-Goの `go.mod` と `go.sum` と同じ役割のファイルです。`fxma.mod` の項目名は辞書の語で、下書きと同じく記号なしの小文字で書きます。
+Goの `go.mod` と `go.sum` と同じ役割のファイルです。`fixmarge.mod` の項目名は辞書の語で、下書きと同じく記号なしの小文字で書きます。
 
 ```
 ado github.com/alice/strs
@@ -883,31 +883,31 @@ lainei github.com/bob/util ../util
 | `neyo` | `require` | 必要 | 使うパッケージと版 |
 | `unneyo` | `exclude` | 要らない | 使わせない版 |
 | `lainei` | `replace` | 〜のように | パッケージを別の場所のもので置き換える |
-| `youlugive` | なし (ESLintの設定の `rules`) | 許し | `fxma lavi` で指摘しない規則 |
+| `youlugive` | なし (ESLintの設定の `rules`) | 許し | `fixmarge lavi` で指摘しない規則 |
 
 - `foryulvu` の `MIT OR Apache-2.0` は、`OR`・`AND`・`WITH` まで含めてSPDXの1つの表記なので、フィクスマージ語に置き換えません。識別子がSPDXの一覧になければエラーです。
-- `foryulvu` と `neyo fxma` は必須です。どちらかがないパッケージは `fxma werer` で取り込めません (`Ca-nay`)。
-- 手元の fxma が `neyo fxma` の範囲に入っていなければ、`fxma werer` の時点でエラーです。
-- `fxma.sum` は人が書かないファイルなので、語は入れません。`go.sum` と同じく「パッケージ名、版、ハッシュ」を並べます。
+- `foryulvu` と `neyo fxma` は必須です。どちらかがないパッケージは `fixmarge werer` で取り込めません (`Ca-nay`)。
+- 手元の fxma が `neyo fxma` の範囲に入っていなければ、`fixmarge werer` の時点でエラーです。
+- `fixmarge.sum` は人が書かないファイルなので、語は入れません。`go.sum` と同じく「パッケージ名、版、ハッシュ」を並べます。
 
 ### 外部パッケージの取得
 
 | コマンド | 英語の別名 | Go | すること |
 | --- | --- | --- | --- |
-| `fxma ado meif <名前>` | `mod init` | `go mod init` | `fxma.mod` を作る |
-| `fxma werer <パッケージ>@<版>` | `get` | `go get` | パッケージを追加する |
-| `fxma ado saymal` | `mod tidy` | `go mod tidy` | 使っていないものを消し、足りないものを足す |
+| `fixmarge ado meif <名前>` | `mod init` | `go mod init` | `fixmarge.mod` を作る |
+| `fixmarge werer <パッケージ>@<版>` | `get` | `go get` | パッケージを追加する |
+| `fixmarge ado saymal` | `mod tidy` | `go mod tidy` | 使っていないものを消し、足りないものを足す |
 
 - パッケージの名前はGitリポジトリのURLから `https://` を除いたもの (`github.com/owner/repo`) で、版はGitのタグ (`v1.2.0`) です。タグは `v` で始まるsemverだけを版として使います。
-- 取ってくるのはfxmaに組み込んだGitの実装 (go-git) なので、`git` コマンドは要りません。タグが指すコミットのファイルを取ってきます。
-- `fxma werer <パッケージ>` のように版を省くと、いちばん新しい正式版を使います。正式版がなければいちばん新しいプレリリースです (Goの `latest` と同じ)。
-- ダウンロードするのは `fxma werer` と `fxma ado saymal` のときだけで、`fxma keeon` の途中ではダウンロードしません。取ってきていないパッケージを読み込むと `Nii eXi'` です。
-- ダウンロードしたものはOSのキャッシュの場所 (Linuxは `~/.cache/fxma/mod`、Windowsは `%LocalAppData%\fxma\mod`、macOSは `~/Library/Caches/fxma/mod`) に置き、プロジェクトの間で使い回します。環境変数 `FXMA_CACHE` を設定すると、その下の `mod` に置きます。
+- 取ってくるのはfixmargeに組み込んだGitの実装 (go-git) なので、`git` コマンドは要りません。タグが指すコミットのファイルを取ってきます。
+- `fixmarge werer <パッケージ>` のように版を省くと、いちばん新しい正式版を使います。正式版がなければいちばん新しいプレリリースです (Goの `latest` と同じ)。
+- ダウンロードするのは `fixmarge werer` と `fixmarge ado saymal` のときだけで、`fixmarge keeon` の途中ではダウンロードしません。取ってきていないパッケージを読み込むと `Nii eXi'` です。
+- ダウンロードしたものはOSのキャッシュの場所 (Linuxは `~/.cache/fixmarge/mod`、Windowsは `%LocalAppData%\fixmarge\mod`、macOSは `~/Library/Caches/fixmarge/mod`) に置き、プロジェクトの間で使い回します。環境変数 `FIXMARGE_CACHE` を設定すると、その下の `mod` に置きます。
 - 同じパッケージを別の版で要求されたら、要求の中でいちばん新しい版を1つだけ使います (Goの最小バージョン選択)。`unneyo` で使わせない版が選ばれたら、その次に新しい版に上げます。
-- `fxma.mod` の `neyo` には、直接読み込むものだけでなく、間接的に使うものも含めて使うパッケージをすべて並べます (Go 1.17からの `go.mod` と同じ)。`fxma keeon` は `fxma.mod` だけを見て読み込み先を決めます。
-- `fxma.sum` のハッシュはGoの `go.sum` と同じ `h1:` の形です (ファイルごとのSHA-256をまとめたもの)。`fxma keeon` は読み込む前にキャッシュの中身をこのハッシュと比べ、合わないか `fxma.sum` に書かれていなければ `CraeyTA'` です。版を選ぶためにたどった、選ばれなかった版のハッシュも残ります。
+- `fixmarge.mod` の `neyo` には、直接読み込むものだけでなく、間接的に使うものも含めて使うパッケージをすべて並べます (Go 1.17からの `go.mod` と同じ)。`fixmarge keeon` は `fixmarge.mod` だけを見て読み込み先を決めます。
+- `fixmarge.sum` のハッシュはGoの `go.sum` と同じ `h1:` の形です (ファイルごとのSHA-256をまとめたもの)。`fixmarge keeon` は読み込む前にキャッシュの中身をこのハッシュと比べ、合わないか `fixmarge.sum` に書かれていなければ `CraeyTA'` です。版を選ぶためにたどった、選ばれなかった版のハッシュも残ります。
 - `lainei` で手元のフォルダに置き換えたパッケージは、ダウンロードもハッシュの確認もしません。
-- `fxma ado saymal` は、パッケージの下書き (`.fxma`) の `werer` を集めて使うパッケージを決め直します。清書 (`.fxmac`)、`.` で始まるフォルダ、別の `fxma.mod` があるフォルダは見ません。`neyo` にない読み込み先は、名前の長い方からリポジトリを探して、いちばん新しい版を足します。読み込み先のファイルがなければ、その `werer` の位置で `Nii eXi'` です。
+- `fixmarge ado saymal` は、パッケージの下書き (`.fxma`) の `werer` を集めて使うパッケージを決め直します。清書 (`.fxmac`)、`.` で始まるフォルダ、別の `fixmarge.mod` があるフォルダは見ません。`neyo` にない読み込み先は、名前の長い方からリポジトリを探して、いちばん新しい版を足します。読み込み先のファイルがなければ、その `werer` の位置で `Nii eXi'` です。
 - WebAssembly版のプレイグラウンドはGitを使えないので、標準ライブラリと同じ画面で書いたファイルだけを読み込めます。
 
 外部パッケージの読み込みは次のとおりです。
@@ -918,19 +918,19 @@ lainei github.com/bob/util ../util
 | `"github.com/alice/strs/case" aste c werer` | パッケージの直下の `case.fxma` | `import * as c from "strs/case"` |
 
 - 外部パッケージは、清書を実行しているときも下書き (`.fxma`) を読みます。キャッシュの中身は書き換えないためです。
-- 外部パッケージの中の `"./util"` は、そのパッケージの中のファイルを読みます。外部パッケージの中の外部パッケージは、実行しているパッケージの `fxma.mod` で決めた版を読みます。
+- 外部パッケージの中の `"./util"` は、そのパッケージの中のファイルを読みます。外部パッケージの中の外部パッケージは、実行しているパッケージの `fixmarge.mod` で決めた版を読みます。
 
 取ってくるときのエラーは次のとおりです。
 
 | エラー | 起きるとき |
 | --- | --- |
-| `Nii eXi'` | `fxma.mod` が見つからない。リポジトリやタグがない |
-| `AyAmis` | `fxma.mod` の書き方や版の書き方が正しくない。`foryulvu` がSPDXのライセンス式として読めない |
-| `Ca-nay` | 取ってきたパッケージに `fxma.mod` がない。`ado` が取ってきた名前と違う。`foryulvu` か `neyo fxma` がない。手元の fxma が `neyo fxma` の範囲に入らない |
-| `Su·Ready` | `fxma ado meif` で、もう `fxma.mod` がある。`fxma.mod` に同じ項目や同じパッケージを二度書いた |
-| `CraeyTA'` | 取ってきたものが `fxma.sum` と合わない |
+| `Nii eXi'` | `fixmarge.mod` が見つからない。リポジトリやタグがない |
+| `AyAmis` | `fixmarge.mod` の書き方や版の書き方が正しくない。`foryulvu` がSPDXのライセンス式として読めない |
+| `Ca-nay` | 取ってきたパッケージに `fixmarge.mod` がない。`ado` が取ってきた名前と違う。`foryulvu` か `neyo fxma` がない。手元の fxma が `neyo fxma` の範囲に入らない |
+| `Su·Ready` | `fixmarge ado meif` で、もう `fixmarge.mod` がある。`fixmarge.mod` に同じ項目や同じパッケージを二度書いた |
+| `CraeyTA'` | 取ってきたものが `fixmarge.sum` と合わない |
 
-開発中の fxma (タグから作っていない版) では、`neyo fxma` の範囲を確かめません。`fxma ado meif` は手元の fxma の版から `neyo fxma >=0.1.0` のように書き、開発中の版なら `neyo fxma *` と書きます。
+開発中の fxma (タグから作っていない版) では、`neyo fxma` の範囲を確かめません。`fixmarge ado meif` は手元の fxma の版から `neyo fxma >=0.1.0` のように書き、開発中の版なら `neyo fxma *` と書きます。
 
 ## 標準パッケージ
 
@@ -969,10 +969,10 @@ lainei github.com/bob/util ../util
 
 | 名前 | 辞書の意味 | 種類 | 起きるとき |
 | --- | --- | --- | --- |
-| `DowGuil` | 疑惑 | 警告 | 方言の綴りを使った。`fxma keeon`・`fxma sinruits`・`fxma lavi` で出る |
-| `LaVI` | 法の悪魔 | 指摘 | `fxma lavi` が規則違反を見つけた。規則は「法の悪魔」の節 |
+| `DowGuil` | 疑惑 | 警告 | 方言の綴りを使った。`fixmarge keeon`・`fixmarge sinruits`・`fixmarge lavi` で出る |
+| `LaVI` | 法の悪魔 | 指摘 | `fixmarge lavi` が規則違反を見つけた。規則は「法の悪魔」の節 |
 | `Su·Ready` | 既に | エラー | 同じ名前を二重に定義した。関数の中から外の変数に `izu` した。読み込みが循環した |
-| `CraeyTA'` | 壊れた | エラー | ダウンロードしたパッケージが `fxma.sum` と合わない (改ざん・破損) |
+| `CraeyTA'` | 壊れた | エラー | ダウンロードしたパッケージが `fixmarge.sum` と合わない (改ざん・破損) |
 | `SaiVI` | 災い | エラー | インタプリタ自体のバグ (起きてはいけない内部エラー) |
 
 指摘の表示例: `LaVI Was·Da main.fxma:4:1 tmp`
@@ -998,7 +998,7 @@ Nii eXi' main.fxma:3:5 cnt
 | テストの結果 | `hung gement fizzbuzz: Nii Guil-me` | 判決、罪なし |
 | テストの失敗 | `hung gement fizzbuzz: Guil-me` | 判決、罪 |
 
-例外として、`fxma neyar` が出す非公式表記だけは日本語にします。ガイドラインが「分かりやすい位置に明記」を求めているためです。インストーラの画面も日本語です (「インストーラ」の章)。
+例外として、`fixmarge neyar` が出す非公式表記だけは日本語にします。ガイドラインが「分かりやすい位置に明記」を求めているためです。インストーラの画面も日本語です (「インストーラ」の章)。
 
 ## 実装方針
 
@@ -1024,38 +1024,38 @@ Nii eXi' main.fxma:3:5 cnt
 5. **実行**: 構文木をたどるインタプリタ。
 6. **ビルド**: 字句の並びを保ったまま、辞書の語だけを正式な綴りに置き換え、インタプリタが実行する形である `.fxmac` を出す。置き換えるのは、語の表にある語 (キーワード、組み込み、標準パッケージの名前と関数名、2語の名前とその部品、辞書のキーの語など) を識別子として書いたものすべてで、文脈は見ない。変数に `meme` と名付けても `MeMe` になる。文字列の中のキー (`"lyuzun"`) は書き換えない。
 
-コマンドとオプションは辞書の語で書きます。慣れた人のために、英語の別名も使えます。どちらで書いても動きは同じで、ヘルプや `fxma nai` の説明には辞書の語を出します。
+コマンドとオプションは辞書の語で書きます。慣れた人のために、英語の別名も使えます。どちらで書いても動きは同じで、ヘルプや `fixmarge nai` の説明には辞書の語を出します。
 
 | コマンド | 辞書の意味 | 英語の別名 | すること | 他の言語でいうと |
 | --- | --- | --- | --- | --- |
-| `fxma keeon main.fxma` | 続ける | `run` | 下書きをメモリ上でビルドし、その清書を実行する | `go run` |
-| `fxma keeon main.fxmac` | 続ける | `run` | 清書をそのまま実行する | ビルド済みのファイルを実行 |
-| `fxma sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き (`./` か `../` で始まるもの) も、たどってまとめて清書する | `go build`、`tsc` |
-| `fxma sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する | `deno compile`、`bun build --compile` |
-| `fxma coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す。ファイルやフォルダを渡せて、省くと今いる場所より下のフォルダまで全部探す (隠しフォルダと `node_modules` は飛ばす) | `go test`、vitest |
-| `fxma beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形してファイルを書き換える。下の「整形」 | `go fmt`、`deno fmt` |
-| `fxma beaukshi --curoi main.fxma` | 呪い | `--expand` | 呪い (マクロ) を展開した結果を表示する | `cargo expand` |
-| `fxma hak` | 話す | `repl` | 対話モード。1行ずつ打って実行する | 引数なしの `python` |
-| `fxma nai <エラー名>` | なぜ | `explain` | エラーや警告の意味と直し方を表示する | `rustc --explain` |
-| `fxma nai`、`fxma --nai` | なぜ | `help`、`--help` | 使い方を表示する | `go help` |
-| `fxma persemon main.fxma` | 見世物 | `bench` | 関数の速さを測る | `go test -bench` |
-| `fxma werer <パッケージ>@<版>` | 迎える | `get` | パッケージを追加する | `go get` |
-| `fxma ado meif <名前>` | これ、命 | `mod init` | `fxma.mod` を作る | `go mod init` |
-| `fxma ado saymal` | これ、正常 | `mod tidy` | 使っていないものを消し、足りないものを足す | `go mod tidy` |
-| `fxma neyar`、`fxma --neyar` | 年 | `version`、`--version` | 版と、非公式のファンメイド作品であることを表示する | `go version` |
-| `fxma trench` | 友達 | `lsp` | エディタのための言語サーバーを動かす | `gopls` |
-| `fxma lavi` | 法の悪魔 | `lint` | 規則違反を指摘する。下の「法の悪魔」 | ESLint、`go vet` |
+| `fixmarge keeon main.fxma` | 続ける | `run` | 下書きをメモリ上でビルドし、その清書を実行する | `go run` |
+| `fixmarge keeon main.fxmac` | 続ける | `run` | 清書をそのまま実行する | ビルド済みのファイルを実行 |
+| `fixmarge sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き (`./` か `../` で始まるもの) も、たどってまとめて清書する | `go build`、`tsc` |
+| `fixmarge sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する | `deno compile`、`bun build --compile` |
+| `fixmarge coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す。ファイルやフォルダを渡せて、省くと今いる場所より下のフォルダまで全部探す (隠しフォルダと `node_modules` は飛ばす) | `go test`、vitest |
+| `fixmarge beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形してファイルを書き換える。下の「整形」 | `go fmt`、`deno fmt` |
+| `fixmarge beaukshi --curoi main.fxma` | 呪い | `--expand` | 呪い (マクロ) を展開した結果を表示する | `cargo expand` |
+| `fixmarge hak` | 話す | `repl` | 対話モード。1行ずつ打って実行する | 引数なしの `python` |
+| `fixmarge nai <エラー名>` | なぜ | `explain` | エラーや警告の意味と直し方を表示する | `rustc --explain` |
+| `fixmarge nai`、`fixmarge --nai` | なぜ | `help`、`--help` | 使い方を表示する | `go help` |
+| `fixmarge persemon main.fxma` | 見世物 | `bench` | 関数の速さを測る | `go test -bench` |
+| `fixmarge werer <パッケージ>@<版>` | 迎える | `get` | パッケージを追加する | `go get` |
+| `fixmarge ado meif <名前>` | これ、命 | `mod init` | `fixmarge.mod` を作る | `go mod init` |
+| `fixmarge ado saymal` | これ、正常 | `mod tidy` | 使っていないものを消し、足りないものを足す | `go mod tidy` |
+| `fixmarge neyar`、`fixmarge --neyar` | 年 | `version`、`--version` | 版と、非公式のファンメイド作品であることを表示する | `go version` |
+| `fixmarge trench` | 友達 | `lsp` | エディタのための言語サーバーを動かす | `gopls` |
+| `fixmarge lavi` | 法の悪魔 | `lint` | 規則違反を指摘する。下の「法の悪魔」 | ESLint、`go vet` |
 
 - 短いオプションは、辞書の語の頭文字と英語の別名の頭文字の両方を使えます。`--karady` は `-k` でも `-c` でも書けます。
 - 同じコマンドの中で頭文字がぶつかったら、ぶつかった側には短い形を付けません。たとえば `--nai` は `-n` ですが、`--neyar` には `-n` を付けず、英語の `-v` だけを使えます。`--help` は `-h` です。
-- `fxma keeon main.fxma a b` のように、ファイルより後ろに書いた引数は、オプションも含めてそのままプログラムに渡します (`dv no "conwa"`)。
-- コマンドを省いてファイルだけを渡すと、`keeon` と同じく実行します。そのため清書の1行目には `#!/usr/bin/env fxma` を書けます。macOSとLinuxでは、実行権限を付ければ `./main.fxmac` で動きます。
+- `fixmarge keeon main.fxma a b` のように、ファイルより後ろに書いた引数は、オプションも含めてそのままプログラムに渡します (`dv no "conwa"`)。
+- コマンドを省いてファイルだけを渡すと、`keeon` と同じく実行します。そのため清書の1行目には `#!/usr/bin/env fixmarge` を書けます。macOSとLinuxでは、実行権限を付ければ `./main.fxmac` で動きます。
 
-コンソールにはフィクスマージ語しか出さないため、`fxma nai` だけは意味を日本語で説明します。
+コンソールにはフィクスマージ語しか出さないため、`fixmarge nai` だけは意味を日本語で説明します。
 
-`fxma hak` では、1回の入力を実行し終えるたびに、その中の選択肢 (`mekamo`) を確定して出力を書き出します。`praylee` で待つときと同じ考え方です。後の入力で `shoubek` が偽になっても前の入力には戻らず、`Co-Jundic` になります。
+`fixmarge hak` では、1回の入力を実行し終えるたびに、その中の選択肢 (`mekamo`) を確定して出力を書き出します。`praylee` で待つときと同じ考え方です。後の入力で `shoubek` が偽になっても前の入力には戻らず、`Co-Jundic` になります。
 
-`fxma hak` の細かい決まりは次のとおりです。JavaScriptのnodeのREPLやChromeのコンソールに合わせています。
+`fixmarge hak` の細かい決まりは次のとおりです。JavaScriptのnodeのREPLやChromeのコンソールに合わせています。
 
 - 前の入力で作った変数や関数は、後の入力でもそのまま使えます。関数の中から、後の入力で作った関数も呼べます。
 - 入力が式の文で終わっていたら、その値を出します (`1 + 2` なら `3`)。`vanita` は出しません。文字列は配列の中と同じく `"ab"` と引用符で囲み、`redogh` の出力と見分けられるようにします。
@@ -1066,9 +1066,9 @@ Nii eXi' main.fxma:3:5 cnt
 - エラーの場所は `hak:<行>:<列>` です。行は始めてからの通し番号で、なかったことにした入力の行も数えます。
 - 入力の終わり (macOSとLinuxでは Ctrl+D、Windowsでは Ctrl+Z の後に Enter) か、`fxma:ieviljio` の `shid` で終わります。
 
-### 整形 (fxma beaukshi)
+### 整形 (fixmarge beaukshi)
 
-`fxma beaukshi` は下書きを決まった形に整えて、ファイルを書き換えます。Goの `go fmt` やDenoの `deno fmt` と同じです。ファイルやフォルダを渡せて、省くと今いる場所より下の `.fxma` を全部整えます (`fxma coatain` と同じ探し方)。変わったファイルだけ書き換えて、その名前を出します (`beAukShi main.fxma`)。
+`fixmarge beaukshi` は下書きを決まった形に整えて、ファイルを書き換えます。Goの `go fmt` やDenoの `deno fmt` と同じです。ファイルやフォルダを渡せて、省くと今いる場所より下の `.fxma` を全部整えます (`fixmarge coatain` と同じ探し方)。変わったファイルだけ書き換えて、その名前を出します (`beAukShi main.fxma`)。
 
 - 字下げは空白2つです。ブロックの中を1段深くし、`finend`、`siva`、`youlugive`、`ennote` の行は1段浅く書きます。
 - 行の中の空白もそろえます。演算子の前後に空白を1つ、`,` と `:` の後ろに空白を1つ置き、括弧の内側には空白を置きません (`x izu f(a, b) + 1`)。
@@ -1078,11 +1078,11 @@ Nii eXi' main.fxma:3:5 cnt
 - 括弧の中で改行していれば、改行を残します。次の行の字下げは、開いたままの括弧やブロックを開いた行1つにつき1段です (Prettierと同じ)。
 - 文字列の中は書き換えません。
 - 整えた結果を読み直して、字句の並びが変わっていないか確かめます。変わっていたら書き換えずに `SaiVI` エラーにします。
-- `fxma beaukshi --curoi main.fxma` は、呪いを展開した結果を画面に出すだけで、書き換えません。呪いの中で作った名前は、付け替えた名前 (`tmp·1`) のまま出します。
+- `fixmarge beaukshi --curoi main.fxma` は、呪いを展開した結果を画面に出すだけで、書き換えません。呪いの中で作った名前は、付け替えた名前 (`tmp·1`) のまま出します。
 
-### 法の悪魔 (fxma lavi)
+### 法の悪魔 (fixmarge lavi)
 
-`fxma lavi` は、エラーにはならないけれど間違いのもとになる書き方を、法の悪魔 (`LaVI`) が指摘するコマンドです。JavaScriptのESLintやGoの `go vet` に当たります。`fxma keeon` と `fxma sinruits` が出す警告は方言の綴り (`DowGuil`) だけで、ほかの指摘はすべて `fxma lavi` にまとめます。
+`fixmarge lavi` は、エラーにはならないけれど間違いのもとになる書き方を、法の悪魔 (`LaVI`) が指摘するコマンドです。JavaScriptのESLintやGoの `go vet` に当たります。`fixmarge keeon` と `fixmarge sinruits` が出す警告は方言の綴り (`DowGuil`) だけで、ほかの指摘はすべて `fixmarge lavi` にまとめます。
 
 | 規則 | 辞書の意味 | 指摘すること | 似ているもの |
 | --- | --- | --- | --- |
@@ -1098,7 +1098,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `dEs·lee` | 絶望 | 戻れる選択肢 (`mekamo`) がない場所の `shoubek`。偽になると必ず `Co-Jundic` になる | なし。この言語だけの指摘 |
 
 - 指摘の形は `LaVI <規則> <ファイル>:<行>:<列> <対象>` です (`LaVI anxAn main.fxma:12:3 greet`)。
-- ファイルやフォルダを渡せて、省くと今いる場所より下の `.fxma` を全部調べます (`fxma coatain` と同じ探し方)。
+- ファイルやフォルダを渡せて、省くと今いる場所より下の `.fxma` を全部調べます (`fixmarge coatain` と同じ探し方)。
 - 実行せずに構文木を調べるので、確かにそうだと言えるときだけ指摘します。たとえば `emBasy` は、中で呼ぶ関数がどれも入出力をしないと実行前に分かるときだけ指摘します。引数で受け取った関数や、読み込んだファイルの関数を呼んでいれば指摘しません。
 - `Was·Da` は、`_` で始まる名前を指摘しません (ESLintと同じ)。わざと使わない変数は `_i` のように書きます。引数、関数の名前、公開した `showence` も指摘しません。
 - `shi-des` は、`itswa`・`ketzen`・`accuhearts` に加えて `keip` の後ろの文も指摘します。
@@ -1110,7 +1110,7 @@ Nii eXi' main.fxma:3:5 cnt
 - `dEs·lee` は、ファイルに `mekamo` が1つもなく、`mekamo` を持つかもしれないファイル (`./` で読み込むもの) も読み込んでいないときだけ指摘します。`sentky` の本体の `shoubek` はテストなので指摘しません。
 - 指摘が1つでもあれば、終了コード1で終わります。CIに入れると、指摘が残っているときに落ちます。
 - わざとそう書いているときは、行の終わりに `# lavi: mehberac` のように規則の骨格を書くと、その行のその規則だけ止まります。悪魔に「これは見逃して」と頼むという見立てです。
-- パッケージ全体で止めるときは、`fxma.mod` に `youlugive mehberac suzai` のように許す規則を並べます。
+- パッケージ全体で止めるときは、`fixmarge.mod` に `youlugive mehberac suzai` のように許す規則を並べます。
 
 ### 巻き戻しの実現方法
 
@@ -1145,22 +1145,22 @@ Nii eXi' main.fxma:3:5 cnt
 
 ### エディタ
 
-エディタの機能は、言語サーバー `fxma trench` (LSP、標準入出力で話す) にまとめます。goplsと同じく、CLIと同じ実行ファイルに入れます。
+エディタの機能は、言語サーバー `fixmarge trench` (LSP、標準入出力で話す) にまとめます。goplsと同じく、CLIと同じ実行ファイルに入れます。
 
 | 機能 | 中身 |
 | --- | --- |
-| 診断 | 字句・構文・実行前の検査のエラーと、法の悪魔 (`fxma lavi`) の指摘を波線で出す。文言はコンソールと同じくフィクスマージ語だけで、位置は範囲で示すので書かない |
-| 整形 | `fxma beaukshi` と同じ。構文が正しくなければ何もしない |
+| 診断 | 字句・構文・実行前の検査のエラーと、法の悪魔 (`fixmarge lavi`) の指摘を波線で出す。文言はコンソールと同じくフィクスマージ語だけで、位置は範囲で示すので書かない |
+| 整形 | `fixmarge beaukshi` と同じ。構文が正しくなければ何もしない |
 | 補完 | 語の表のキーワード・組み込み・標準パッケージの名前と関数、ファイルの中の名前。`モジュール no` の後ろでは、そのモジュールの中の名前だけを出す。下書きには骨格、清書には正式な綴りを入れる |
-| ホバー | 辞書の語なら正式な綴りと訳、エラー名なら `fxma nai` と同じ説明、ファイルの中の名前なら定義の種類 |
+| ホバー | 辞書の語なら正式な綴りと訳、エラー名なら `fixmarge nai` と同じ説明、ファイルの中の名前なら定義の種類 |
 | 定義へ移動 | ファイルの中の定義へ飛ぶ。`werer` で読み込んだ名前は、読み込み先のファイルで `oqun` を付けた定義へ飛ぶ。標準パッケージの中身は実行ファイルに組み込まれているので飛び先はない |
 | 色分け | セマンティックトークン。字句解析と名前の解決の結果で、変数・引数・関数・モジュールなどを分ける |
 
-名前の解決 (どの名前がどの定義を指すか) は、実行時と同じ規則を `fxma lavi` と共有します。
+名前の解決 (どの名前がどの定義を指すか) は、実行時と同じ規則を `fixmarge lavi` と共有します。
 
-VS Code拡張 (`editors/vscode`) は、色分けの土台にTextMate文法を持ち、ほかは言語サーバーに任せます。TextMate文法は語の表から生成するので、`fxma` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fxma` と `fxmac`) と別の文法にします。言語サーバーは `PATH` の `fxma` を動かし、設定 `fxma.path` で場所を変えられます。見つからなければ `Nii eXi' fxma` と出します。
+VS Code拡張 (`editors/vscode`) は、色分けの土台にTextMate文法を持ち、ほかは言語サーバーに任せます。TextMate文法は語の表から生成するので、`fixmarge` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fxma` と `fxmac`) と別の文法にします。言語サーバーは `PATH` の `fixmarge` を動かし、設定 `fxma.path` で場所を変えられます。見つからなければ `Nii eXi' fixmarge` と出します。
 
-Neovim・Vimのプラグインは、リポジトリの直下に置き (`ftdetect/`・`ftplugin/`・`indent/`・`syntax/`・`autoload/`・`lsp/`・`doc/`)、リポジトリそのものをプラグインとして入れられるようにします。中身はVS Code拡張と同じく、ファイルタイプ (`fxma` と `fxmac`)、語の表から生成する色分け、`fxma beaukshi` と同じ字下げです。言語サーバーは、Neovim 0.11からは `lsp/fxma.lua` を置くので `vim.lsp.enable('fxma')` でつながります。勝手にはつなぎません (nvim-lspconfigと同じ)。Vimには言語サーバーをつなぐ機能が組み込まれていないので、yegappan/lspとvim-lspの設定の例をヘルプ (`:help fxma`) に書きます。
+Neovim・Vimのプラグインは、リポジトリの直下に置き (`ftdetect/`・`ftplugin/`・`indent/`・`syntax/`・`autoload/`・`lsp/`・`doc/`)、リポジトリそのものをプラグインとして入れられるようにします。中身はVS Code拡張と同じく、ファイルタイプ (`fxma` と `fxmac`)、語の表から生成する色分け、`fixmarge beaukshi` と同じ字下げです。言語サーバーは、Neovim 0.11からは `lsp/fxma.lua` を置くので `vim.lsp.enable('fxma')` でつながります。勝手にはつなぎません (nvim-lspconfigと同じ)。Vimには言語サーバーをつなぐ機能が組み込まれていないので、yegappan/lspとvim-lspの設定の例をヘルプ (`:help fxma`) に書きます。
 
 ## 配布
 
@@ -1172,13 +1172,13 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 | OS | CPU | ファイル |
 | --- | --- | --- |
-| Linux | x86\_64 / arm64 | `fxma_<版>_linux_<CPU>.tar.gz` |
-| macOS | x86\_64 / arm64 | `fxma_<版>_darwin_<CPU>.tar.gz` |
-| Windows | x86\_64 / arm64 | `fxma_<版>_windows_<CPU>.zip` |
+| Linux | x86\_64 / arm64 | `fixmarge_<版>_linux_<CPU>.tar.gz` |
+| macOS | x86\_64 / arm64 | `fixmarge_<版>_darwin_<CPU>.tar.gz` |
+| Windows | x86\_64 / arm64 | `fixmarge_<版>_windows_<CPU>.zip` |
 
 圧縮ファイルの中身は共通です。
 
-- `fxma` (Windowsでは `fxma.exe`)
+- `fixmarge` (Windowsでは `fixmarge.exe`)
 - `README.md`: 同梱のREADME。日本語で書き、二次創作ガイドラインで求められた表示を入れる (後の章)
 - `LICENSE-MIT` と `LICENSE-APACHE`: この言語のコードのライセンス
 - `THIRD_PARTY_LICENSES`: Goのランタイムなど、実行ファイルに含まれる他者のコードのライセンス
@@ -1190,18 +1190,18 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 | 方法 | コマンド | 時期 |
 | --- | --- | --- |
 | インストーラ (macOS・Linux) | `curl -fsSL https://fixmargescript.oto.im/install.sh \| sh` | 最初から |
-| インストーラ (Windows) | Releasesの `fxma_<版>_windows_setup.exe` (Inno Setup製) | 最初から |
+| インストーラ (Windows) | Releasesの `fixmarge_<版>_windows_setup.exe` (Inno Setup製) | 最初から |
 | 手動 | Releasesから展開してPATHの通った場所に置く | 最初から |
-| Go | `go install github.com/otnc/fiXmArgeScript/cmd/fxma@latest` | 最初から |
+| Go | `go install github.com/otnc/fiXmArgeScript/cmd/fixmarge@latest` | 最初から |
 | Homebrew・Scoop | 自前のtap・bucketを用意する | 後で |
 
-版番号はセマンティックバージョニングです。`fxma neyar` は版番号と一緒に、非公式のファンメイド作品であることを表示します。
+版番号はセマンティックバージョニングです。`fixmarge neyar` は版番号と一緒に、非公式のファンメイド作品であることを表示します。
 
 ### 版とリリース
 
 版の元はGitのタグ (`v0.2.0`) だけにして、版をファイルに手で書きません。
 
-- **CLI**: Go 1.24からは、ビルドのときにGitのタグとコミットから版が実行ファイルに埋め込まれます。`fxma neyar` はそれを読んで、版とコミットとその日時を出します。タグの上なら `v0.2.0`、タグより後なら `v0.2.1-0.<日時>-<コミット>`、手元の変更が残っていれば `+dirty` が付きます。`go install ...@v0.2.0` で入れた場合も同じく `v0.2.0` になります。
+- **CLI**: Go 1.24からは、ビルドのときにGitのタグとコミットから版が実行ファイルに埋め込まれます。`fixmarge neyar` はそれを読んで、版とコミットとその日時を出します。タグの上なら `v0.2.0`、タグより後なら `v0.2.1-0.<日時>-<コミット>`、手元の変更が残っていれば `+dirty` が付きます。`go install ...@v0.2.0` で入れた場合も同じく `v0.2.0` になります。
 - **全部同じ版**: CLI、WebAssembly版 (npm)、VS Code拡張、LSP、Neovim・Vimのプラグインは、1つのタグで同じ版にそろえます。言語の仕様とLSPと拡張は一緒に変わるからです。
 - **リリースの手順**: GitHub Actionsの `release` を `workflow_dispatch` で動かし、次の版 (`patch`・`minor`・`major`・`prerelease`、または版を直接書く) と、プレリリースの識別子 (`rc`・`beta` など、空でもよい) を選びます。最新のタグから次の版を決め、テストを通してからタグを打ち、GoReleaserでReleasesを作ります。版の計算はnpmの `semver` と同じです。
   - 識別子なしの `patch`・`minor`・`major` は正式版になる (`v0.1.0` の次の `minor` は `v0.2.0`、`v0.2.0-rc.1` の次の `minor` は `v0.2.0`)。
@@ -1211,15 +1211,15 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
   - 次の版は最新のタグより新しくなければならず、プレリリースの識別子は英小文字だけにする (`0.1.1-0` のような数字だけの識別子はdist-tagにできないため)。
 - **同梱するライセンス**: `THIRD_PARTY_LICENSES` は、リリースのときにGo本体のライセンスと、`go-licenses` で集めた依存のライセンスから作ります。CLIとWebAssembly版で同じファイルを使います。
 - **npmのパッケージ**: リポジトリの `package.json` の `version` は `0.0.0` のままにし、リリースのときだけ書き換えて公開します (コミットはしません)。dist-tagは、プレリリースなら識別子 (`0.2.0-rc.1` なら `rc`)、正式版なら `latest` です。
-- **VS Code拡張**: Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。VSIXファイル (`fxma_<版>_vscode.vsix`) は、どの版でもReleasesに添付します。
+- **VS Code拡張**: Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。VSIXファイル (`fixmarge_<版>_vscode.vsix`) は、どの版でもReleasesに添付します。
 - **Neovim・Vimのプラグイン**: 版のファイルは持たず、リポジトリのタグをそのまま使います。lazy.nvimの `version` もNeovimの `vim.pack` も、Gitのタグで版を選びます。
 - **インストーラ**: Inno Setupには、ビルドのときに版を渡します (`iscc /DAppVersion=0.2.0`)。`install.sh` はReleasesの最新版を見るので、版を持ちません。
 
 ### WebAssembly版
 
-`GOOS=js GOARCH=wasm` で `fxma.wasm` を作り、Go付属の `wasm_exec.js` と組み合わせて配ります。
+`GOOS=js GOARCH=wasm` で `fixmarge.wasm` を作り、Go付属の `wasm_exec.js` と組み合わせて配ります。
 
-- **Releases**: `fxma_<版>_wasm.zip` に `fxma.wasm`、`wasm_exec.js`、`README.md`、ライセンス類を入れる。
+- **Releases**: `fixmarge_<版>_wasm.zip` に `fixmarge.wasm`、`wasm_exec.js`、`README.md`、ライセンス類を入れる。
 - **npm**: パッケージ `fxma` として公開し、JavaScriptから `run(source, { stdin, files, args })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`files` は名前と中身の組で、`werer` でも `fxma:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
 - **プレイグラウンド**: Cloudflare Workersの静的アセットとして https://fixmargescript.oto.im/ に置き、ブラウザだけで書いて実行できるようにする。ViteとCodeMirror 6で作り、リポジトリの `playground/` にある。ファイルを足して `werer` で読み込める。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
 
@@ -1231,9 +1231,9 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 ### Windows: Inno Setup
 
-- Inno Setupで `fxma_<版>_windows_setup.exe` を作り、Releasesで配る。x86\_64とarm64の実行ファイルを1つのセットアップに入れ、インストールするときにCPUに合うほうを選ぶ。
+- Inno Setupで `fixmarge_<版>_windows_setup.exe` を作り、Releasesで配る。x86\_64とarm64の実行ファイルを1つのセットアップに入れ、インストールするときにCPUに合うほうを選ぶ。
 - 文言はInno Setup付属の日本語の言語ファイル (`Japanese.isl`) を使う。
-- 既定では管理者権限なしで自分だけに入れる (`%LOCALAPPDATA%\Programs\fxma`)。起動したときに、全員向け (`Program Files`、管理者権限が要る) も選べる。入れた場所を、自分だけならユーザーの、全員向けならシステムの `PATH` に足し、アンインストールで取り除く。
+- 既定では管理者権限なしで自分だけに入れる (`%LOCALAPPDATA%\Programs\fixmarge`)。起動したときに、全員向け (`Program Files`、管理者権限が要る) も選べる。入れた場所を、自分だけならユーザーの、全員向けならシステムの `PATH` に足し、アンインストールで取り除く。
 - Inno Setupは非営利なら無料で使える。6.5.0から営利利用には有償ライセンスを求めているが、この作品は非営利なので対象外。
 - 署名していない `.exe` は、起動時にWindowsのSmartScreenの警告が出る。最初の版では署名せず、警告の出方と実行の手順をREADMEに書く。使う人が増えたら、オープンソース向けの無償の署名サービスに申し込む。
 - ライセンス同意の画面には、READMEの非公式表記を出す。ガイドラインの「分かりやすい位置に明記」を満たすためです。
@@ -1243,7 +1243,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 `curl -fsSL https://fixmargescript.oto.im/install.sh | sh` で入れます。`sh -s v0.2.0` のように版を渡すと、その版を入れます。渡さなければ最新の正式版です。
 
-- OSとCPUを調べ、圧縮ファイルと `checksums.txt` を取得してSHA-256を照合し、`~/.fxma/bin/fxma` に置く。READMEとライセンス類は `~/.fxma` に置く。場所は環境変数 `FXMA_INSTALL` で変えられる。
+- OSとCPUを調べ、圧縮ファイルと `checksums.txt` を取得してSHA-256を照合し、`~/.fixmarge/bin/fixmarge` に置く。READMEとライセンス類は `~/.fixmarge` に置く。場所は環境変数 `FIXMARGE_INSTALL` で変えられる。
 - 使っているシェル (bash・zsh・fish) の設定ファイルに、`PATH` に足す行を書く (Bunと同じ)。すでに `PATH` に入っていれば書かない。macOSのbashは `.bash_profile`、Linuxのbashは `.bashrc`。ほかのシェルでは、足す行を表示するだけにする。
 - `install.sh` はプレイグラウンドと同じ場所 (Cloudflare Workersの静的アセット) に置く。
 - HomebrewやmacOSの `.pkg` は後で検討する。
@@ -1260,7 +1260,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 | 広告、寄付、投げ銭などで収益を得ない | 9 | GitHub Sponsorsなどの寄付リンクと、サイトの広告を置かない |
 | 公式のイラスト、ロゴ、楽曲、シナリオなどを直接組み込まない | 7・9 | ロゴや画像は使わない。歌詞の文は入れず、キーワードには単語だけを使う |
 | 素材は自作か、権利処理済みのものだけ | 9 | アイコンなどは自作する。ライセンスのない辞書CSVは同梱しない |
-| 「非公式のファンメイド作品」と配信ページと作品内に明記する | 9 | 配信ページ: リポジトリREADME、Releases、npm、プレイグラウンド。作品内: `fxma neyar`、インストーラの同意画面、同梱README |
+| 「非公式のファンメイド作品」と配信ページと作品内に明記する | 9 | 配信ページ: リポジトリREADME、Releases、npm、プレイグラウンド。作品内: `fixmarge neyar`、インストーラの同意画面、同梱README |
 | 公式の続編や公認作品と誤認させない | 9・10 | 名前や説明に「公式」「公認」を使わない |
 | 生成AIを使った作品は「AI利用」と明記する | 6 | 制作にClaudeを使うため、READMEに「AI利用」と書く |
 | ゲームのデータを抽出して再配布しない | 7 | ゲームのファイルは解析しない |

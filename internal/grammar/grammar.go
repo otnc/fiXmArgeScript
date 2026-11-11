@@ -1,6 +1,6 @@
 // Package grammar は、エディタの色分けに使うファイルを語の表 (lexicon) から作る。
 // VS Code 拡張 (editors/vscode) の TextMate 文法と、Vim・Neovim の syntax と字下げの語 (リポジトリの直下)。
-// 字句解析に沿った正確な色は LSP のセマンティックトークンが上書きするので、ここでは fxma を入れていなくても読める程度の色を付ける。
+// 字句解析に沿った正確な色は LSP のセマンティックトークンが上書きするので、ここでは fixmarge を入れていなくても読める程度の色を付ける。
 package grammar
 
 import (
@@ -115,15 +115,15 @@ func TextMate(mode lexer.Mode) ([]byte, error) {
 	return marshal(g)
 }
 
-// ModFile は fxma.mod の文法のファイルの名前。
+// ModFile は fixmarge.mod の文法のファイルの名前。
 const ModFile = "fxma-mod.tmLanguage.json"
 
-// ModTextMate は fxma.mod の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
+// ModTextMate は fixmarge.mod の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
 func ModTextMate() ([]byte, error) {
 	fields := modFields()
 	return marshal(grammar{
 		Schema:    "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-		Name:      "fiXmArge Script (fxma.mod)",
+		Name:      "fiXmArge Script (fixmarge.mod)",
 		ScopeName: "source.fxma-mod",
 		Patterns:  []rule{include("field"), include("string")},
 		Repository: map[string]rule{
@@ -139,7 +139,7 @@ func ModTextMate() ([]byte, error) {
 	})
 }
 
-// modFields は fxma.mod の項目名 (キーワードを兼ねる youlugive も含む)。
+// modFields は fixmarge.mod の項目名 (キーワードを兼ねる youlugive も含む)。
 func modFields() []string {
 	var out []string
 	for _, e := range lexicon.Entries() {

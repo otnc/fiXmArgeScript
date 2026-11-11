@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 )
 
-// hakStep は fxma hak の入力1つと、そのときの出力とエラー。
+// hakStep は fixmarge hak の入力1つと、そのときの出力とエラー。
 type hakStep struct {
 	text   string
 	stdout string

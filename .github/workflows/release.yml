@@ -39,7 +39,7 @@ jobs:
         env:
           FXMA_DICT_CHECK: "1"
       - run: node npm/build.mjs
-      - run: node --test npm/test/fxma.test.js
+      - run: node --test npm/test/fixmarge.test.js
 
       - name: Decide version
         id: next
@@ -77,15 +77,15 @@ jobs:
         run: |
           $version = $env:TAG.Substring(1)
           foreach ($arch in "amd64", "arm64") {
-            gh release download $env:TAG -p "fxma_${version}_windows_${arch}.zip" -D dist
-            Expand-Archive "dist\fxma_${version}_windows_${arch}.zip" "dist\windows\$arch"
+            gh release download $env:TAG -p "fixmarge_${version}_windows_${arch}.zip" -D dist
+            Expand-Archive "dist\fixmarge_${version}_windows_${arch}.zip" "dist\windows\$arch"
           }
           Copy-Item dist\windows\amd64\THIRD_PARTY_LICENSES .
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" installer\fxma.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" installer\fixmarge.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
       - name: Upload
         run: |
-          $setup = "fxma_$($env:TAG.Substring(1))_windows_setup.exe"
+          $setup = "fixmarge_$($env:TAG.Substring(1))_windows_setup.exe"
           gh release download $env:TAG -p checksums.txt -D dist --clobber
           $hash = (Get-FileHash "dist\$setup" -Algorithm SHA256).Hash.ToLower()
           # GoReleaser と同じ形 (ハッシュ、空白2つ、名前) で、改行は LF
@@ -111,7 +111,7 @@ jobs:
         working-directory: editors/vscode
         run: |
           version=${TAG#v}
-          vsix="fxma_${version}_vscode.vsix"
+          vsix="fixmarge_${version}_vscode.vsix"
           # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
           npm pkg set version="$version"
           npx vsce package --out "$vsix"

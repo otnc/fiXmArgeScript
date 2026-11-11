@@ -1,5 +1,5 @@
 {
-  "name": "fxma",
+  "name": "fixmarge",
   "version": "0.0.0",
   "description": "fiXmArge Script の WebAssembly 版。「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。",
   "keywords": ["fixmarge", "programming-language", "webassembly"],
@@ -22,7 +22,7 @@
     "index.js",
     "index.d.ts",
     "wasm_exec.js",
-    "fxma.wasm",
+    "fixmarge.wasm",
     "LICENSE-MIT",
     "LICENSE-APACHE"
   ],

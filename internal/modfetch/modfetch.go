@@ -26,20 +26,20 @@ import (
 
 // Fetcher はパッケージの取得とキャッシュの場所を受け持つ。
 type Fetcher struct {
-	Root string                   // キャッシュのフォルダ (…/fxma/mod)
+	Root string                   // キャッシュのフォルダ (…/fixmarge/mod)
 	URL  func(path string) string // パッケージの名前から Git の URL を作る。nil なら https://<名前>
 }
 
-// DefaultRoot はキャッシュのフォルダ。環境変数 FXMA_CACHE があればその下の mod、なければ OS のキャッシュの場所の fxma/mod。
+// DefaultRoot はキャッシュのフォルダ。環境変数 FIXMARGE_CACHE があればその下の mod、なければ OS のキャッシュの場所の fixmarge/mod。
 func DefaultRoot() (string, error) {
-	if dir := os.Getenv("FXMA_CACHE"); dir != "" {
+	if dir := os.Getenv("FIXMARGE_CACHE"); dir != "" {
 		return filepath.Join(dir, "mod"), nil
 	}
 	dir, err := os.UserCacheDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "fxma", "mod"), nil
+	return filepath.Join(dir, "fixmarge", "mod"), nil
 }
 
 func (f *Fetcher) url(p string) string {

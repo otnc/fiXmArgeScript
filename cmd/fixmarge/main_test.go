@@ -14,7 +14,7 @@ func TestRun(t *testing.T) {
 	}{
 		{args: nil, code: 0, stdout: "fiXmArge Script (fxma) の使い方"},
 		{args: []string{"--help"}, code: 0, stdout: "fiXmArge Script (fxma) の使い方"},
-		{args: []string{"-v"}, code: 0, stdout: "fxma "},
+		{args: []string{"-v"}, code: 0, stdout: "fixmarge "},
 		{args: []string{"nai", "imjune"}, code: 0, stdout: "imJune"},
 		{args: []string{"explain", "nothing"}, code: 1, stderr: "Nii eXi' nothing"},
 		{args: []string{"zzz"}, code: 2, stderr: "Nii eXi' zzz"},
@@ -72,16 +72,16 @@ func TestHak(t *testing.T) {
 func TestModCommands(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)
-	t.Setenv("FXMA_CACHE", t.TempDir())
+	t.Setenv("FIXMARGE_CACHE", t.TempDir())
 	cases := []struct {
 		args   []string
 		code   int
 		stderr string
 	}{
-		{args: []string{"werer", "github.com/alice/strs"}, code: 1, stderr: "Nii eXi' fxma.mod"},
+		{args: []string{"werer", "github.com/alice/strs"}, code: 1, stderr: "Nii eXi' fixmarge.mod"},
 		{args: []string{"ado"}, code: 2, stderr: "fiXmArge Script (fxma) の使い方"},
 		{args: []string{"mod", "init", "github.com/me/app"}, code: 0},
-		{args: []string{"ado", "meif", "github.com/me/app"}, code: 1, stderr: "Su·Ready fxma.mod"},
+		{args: []string{"ado", "meif", "github.com/me/app"}, code: 1, stderr: "Su·Ready fixmarge.mod"},
 		{args: []string{"get", "github.com/alice/strs@latest"}, code: 1, stderr: "AyAmis latest"},
 		{args: []string{"ado", "saymal"}, code: 0},
 	}

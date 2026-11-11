@@ -18,7 +18,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
-// Init は fxma ado meif。dir に fxma.mod を作る。neyo fxma は手元の fxma の版から (開発中の版なら *)。
+// Init は fixmarge ado meif。dir に fixmarge.mod を作る。neyo fxma は手元の fxma の版から (開発中の版なら *)。
 func Init(dir, name, fxmaVersion string) error {
 	if _, err := os.Stat(filepath.Join(dir, modfile.Name)); err == nil {
 		return diag.NewUnplaced(diag.SuReady, modfile.Name)
@@ -33,7 +33,7 @@ func Init(dir, name, fxmaVersion string) error {
 	return os.WriteFile(filepath.Join(dir, modfile.Name), f.Format(), 0o644)
 }
 
-// Get は fxma werer <パッケージ>@<版>。版を省くといちばん新しい版。ほかのパッケージの要求で、選ばれる版が上がることもある。
+// Get は fixmarge werer <パッケージ>@<版>。版を省くといちばん新しい版。ほかのパッケージの要求で、選ばれる版が上がることもある。
 func (m *Module) Get(p, version string) (modfile.Version, error) {
 	if version == "" {
 		versions, err := m.Fetcher.Versions(p)
@@ -59,7 +59,7 @@ func (m *Module) Get(p, version string) (modfile.Version, error) {
 	return target, m.save()
 }
 
-// Tidy は fxma ado saymal。ソースの werer から使うパッケージを決め直す。使っていないものは消し、足りないものはいちばん新しい版を足す。
+// Tidy は fixmarge ado saymal。ソースの werer から使うパッケージを決め直す。使っていないものは消し、足りないものはいちばん新しい版を足す。
 func (m *Module) Tidy() error {
 	imports, err := m.imports()
 	if err != nil {
@@ -94,7 +94,7 @@ func (m *Module) Tidy() error {
 	return m.save()
 }
 
-// resolve は roots から使うパッケージを決めて、fxma.mod の neyo と fxma.sum をそれに入れ替える。
+// resolve は roots から使うパッケージを決めて、fixmarge.mod の neyo と fixmarge.sum をそれに入れ替える。
 func (m *Module) resolve(roots []modfile.Version) error {
 	m.previous, m.Sums = m.Sums, Sums{}
 	list, err := m.buildList(roots)
@@ -128,7 +128,7 @@ type importAt struct {
 }
 
 // imports はパッケージの下書き (.fxma) にある、外部パッケージの werer をすべて返す。
-// 隠しフォルダと、別の fxma.mod があるフォルダ (別のパッケージ) には入らない。
+// 隠しフォルダと、別の fixmarge.mod があるフォルダ (別のパッケージ) には入らない。
 func (m *Module) imports() ([]importAt, error) {
 	var out []importAt
 	err := filepath.WalkDir(m.Dir, func(p string, d fs.DirEntry, err error) error {

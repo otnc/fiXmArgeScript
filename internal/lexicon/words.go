@@ -146,7 +146,7 @@ var words = []Word{
 	{"DowGuil", "疑惑", Error | LintRule},
 	{"LaVI", "法の悪魔", Error | Command},
 
-	// fxma lavi の規則
+	// fixmarge lavi の規則
 	{"Was·Da", "無駄", LintRule},
 	{"shi-des", "死", LintRule},
 	{"emBasy", "恥ずかしい", LintRule},
@@ -171,7 +171,7 @@ var words = []Word{
 	{"Per·SemOn", "見世物", Command},
 	{"Trench", "友達", Command},
 
-	// fxma.mod の項目
+	// fixmarge.mod の項目
 	{"MokpOSe", "目的", ModField},
 	{"neYO", "必要", ModField},
 	{"UnneYO", "要らない", ModField},

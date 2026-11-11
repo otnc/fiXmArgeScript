@@ -74,10 +74,10 @@ syntax region fxmaString matchgroup=fxmaStringDelimiter start=/"""/ end=/"""/ co
 	return []byte(b.String())
 }
 
-// VimModFiletype は fxma.mod の Vim のファイルタイプの名前。
+// VimModFiletype は fixmarge.mod の Vim のファイルタイプの名前。
 const VimModFiletype = "fxmamod"
 
-// VimModSyntax は fxma.mod の syntax ファイルを返す。TextMate の ModTextMate と同じく、行の頭の項目名と文字列だけに色を付ける。
+// VimModSyntax は fixmarge.mod の syntax ファイルを返す。TextMate の ModTextMate と同じく、行の頭の項目名と文字列だけに色を付ける。
 func VimModSyntax() []byte {
 	var b strings.Builder
 	b.WriteString(vimHeader)

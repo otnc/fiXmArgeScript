@@ -3,26 +3,26 @@ version: 2
 
 before:
   hooks:
-    # npm/ に wasm_exec.js を写すため。fxma.wasm もできるが、ここでは使わない
+    # npm/ に wasm_exec.js を写すため。fixmarge.wasm もできるが、ここでは使わない
     - node npm/build.mjs
     - sh scripts/third-party-licenses.sh
 
 builds:
-  - id: fxma
-    main: ./cmd/fxma
-    binary: fxma
+  - id: fixmarge
+    main: ./cmd/fixmarge
+    binary: fixmarge
     env:
       - CGO_ENABLED=0
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
     flags: [-trimpath]
-    # fxma neyar は Go が埋め込む版を読むので、-X で版を渡さない
+    # fixmarge neyar は Go が埋め込む版を読むので、-X で版を渡さない
     ldflags: [-s -w]
     mod_timestamp: "{{ .CommitTimestamp }}"
 
   - id: wasm
-    main: ./cmd/fxma-wasm
-    binary: fxma
+    main: ./cmd/fixmarge-wasm
+    binary: fixmarge
     env:
       - CGO_ENABLED=0
     goos: [js]
@@ -32,9 +32,9 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
-  - id: fxma
-    ids: [fxma]
-    name_template: "fxma_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - id: fixmarge
+    ids: [fixmarge]
+    name_template: "fixmarge_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     formats: [tar.gz]
     format_overrides:
       - goos: windows
@@ -47,7 +47,7 @@ archives:
 
   - id: wasm
     ids: [wasm]
-    name_template: "fxma_{{ .Version }}_wasm"
+    name_template: "fixmarge_{{ .Version }}_wasm"
     formats: [zip]
     files:
       - README.md

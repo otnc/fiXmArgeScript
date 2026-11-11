@@ -1,5 +1,5 @@
-// Package modload は fxma.mod と fxma.sum をもとに、外部パッケージの読み込み先を決める。
-// 取得とそろえ直し (fxma werer、fxma ado saymal) もここで行う。
+// Package modload は fixmarge.mod と fixmarge.sum をもとに、外部パッケージの読み込み先を決める。
+// 取得とそろえ直し (fixmarge werer、fixmarge ado saymal) もここで行う。
 package modload
 
 import (
@@ -17,7 +17,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/modfile"
 )
 
-// Module は fxma.mod のあるフォルダ1つ (いま作っているパッケージ)。
+// Module は fixmarge.mod のあるフォルダ1つ (いま作っているパッケージ)。
 type Module struct {
 	Dir     string
 	File    *modfile.File
@@ -27,11 +27,11 @@ type Module struct {
 	FxmaVersion string
 
 	verified map[modfile.Version]bool
-	// previous はそろえ直す前の fxma.sum。取り直したものがこれと合わなければ CraeyTA'。
+	// previous はそろえ直す前の fixmarge.sum。取り直したものがこれと合わなければ CraeyTA'。
 	previous Sums
 }
 
-// Load は dir から上にたどって fxma.mod を探して読む。なければ Nii eXi' fxma.mod。
+// Load は dir から上にたどって fixmarge.mod を探して読む。なければ Nii eXi' fixmarge.mod。
 func Load(dir string, fetcher *modfetch.Fetcher) (*Module, error) {
 	root := modfile.Find(dir)
 	if root == "" {
@@ -56,7 +56,7 @@ func Load(dir string, fetcher *modfetch.Fetcher) (*Module, error) {
 	return &Module{Dir: root, File: f, Sums: sums, Fetcher: fetcher}, nil
 }
 
-// Locate は外部パッケージの読み込み先 importPath を、読むファイルの名前にする。中身が fxma.sum と合うかは確かめない (LSP 用)。
+// Locate は外部パッケージの読み込み先 importPath を、読むファイルの名前にする。中身が fixmarge.sum と合うかは確かめない (LSP 用)。
 // "github.com/alice/strs" のようにパッケージだけなら、名前の最後と同じ strs.fxma を読む。
 // 外部パッケージは清書を実行しているときも下書きを読む (キャッシュは書き換えないため)。
 func (m *Module) Locate(importPath string) (string, modfile.Version, error) {
@@ -74,8 +74,8 @@ func (m *Module) Locate(importPath string) (string, modfile.Version, error) {
 	return filepath.ToSlash(filepath.Join(dir, filepath.FromSlash(rest))) + ".fxma", v, nil
 }
 
-// Resolve は Locate と同じく読むファイルを返すが、置いてある中身が fxma.sum と合うかを先に確かめる (合わなければ CraeyTA')。
-// 取ってきていなければ Nii eXi' (fxma werer で取ってくる)。
+// Resolve は Locate と同じく読むファイルを返すが、置いてある中身が fixmarge.sum と合うかを先に確かめる (合わなければ CraeyTA')。
+// 取ってきていなければ Nii eXi' (fixmarge werer で取ってくる)。
 func (m *Module) Resolve(importPath string) (string, error) {
 	name, v, err := m.Locate(importPath)
 	if err != nil {
@@ -133,7 +133,7 @@ func (m *Module) dir(v modfile.Version) (string, error) {
 	return m.Fetcher.Dir(v)
 }
 
-// save は fxma.mod と fxma.sum を書き出す。
+// save は fixmarge.mod と fixmarge.sum を書き出す。
 func (m *Module) save() error {
 	if err := os.WriteFile(filepath.Join(m.Dir, modfile.Name), m.File.Format(), 0o644); err != nil {
 		return err
@@ -141,10 +141,10 @@ func (m *Module) save() error {
 	return os.WriteFile(filepath.Join(m.Dir, modfile.Sum), m.Sums.Format(), 0o644)
 }
 
-// Sums は fxma.sum の中身。パッケージの版ごとのハッシュ。
+// Sums は fixmarge.sum の中身。パッケージの版ごとのハッシュ。
 type Sums map[modfile.Version]string
 
-// ParseSums は fxma.sum を読む。1行に「パッケージ名 版 ハッシュ」。
+// ParseSums は fixmarge.sum を読む。1行に「パッケージ名 版 ハッシュ」。
 func ParseSums(data []byte) (Sums, error) {
 	sums := Sums{}
 	for i, line := range strings.Split(string(data), "\n") {

@@ -2,7 +2,7 @@
 # fiXmArge Script (fxma) を macOS・Linux に入れる。
 #   curl -fsSL https://fixmargescript.oto.im/install.sh | sh
 #   curl -fsSL https://fixmargescript.oto.im/install.sh | sh -s v0.2.0   (版を選ぶ)
-# 入れる場所は $FXMA_INSTALL/bin (既定は ~/.fxma/bin)。
+# 入れる場所は $FIXMARGE_INSTALL/bin (既定は ~/.fixmarge/bin)。
 #
 # この作品は「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。
 # https://github.com/otnc/fiXmArgeScript
@@ -58,13 +58,13 @@ case "$tag" in
 esac
 version=${tag#v}
 
-archive="fxma_${version}_${os}_${arch}.tar.gz"
+archive="fixmarge_${version}_${os}_${arch}.tar.gz"
 base="https://github.com/$repo/releases/download/$tag"
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
-echo "fxma $tag ($os/$arch) をダウンロードしています..."
+echo "fixmarge $tag ($os/$arch) をダウンロードしています..."
 curl -fsSL -o "$tmp/$archive" "$base/$archive" || fail "$base/$archive をダウンロードできませんでした"
 curl -fsSL -o "$tmp/checksums.txt" "$base/checksums.txt" || fail "checksums.txt をダウンロードできませんでした"
 
@@ -80,17 +80,17 @@ else
 fi
 [ "$actual" = "$expected" ] || fail "ダウンロードしたファイルのハッシュが checksums.txt と一致しません"
 
-root=${FXMA_INSTALL:-$HOME/.fxma}
+root=${FIXMARGE_INSTALL:-$HOME/.fixmarge}
 bin="$root/bin"
 mkdir -p "$bin"
 tar -xzf "$tmp/$archive" -C "$tmp"
-mv "$tmp/fxma" "$bin/fxma"
-chmod +x "$bin/fxma"
+mv "$tmp/fixmarge" "$bin/fixmarge"
+chmod +x "$bin/fixmarge"
 for f in README.md LICENSE-MIT LICENSE-APACHE THIRD_PARTY_LICENSES; do
   mv "$tmp/$f" "$root/$f"
 done
 
-echo "$bin/fxma に入れました"
+echo "$bin/fixmarge に入れました"
 
 # 設定ファイルに書く行は $HOME を展開しないまま書き、ホームの場所が変わっても動くようにする
 case "$bin" in
@@ -100,7 +100,7 @@ esac
 
 case ":$PATH:" in
   *":$bin:"*)
-    echo "fxma neyar で動くか確かめられます"
+    echo "fixmarge neyar で動くか確かめられます"
     exit 0
     ;;
 esac
@@ -136,9 +136,9 @@ if [ -f "$rc" ] && grep -Fqx "$line" "$rc"; then
   :
 else
   mkdir -p "$(dirname "$rc")"
-  printf '\n# fxma\n%s\n' "$line" >>"$rc"
+  printf '\n# fixmarge\n%s\n' "$line" >>"$rc"
   echo "$rc に PATH を足しました"
 fi
-echo "新しいターミナルを開くか、次を実行すると fxma が使えます:"
+echo "新しいターミナルを開くか、次を実行すると fixmarge が使えます:"
 echo
 echo "  source $rc"

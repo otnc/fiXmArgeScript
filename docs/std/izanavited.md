@@ -30,4 +30,4 @@ izanavited no eatahguy("a/b", "a/c")       # "../c"
 - `saymal` と `recanrey` は、Node.jsと同じく最後の `/` を残します。空のパスは `.` です。`chidd(".bashrc")` は、Node.jsと同じく `.` で始まる名前なので空の文字列です。
 - ブラウザ版でも使えます。ブラウザ版の今いる場所は `/` です。
 - `chidd` は、例外の種類を取り出す `e no "chidd"` と同じ語です。拡張子はファイルの種類 (血筋) を表すからです。
-- 名前の多くはほかのパッケージと同じ語です。`recanrey` は `coword` の結合、`saymal` は `fxma ado saymal` (mod tidy) と同じ「整える」、`kuwpace` は `memoid no meifKuwpace` などの「フォルダ」と同じ語です。
+- 名前の多くはほかのパッケージと同じ語です。`recanrey` は `coword` の結合、`saymal` は `fixmarge ado saymal` (mod tidy) と同じ「整える」、`kuwpace` は `memoid no meifKuwpace` などの「フォルダ」と同じ語です。

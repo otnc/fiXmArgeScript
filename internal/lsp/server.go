@@ -1,4 +1,4 @@
-// Package lsp はエディタのための言語サーバー (fxma trench) を持つ。
+// Package lsp はエディタのための言語サーバー (fixmarge trench) を持つ。
 // 診断、整形、補完、ホバー、定義へ移動、色分け (セマンティックトークン) を、字句解析から lint までの部品を組み合わせて出す。
 package lsp
 
@@ -54,7 +54,7 @@ func (s *Server) Initialize(context.Context, *protocol.InitializeParams) (*proto
 				Full:   protocol.Boolean(true),
 			},
 		},
-		ServerInfo: protocol.ServerInfo{Name: "fxma trench", Version: protocol.NewOptional(s.version)},
+		ServerInfo: protocol.ServerInfo{Name: "fixmarge trench", Version: protocol.NewOptional(s.version)},
 	}, nil
 }
 

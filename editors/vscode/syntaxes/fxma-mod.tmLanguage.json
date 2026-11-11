@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "fiXmArge Script (fxma.mod)",
+  "name": "fiXmArge Script (fixmarge.mod)",
   "scopeName": "source.fxma-mod",
   "patterns": [
     {

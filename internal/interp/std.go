@@ -62,7 +62,7 @@ func newStd(funcs map[string]stdDef, consts map[string]Value) *Module {
 	return m
 }
 
-// StdFuncInfo は標準パッケージの関数の性質。実行しないで調べる fxma lavi が使う。
+// StdFuncInfo は標準パッケージの関数の性質。実行しないで調べる fixmarge lavi が使う。
 type StdFuncInfo struct {
 	Abiryoku bool // 入出力をする
 	Itsver   bool // praylee で待つ

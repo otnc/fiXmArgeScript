@@ -1,5 +1,5 @@
 {
-  "name": "fxma-playground",
+  "name": "fixmarge-playground",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "@codemirror/view": "^6.43.15",
     "@lezer/highlight": "^1.2.5",
     "codemirror": "^6.0.2",
-    "fxma": "file:../npm"
+    "fixmarge": "file:../npm"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^2.0.0-beta.v.0",

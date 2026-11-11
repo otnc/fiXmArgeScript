@@ -21,7 +21,7 @@
     "fxmac": "fxma"
   },
   "fileNames": {
-    "fxma.mod": "fxma-mod",
-    "fxma.sum": "fxma-sum"
+    "fixmarge.mod": "fxma-mod",
+    "fixmarge.sum": "fxma-sum"
   }
 }

@@ -69,7 +69,7 @@ func (w *world) publish(path string, releases ...release) {
 	}
 }
 
-// project は fxma.mod と files を置いたフォルダを作って読む。
+// project は fixmarge.mod と files を置いたフォルダを作って読む。
 func (w *world) project(mod string, files map[string]string) *Module {
 	dir := w.t.TempDir()
 	require.NoError(w.t, os.WriteFile(filepath.Join(dir, modfile.Name), []byte(mod), 0o644))
@@ -90,7 +90,7 @@ const strsV2 = "oqun weho shout(s)\n  s + \"!!\" itswa\nfinend\n"
 
 func strsRepo(w *world) {
 	w.publish("github.com/alice/strs",
-		release{"v1.0.0", map[string]string{"fxma.mod": modOf("github.com/alice/strs"), "strs.fxma": strsV1}},
+		release{"v1.0.0", map[string]string{"fixmarge.mod": modOf("github.com/alice/strs"), "strs.fxma": strsV1}},
 		release{"v1.1.0", map[string]string{"strs.fxma": strsV2, "case.fxma": "oqun showence upper izu 1\n"}},
 	)
 }
@@ -170,15 +170,15 @@ func TestMinimalVersionSelection(t *testing.T) {
 	w := newWorld(t)
 	strsRepo(w)
 	w.publish("github.com/bob/util", release{"v0.2.0", map[string]string{
-		"fxma.mod":  modOf("github.com/bob/util", "", "neyo github.com/alice/strs v1.1.0"),
-		"util.fxma": "\"github.com/alice/strs\" aste strs werer\noqun weho loud(s)\n  strs no shout(s) itswa\nfinend\n",
+		"fixmarge.mod": modOf("github.com/bob/util", "", "neyo github.com/alice/strs v1.1.0"),
+		"util.fxma":    "\"github.com/alice/strs\" aste strs werer\noqun weho loud(s)\n  strs no shout(s) itswa\nfinend\n",
 	}})
 	m := w.project("ado github.com/me/app\n\nneyo github.com/alice/strs v1.0.0\n", nil)
 	_, err := m.Get("github.com/bob/util", "")
 	require.NoError(t, err)
 	mod, sum := readMod(t, m)
 	require.Contains(t, mod, "neyo github.com/alice/strs v1.1.0\nneyo github.com/bob/util v0.2.0\n")
-	// たどった版 (v1.0.0 も) の中身を確かめるため、fxma.sum には選ばれなかった版も残る。
+	// たどった版 (v1.0.0 も) の中身を確かめるため、fixmarge.sum には選ばれなかった版も残る。
 	require.Contains(t, sum, "github.com/alice/strs v1.0.0 ")
 	require.Contains(t, sum, "github.com/alice/strs v1.1.0 ")
 }
@@ -195,13 +195,13 @@ func TestExcludeSkipsToNextVersion(t *testing.T) {
 func TestPackageNeedsLicenseAndFxmaRange(t *testing.T) {
 	w := newWorld(t)
 	w.publish("github.com/eve/nolicense", release{"v1.0.0", map[string]string{
-		"fxma.mod": "ado github.com/eve/nolicense\nneyo fxma *\n", "nolicense.fxma": "",
+		"fixmarge.mod": "ado github.com/eve/nolicense\nneyo fxma *\n", "nolicense.fxma": "",
 	}})
 	w.publish("github.com/eve/badlicense", release{"v1.0.0", map[string]string{
-		"fxma.mod": "ado github.com/eve/badlicense\nneyo fxma *\nforyulvu NOT-A-LICENSE\n", "badlicense.fxma": "",
+		"fixmarge.mod": "ado github.com/eve/badlicense\nneyo fxma *\nforyulvu NOT-A-LICENSE\n", "badlicense.fxma": "",
 	}})
 	w.publish("github.com/eve/future", release{"v1.0.0", map[string]string{
-		"fxma.mod": "ado github.com/eve/future\nneyo fxma >=9.0.0\nforyulvu MIT OR Apache-2.0\n", "future.fxma": "",
+		"fixmarge.mod": "ado github.com/eve/future\nneyo fxma >=9.0.0\nforyulvu MIT OR Apache-2.0\n", "future.fxma": "",
 	}})
 	m := w.project("ado github.com/me/app\n", nil)
 	m.FxmaVersion = "v0.1.0"
@@ -211,7 +211,7 @@ func TestPackageNeedsLicenseAndFxmaRange(t *testing.T) {
 	require.Equal(t, diag.AyAmis, kindOf(err))
 	_, err = m.Get("github.com/eve/future", "")
 	require.Equal(t, diag.CaNay, kindOf(err))
-	require.EqualError(t, err, "Ca-nay github.com/eve/future@v1.0.0/fxma.mod:2:1 >=9.0.0")
+	require.EqualError(t, err, "Ca-nay github.com/eve/future@v1.0.0/fixmarge.mod:2:1 >=9.0.0")
 
 	m.FxmaVersion = "v0.0.0-20261109000000-abcdefabcdef"
 	_, err = m.Get("github.com/eve/future", "")
@@ -248,7 +248,7 @@ func TestResolveNotDownloaded(t *testing.T) {
 func TestTidy(t *testing.T) {
 	w := newWorld(t)
 	strsRepo(w)
-	w.publish("github.com/bob/util", release{"v0.2.0", map[string]string{"fxma.mod": modOf("github.com/bob/util"), "util.fxma": ""}})
+	w.publish("github.com/bob/util", release{"v0.2.0", map[string]string{"fixmarge.mod": modOf("github.com/bob/util"), "util.fxma": ""}})
 	m := w.project("ado github.com/me/app\n\nneyo github.com/bob/util v0.2.0\n", map[string]string{
 		"main.fxma":   "\"github.com/alice/strs\" aste strs werer\n\"./lib\" aste lib werer\n",
 		"lib.fxma":    "\"github.com/alice/strs/case\" no upper werer\n\"fxma:meme\" aste meme werer\n",

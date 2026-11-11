@@ -2,7 +2,7 @@ import { basicSetup, EditorView } from "codemirror";
 import { HighlightStyle, indentUnit, syntaxHighlighting } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
 import { tags } from "@lezer/highlight";
-import { build, run, words } from "fxma";
+import { build, run, words } from "fixmarge";
 
 import sample from "../../examples/fizzbuzz.fxma?raw";
 import { fxmaLanguage } from "./language.js";
