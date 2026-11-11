@@ -7,6 +7,7 @@ import (
 
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/modpath"
 	"github.com/otnc/fiXmArgeScript/internal/scope"
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
@@ -101,7 +102,7 @@ func (d *document) classifyIdent(t token.Token) (typ, mods int) {
 		return typeVariable, mods
 	}
 	if m, ok := d.member(t.Pos); ok {
-		if pkg, isStd := strings.CutPrefix(m.Module.Path, "fxma:"); isStd {
+		if pkg, isStd := strings.CutPrefix(m.Module.Path, modpath.StdPrefix); isStd {
 			if _, isFunc := interp.StdFunc(lexicon.Skeleton(pkg), m.Name); isFunc {
 				return typeFunction, modDefaultLibrary
 			}

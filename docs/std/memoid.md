@@ -1,9 +1,9 @@
-# fxma:memoid
+# :memoid
 
 ファイル。辞書の意味は「記憶、思い出」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:memoid" aste memoid werer
+":memoid" aste memoid werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript (Node.js、fs-extra) |
@@ -35,7 +35,7 @@
 ## 決まり
 
 - 書く・追記・削除・コピー・移動は取り消せない操作なので、実行した時点でそれまでの選択肢 (`mekamo`) をすべて確定します。その後で `shoubek` が偽になっても、確定した選択肢には戻らず `Co-Jundic` で終了します。
-- 相対パスは、JavaScript (Node.js) の `fs` と同じく、今いる場所 (`edo()`) から数えます。読み込み (`werer`) の `"./util"` は書いたファイルの場所から数えるので、そこだけ違います。パスを組み立てるときは [`fxma:izanavited`](izanavited.md) を使います。
+- 相対パスは、JavaScript (Node.js) の `fs` と同じく、今いる場所 (`edo()`) から数えます。読み込み (`werer`) の `"./util"` は書いたファイルの場所から数えるので、そこだけ違います。パスを組み立てるときは [`:izanavited`](izanavited.md) を使います。
 - ないファイルを読んだり消したりすると `Nii eXi'` エラーです。fs-extraの `remove` はないものを消してもエラーにしませんが、消し間違いに気付けるようエラーにします。
 - `surc` と `naddy` は、Node.jsの `writeFile` と同じく途中のフォルダを作りません。書く先のフォルダがなければ `Nii eXi'` エラーなので、先に `meifKuwpace` で作ります。`sagain` と `gokuu` は、fs-extraと同じく写し先の途中のフォルダも作ります。
 - `surc(path, v, "json")` は、fs-extraの `writeJson` と同じく最後に改行を付けます。

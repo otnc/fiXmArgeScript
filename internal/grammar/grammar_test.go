@@ -17,7 +17,7 @@ func TestUpToDate(t *testing.T) {
 	mod, err := ModTextMate()
 	require.NoError(t, err)
 	files := map[string][]byte{
-		filepath.Join("autoload", "fxma", "words.vim"):          VimWords(),
+		filepath.Join("autoload", "fixmarge", "words.vim"):      VimWords(),
 		filepath.Join("editors", "vscode", "syntaxes", ModFile): mod,
 		filepath.Join("syntax", VimModFiletype+".vim"):          VimModSyntax(),
 	}

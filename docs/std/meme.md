@@ -1,9 +1,9 @@
-# fxma:meme
+# :meme
 
 数学。辞書の意味は「意味、価値」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:meme" aste meme werer
+":meme" aste meme werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript |

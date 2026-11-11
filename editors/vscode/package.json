@@ -21,60 +21,60 @@
   "contributes": {
     "languages": [
       {
-        "id": "fxma",
-        "aliases": ["fiXmArge Script", "fxma"],
+        "id": "fixmarge",
+        "aliases": ["fiXmArge Script", "fixmarge"],
         "extensions": [".fxma"],
-        "configuration": "./fxma.language-configuration.json",
-        "icon": { "light": "./icons/fxma.svg", "dark": "./icons/fxma.svg" }
+        "configuration": "./fixmarge.language-configuration.json",
+        "icon": { "light": "./icons/fixmarge.svg", "dark": "./icons/fixmarge.svg" }
       },
       {
-        "id": "fxmac",
-        "aliases": ["fiXmArge Script (清書)", "fxmac"],
+        "id": "fixmargec",
+        "aliases": ["fiXmArge Script (清書)", "fixmargec"],
         "extensions": [".fxmac"],
-        "configuration": "./fxmac.language-configuration.json",
-        "icon": { "light": "./icons/fxma.svg", "dark": "./icons/fxma.svg" }
+        "configuration": "./fixmargec.language-configuration.json",
+        "icon": { "light": "./icons/fixmarge.svg", "dark": "./icons/fixmarge.svg" }
       },
       {
-        "id": "fxma-mod",
+        "id": "fixmarge-mod",
         "aliases": ["fiXmArge Script (fixmarge.mod)"],
         "filenames": ["fixmarge.mod"],
-        "icon": { "light": "./icons/fxma-mod.svg", "dark": "./icons/fxma-mod.svg" }
+        "icon": { "light": "./icons/fixmarge-mod.svg", "dark": "./icons/fixmarge-mod.svg" }
       },
       {
-        "id": "fxma-sum",
+        "id": "fixmarge-sum",
         "aliases": ["fiXmArge Script (fixmarge.sum)"],
         "filenames": ["fixmarge.sum"],
-        "icon": { "light": "./icons/fxma-sum.svg", "dark": "./icons/fxma-sum.svg" }
+        "icon": { "light": "./icons/fixmarge-sum.svg", "dark": "./icons/fixmarge-sum.svg" }
       }
     ],
     "iconThemes": [
       {
-        "id": "fxma-icons",
+        "id": "fixmarge-icons",
         "label": "fiXmArge Script のファイルアイコン (補助)",
-        "path": "./icons/fxma-icon-theme.json"
+        "path": "./icons/fixmarge-icon-theme.json"
       }
     ],
     "grammars": [
       {
-        "language": "fxma",
-        "scopeName": "source.fxma",
-        "path": "./syntaxes/fxma.tmLanguage.json"
+        "language": "fixmarge",
+        "scopeName": "source.fixmarge",
+        "path": "./syntaxes/fixmarge.tmLanguage.json"
       },
       {
-        "language": "fxmac",
-        "scopeName": "source.fxmac",
-        "path": "./syntaxes/fxmac.tmLanguage.json"
+        "language": "fixmargec",
+        "scopeName": "source.fixmargec",
+        "path": "./syntaxes/fixmargec.tmLanguage.json"
       },
       {
-        "language": "fxma-mod",
-        "scopeName": "source.fxma-mod",
-        "path": "./syntaxes/fxma-mod.tmLanguage.json"
+        "language": "fixmarge-mod",
+        "scopeName": "source.fixmarge-mod",
+        "path": "./syntaxes/fixmarge-mod.tmLanguage.json"
       }
     ],
     "configuration": {
       "title": "fiXmArge Script",
       "properties": {
-        "fxma.path": {
+        "fixmarge.path": {
           "type": "string",
           "default": "fixmarge",
           "markdownDescription": "言語サーバー (`fixmarge trench`) として動かす `fixmarge` の場所。既定では `PATH` から探します。"

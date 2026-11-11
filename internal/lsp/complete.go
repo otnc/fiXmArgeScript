@@ -9,6 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 	"github.com/otnc/fiXmArgeScript/internal/lexer"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/modpath"
 	"github.com/otnc/fiXmArgeScript/internal/scope"
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
@@ -74,7 +75,7 @@ func isWordByte(c byte) bool {
 
 func (s *Server) memberItems(d *document, m *scope.Binding) []protocol.CompletionItem {
 	var items []protocol.CompletionItem
-	if pkg, isStd := strings.CutPrefix(m.Path, "fxma:"); isStd {
+	if pkg, isStd := strings.CutPrefix(m.Path, modpath.StdPrefix); isStd {
 		pkg = lexicon.Skeleton(pkg)
 		for _, name := range interp.StdMembers(pkg) {
 			kind := protocol.CompletionItemKindConstant
@@ -158,7 +159,7 @@ func (d *document) hover(p protocol.Position) (string, protocol.Range, bool) {
 		return "", protocol.Range{}, false
 	}
 	if b, ok := d.refs[t.Pos]; ok && t.Kind == token.Ident {
-		return "```fxma\n" + b.Name + "\n```\n" + kindLabel(b), d.tokenRange(t), true
+		return "```fixmarge\n" + b.Name + "\n```\n" + kindLabel(b), d.tokenRange(t), true
 	}
 	name := t.Name
 	if m, ok := d.member(t.Pos); ok {

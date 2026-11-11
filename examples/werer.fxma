@@ -1,6 +1,6 @@
 # 標準パッケージと、自分で書いたファイルを読み込む
-"fxma:coword" aste coword werer
-"fxma:varizama" aste varizama werer
+":coword" aste coword werer
+":varizama" aste varizama werer
 "./lib/stats" no average werer
 
 scores izu [72, 95, 88, 61]

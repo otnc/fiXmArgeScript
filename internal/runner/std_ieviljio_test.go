@@ -61,7 +61,7 @@ func fakeProcess(spawned *int) *interp.Process {
 }
 
 func TestStdIeviljio(t *testing.T) {
-	head := "\"fxma:ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\n"
+	head := "\":ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\n"
 	var spawned int
 	cases := []testCase{
 		{name: "info", src: head + "dv no \"conwa\" redogh\ndv no \"lowhell\" no \"HOME\" redogh\ndv no \"ieviljio\" redogh\ndv no \"wid\" redogh\ndv no \"neyar\" redogh\n", stdout: "[\"a\", \"b\"]\n/home/x\n7\nlinux\nv0.1.0\n"},
@@ -75,7 +75,7 @@ func TestStdIeviljio(t *testing.T) {
 		{name: "unknown option", src: head + "dv no \"meif\"(\"a\", [], {\"zzz\": 1})\n", err: diag.NiiExi},
 		{name: "exit skips ennote", src: head + "teitance\n  \"before\" redogh\n  dv no \"shid\"(3)\nyoulugive e\n  \"caught\" redogh\nennote\n  \"ennote\" redogh\nfinend\n", stdout: "before\n", exit: 3},
 		{name: "needs abiryoku", src: head + "weho f()\n  ieviljio no diviljio()\nfinend\nf()\n", err: diag.KiNbOO},
-		{name: "no spawn in browser", src: "\"fxma:ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\ndv no \"meif\"(\"a\", [])\n", err: diag.CaNay},
+		{name: "no spawn in browser", src: "\":ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\ndv no \"meif\"(\"a\", [])\n", err: diag.CaNay},
 	}
 	for _, c := range cases {
 		if c.name != "no spawn in browser" {
@@ -90,7 +90,7 @@ func TestWitchNotRespawnedOnBacktrack(t *testing.T) {
 	var spawned int
 	runCase(t, testCase{
 		name:   "respawn",
-		src:    "\"fxma:ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\nr izu dv no \"meif\"(\"a\", []) praylee\nx izu 1 owk 2 mekamo\nx senaji 2 shoubek\nr no \"shid\" redogh\n",
+		src:    "\":ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\nr izu dv no \"meif\"(\"a\", []) praylee\nx izu 1 owk 2 mekamo\nx senaji 2 shoubek\nr no \"shid\" redogh\n",
 		stdout: "0\n",
 		proc:   fakeProcess(&spawned),
 	})

@@ -1,9 +1,9 @@
-# fxma:varizama
+# :varizama
 
 配列。辞書の意味は「様々」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:varizama" aste varizama werer
+":varizama" aste varizama werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript |

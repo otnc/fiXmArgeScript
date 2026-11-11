@@ -45,7 +45,7 @@ WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と
 
 VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
 
-Vim と Neovim では、このリポジトリをそのままプラグインとして入れられます (lazy.nvim なら `{ 'otnc/fiXmArgeScript' }`)。Neovim 0.11 からは `vim.lsp.enable('fxma')` で言語サーバーにつながります。詳しくは [doc/fxma.txt](doc/fxma.txt) (`:help fxma`) にあります。
+Vim と Neovim では、このリポジトリをそのままプラグインとして入れられます (lazy.nvim なら `{ 'otnc/fiXmArgeScript' }`)。Neovim 0.11 からは `vim.lsp.enable('fixmarge')` で言語サーバーにつながります。詳しくは [doc/fixmarge.txt](doc/fixmarge.txt) (`:help fixmarge`) にあります。
 
 ## ライセンス
 

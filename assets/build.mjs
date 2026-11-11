@@ -156,7 +156,7 @@ function fileIcon(badge) {
 `;
 }
 
-// VS Code の補助のアイコンテーマ。ほかのファイルには何も付けないので、fxma のファイルだけを見分けたいときに選ぶ。
+// VS Code の補助のアイコンテーマ。ほかのファイルには何も付けないので、fiXmArge Script のファイルだけを見分けたいときに選ぶ。
 function iconTheme(files) {
   const theme = { iconDefinitions: {}, languageIds: {}, fileExtensions: {}, fileNames: {} };
   for (const f of files) {
@@ -211,12 +211,12 @@ console.log("cmd/fixmarge/rsrc_windows_{amd64,arm64}.syso");
 
 // 言語の ID とファイルの名前は editors/vscode/package.json の languages と合わせる。
 const files = [
-  { id: "fxma", language: "fxma", extensions: ["fxma"] },
-  { id: "fxma", language: "fxmac", extensions: ["fxmac"] },
-  { id: "fxma-mod", language: "fxma-mod", fileNames: ["fixmarge.mod"], badge: "box" },
-  { id: "fxma-sum", language: "fxma-sum", fileNames: ["fixmarge.sum"], badge: "key" },
+  { id: "fixmarge", language: "fixmarge", extensions: ["fxma"] },
+  { id: "fixmarge", language: "fixmargec", extensions: ["fxmac"] },
+  { id: "fixmarge-mod", language: "fixmarge-mod", fileNames: ["fixmarge.mod"], badge: "box" },
+  { id: "fixmarge-sum", language: "fixmarge-sum", fileNames: ["fixmarge.sum"], badge: "key" },
 ];
 for (const f of new Map(files.map((f) => [f.id, f])).values()) {
   write(`editors/vscode/icons/${f.id}.svg`, fileIcon(f.badge));
 }
-write("editors/vscode/icons/fxma-icon-theme.json", iconTheme(files));
+write("editors/vscode/icons/fixmarge-icon-theme.json", iconTheme(files));

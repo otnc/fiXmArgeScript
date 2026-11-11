@@ -1,11 +1,11 @@
-# fxma:ieviljio
+# :ieviljio
 
 プロセス。辞書の意味は「魔女」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 この言語ではプロセスを「魔女」と呼びます。実行中のプログラム自身は「大魔女」で、`diviljio()` で取り出します。大魔女は魔女を生み、魔女を殺す力をただ一人持ちます。Node.jsの `process` に当たります。
 
 ```
-"fxma:ieviljio" aste ieviljio werer
+":ieviljio" aste ieviljio werer
 dv izu ieviljio no diviljio()
 ```
 
@@ -21,11 +21,11 @@ dv izu ieviljio no diviljio()
 | `dv no "shid"(番号, 道連れ)` | `shid` | 死んだ | 終了コードを付けて終了する。`道連れ` は省ける | `process.exit()` |
 | `dv no "ieviljio"` | `ievil JIO` | 魔女 | プロセス番号 (魔女の番号) | `process.pid` |
 | `dv no "wid"` | `WiD` | 世界 | 動いている環境の名前。値は下の表 | `process.platform` |
-| `dv no "neyar"` | `nEYar` | 年 | fxmaの版 (`fixmarge neyar` と同じ語) | `process.version` |
+| `dv no "neyar"` | `nEYar` | 年 | fixmargeの版 (`fixmarge neyar` と同じ語) | `process.version` |
 
 ## 動いている環境
 
-`dv no "wid"` の値は、Goの `GOOS` をそのまま使わず、fxmaで決めた一覧から返します。WebAssembly版はブラウザでもNode.jsでも `GOOS=js` になり、区別できないためです。
+`dv no "wid"` の値は、Goの `GOOS` をそのまま使わず、fiXmArge Scriptで決めた一覧から返します。WebAssembly版はブラウザでもNode.jsでも `GOOS=js` になり、区別できないためです。
 
 | 値 | 環境 | 決め方 |
 | --- | --- | --- |
@@ -108,4 +108,4 @@ cleanup(dv no "alte", dv no "murm")
 - `dv no "shid"` で終了するとき、まだ生きている魔女も一緒に止めます。2つ目の引数に `ulieso` を渡すと、魔女を残して終了します (`dv no "shid"(0, ulieso)`)。
 - シグナルの名前は、Node.jsの `process.on` と同じく `"SIGINT"`、`"SIGTERM"`、`"SIGHUP"`、`"SIGQUIT"` のように書きます。知らない名前は `Nii eXi'` エラーです。
 - ブラウザ版では、`meif`・`murm`・`nozuki`・`shid` が `Ca-nay` エラーです。`diviljio` と情報の取り出しは使えます。
-- 前の版にあった `fxma:wid` は廃止し、引数・環境変数・終了は大魔女に移しました。
+- 前の版にあった `:wid` は廃止し、引数・環境変数・終了は大魔女に移しました。

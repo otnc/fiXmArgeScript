@@ -1,9 +1,9 @@
-# fxma:keyga
+# :keyga
 
 暗号。辞書の意味は「鍵」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:keyga" aste keyga werer
+":keyga" aste keyga werer
 ```
 
 | 書き方 | 中身 | JavaScript (Node.js) |

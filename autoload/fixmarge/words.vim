@@ -1,9 +1,9 @@
 " 語の表 (internal/lexicon) から internal/grammar が作る。手で直さず FXMA_UPDATE=1 go test ./internal/grammar/ で書き直す。
 scriptencoding utf-8
 
-" ブロックを開く語・閉じる語・区切る語の正規表現。ファイルタイプ (fxma か fxmac) ごとに返す。
-function! fxma#words#Block(filetype) abort
-  if a:filetype ==# 'fxmac'
+" ブロックを開く語・閉じる語・区切る語の正規表現。ファイルタイプ (fixmarge か fixmargec) ごとに返す。
+function! fixmarge#words#Block(filetype) abort
+  if a:filetype ==# 'fixmargec'
     return {
     \ 'opener': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(Tei-Tance\|aZaGara\|sent-ky\|We-Ho\|cUrOi\|Mof\)\w\@!',
     \ 'continued': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(SiVa\)\w\@!\s\+\C\%([[:alnum:]_''’~·-]\)\@<!\%(Mof\)\w\@!',
@@ -20,8 +20,8 @@ function! fxma#words#Block(filetype) abort
 endfunction
 
 " 行の頭に来たら1段浅く書く語。打ち終えたら字下げし直す (indentkeys)。
-function! fxma#words#Dedent(filetype) abort
-  if a:filetype ==# 'fxmac'
+function! fixmarge#words#Dedent(filetype) abort
+  if a:filetype ==# 'fixmargec'
     return ['FineNd', 'SiVa', 'yOuLugiVe', 'En-NOte']
   endif
   return ['finend', 'siva', 'youlugive', 'ennote']

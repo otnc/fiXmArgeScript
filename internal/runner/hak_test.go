@@ -67,8 +67,8 @@ func TestHak(t *testing.T) {
 		{text: "[f(), c]\n", stdout: "[2, 2]\n"},
 		{text: "weho g()\nfinend\nweho g()\nfinend\n", err: diag.SuReady},
 		{text: "c izu 3\n", err: diag.BlasTOac},
-		{text: "\"fxma:meme\" aste m werer\n"},
-		{text: "\"fxma:coword\" aste m werer\n"},
+		{text: "\":meme\" aste m werer\n"},
+		{text: "\":coword\" aste m werer\n"},
 	})
 	runHak(t, "unfinished", "", []hakStep{
 		{text: "mof tadact\n", err: diag.AyAmis},

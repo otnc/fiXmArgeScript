@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// toimPackage は fxma:toim (時間)。docs/std/toim.md。
+// toimPackage は :toim (時間)。docs/std/toim.md。
 // 時刻は 1970年1月1日 (UTC) からのミリ秒の整数で表す (JavaScript の Date.now)。
 func toimPackage() *Module {
 	return newStd(map[string]stdDef{

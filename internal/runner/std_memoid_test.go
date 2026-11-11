@@ -29,7 +29,7 @@ func notExists(name string) func(t *testing.T, fsys afero.Fs) {
 }
 
 func TestStdMemoid(t *testing.T) {
-	head := "\"fxma:memoid\" aste memoid werer\n"
+	head := "\":memoid\" aste memoid werer\n"
 	cases := []testCase{
 		{name: "read", src: head + "memoid no fineclowt(\"a.txt\") redogh\nmemoid no fineclowt(\"/work/a.txt\", \"sanand\") redogh\n", disk: map[string]string{"a.txt": "魔女"}, stdout: "魔女\nsAnAnd(\"e9ad94e5a5b3\", \"hex\")\n"},
 		{name: "read json", src: head + "d izu memoid no fineclowt(\"d.json\", \"json\")\nd no \"k\" redogh\n", disk: map[string]string{"d.json": "{\"k\": [1, 2]}"}, stdout: "[1, 2]\n"},

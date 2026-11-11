@@ -1,9 +1,9 @@
-# fxma:toim
+# :toim
 
 時間。辞書の意味は「時間」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:toim" aste toim werer
+":toim" aste toim werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript |

@@ -44,14 +44,14 @@ func connect(t *testing.T) (protocol.Server, *editor) {
 	return server, e
 }
 
-const util = `"fxma:meme" aste meme werer
+const util = `":meme" aste meme werer
 
 oqun weho average(xs)
   meme no zelln(xs) / nang(xs) itswa
 finend
 `
 
-const main = `"fxma:coword" aste coword werer
+const main = `":coword" aste coword werer
 "./util" no average werer
 "./util" aste util werer
 
@@ -67,7 +67,7 @@ func open(t *testing.T, server protocol.Server, e *editor, path, text string) []
 	t.Helper()
 	require.NoError(t, os.WriteFile(path, []byte(text), 0o644))
 	err := server.DidOpen(t.Context(), &protocol.DidOpenTextDocumentParams{
-		TextDocument: protocol.TextDocumentItem{URI: uri.File(path), LanguageID: "fxma", Text: text},
+		TextDocument: protocol.TextDocumentItem{URI: uri.File(path), LanguageID: "fixmarge", Text: text},
 	})
 	require.NoError(t, err)
 	p := <-e.diagnostics
@@ -93,7 +93,7 @@ func setup(t *testing.T) (protocol.Server, *editor, string, string) {
 	for _, d := range diags {
 		require.Equal(t, protocol.String(lexicon.Spell("wasda")), d.Code)
 	}
-	require.Equal(t, protocol.Range{Start: protocol.Position{Line: 0, Character: 19}, End: protocol.Position{Line: 0, Character: 25}}, diags[0].Range)
+	require.Equal(t, protocol.Range{Start: protocol.Position{Line: 0, Character: 15}, End: protocol.Position{Line: 0, Character: 21}}, diags[0].Range)
 	require.Equal(t, protocol.Range{Start: protocol.Position{Line: 7}, End: protocol.Position{Line: 7, Character: 6}}, diags[1].Range)
 	return server, e, mainPath, utilPath
 }
@@ -162,7 +162,7 @@ func TestCompletion(t *testing.T) {
 func TestCompletionStdMembers(t *testing.T) {
 	server, e := connect(t)
 	path := filepath.Join(t.TempDir(), "main.fxma")
-	open(t, server, e, path, "\"fxma:coword\" aste coword werer\ncoword no c\n")
+	open(t, server, e, path, "\":coword\" aste coword werer\ncoword no c\n")
 	got, err := server.Completion(t.Context(), &protocol.CompletionParams{TextDocumentPositionParams: at(path, 1, 11)})
 	require.NoError(t, err)
 	require.Contains(t, labels(t, got), "confsoy")

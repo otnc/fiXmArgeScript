@@ -20,7 +20,7 @@ func readFrom(files map[string]string) func(string) ([]byte, error) {
 
 func TestProject(t *testing.T) {
 	files := map[string]string{
-		"app/main.fxma":  "\"./lib/a\" aste a werer\n\"fxma:meme\" aste meme werer\n",
+		"app/main.fxma":  "\"./lib/a\" aste a werer\n\":meme\" aste meme werer\n",
 		"app/lib/a.fxma": "\"../b\" no f werer\n\"./c\" aste c werer\n",
 		"app/b.fxma":     "oqun weho f()\nfinend\n",
 		"app/lib/c.fxma": "\"../b\" aste b werer\n",

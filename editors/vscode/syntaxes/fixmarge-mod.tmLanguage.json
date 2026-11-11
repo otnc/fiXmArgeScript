@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "fiXmArge Script (fixmarge.mod)",
-  "scopeName": "source.fxma-mod",
+  "scopeName": "source.fixmarge-mod",
   "patterns": [
     {
       "include": "#field"
@@ -15,12 +15,12 @@
       "match": "^\\s*\\b((?i:youlugive|foryulvu|mokpose|lainei|unneyo|neyo|ado))\\b",
       "captures": {
         "1": {
-          "name": "keyword.other.fxma-mod"
+          "name": "keyword.other.fixmarge-mod"
         }
       }
     },
     "string": {
-      "name": "string.quoted.double.fxma-mod",
+      "name": "string.quoted.double.fixmarge-mod",
       "match": "\"(?:[^\"\\\\]|\\\\.)*\""
     }
   }

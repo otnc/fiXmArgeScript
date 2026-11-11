@@ -1,9 +1,9 @@
-# fxma:izanavited
+# :izanavited
 
 パス。辞書の意味は「導かれた」。パスに導かれてファイルにたどり着く、という見立てです。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:izanavited" aste izanavited werer
+":izanavited" aste izanavited werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript (Node.js) |

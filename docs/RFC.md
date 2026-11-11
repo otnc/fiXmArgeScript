@@ -759,7 +759,7 @@ try {
 フィクスマージ語 (ソース):
 
 ```
-"fxma:toim" aste toim werer
+":toim" aste toim werer
 
 itsver abiryoku weho greet(name)
   toim no saimoku(1000) praylee
@@ -934,7 +934,7 @@ lainei github.com/bob/util ../util
 
 ## 標準パッケージ
 
-標準パッケージは `"fxma:名前"` で読み込みます (`"fxma:meme" aste meme werer`)。各パッケージの仕様は [std/README.md](std/README.md) から、パッケージごとのファイルに分けて書いています。
+標準パッケージは `":名前"` で読み込みます (`":meme" aste meme werer`)。各パッケージの仕様は [std/README.md](std/README.md) から、パッケージごとのファイルに分けて書いています。
 
 ### 組み込み (読み込み不要)
 
@@ -1064,7 +1064,7 @@ Nii eXi' main.fxma:3:5 cnt
 - ブロックや括弧が閉じていないなど、入力が途中で終わっていたら `... ` を出して続きの行を待ちます。続きを待っているときに空行を打つと、そこまでで読んでエラーを出します (Pythonと同じ)。
 - エラーになった入力は、なかったことにします。その入力で代入した変数は前の値に戻ります。ただし、もう出した出力と、ファイルを書く、入力を読むなどの外の世界とのやり取りは戻りません。
 - エラーの場所は `hak:<行>:<列>` です。行は始めてからの通し番号で、なかったことにした入力の行も数えます。
-- 入力の終わり (macOSとLinuxでは Ctrl+D、Windowsでは Ctrl+Z の後に Enter) か、`fxma:ieviljio` の `shid` で終わります。
+- 入力の終わり (macOSとLinuxでは Ctrl+D、Windowsでは Ctrl+Z の後に Enter) か、`:ieviljio` の `shid` で終わります。
 
 ### 整形 (fixmarge beaukshi)
 
@@ -1158,9 +1158,9 @@ Nii eXi' main.fxma:3:5 cnt
 
 名前の解決 (どの名前がどの定義を指すか) は、実行時と同じ規則を `fixmarge lavi` と共有します。
 
-VS Code拡張 (`editors/vscode`) は、色分けの土台にTextMate文法を持ち、ほかは言語サーバーに任せます。TextMate文法は語の表から生成するので、`fixmarge` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fxma` と `fxmac`) と別の文法にします。言語サーバーは `PATH` の `fixmarge` を動かし、設定 `fxma.path` で場所を変えられます。見つからなければ `Nii eXi' fixmarge` と出します。
+VS Code拡張 (`editors/vscode`) は、色分けの土台にTextMate文法を持ち、ほかは言語サーバーに任せます。TextMate文法は語の表から生成するので、`fixmarge` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fixmarge` と `fixmargec`) と別の文法にします。言語サーバーは `PATH` の `fixmarge` を動かし、設定 `fixmarge.path` で場所を変えられます。見つからなければ `Nii eXi' fixmarge` と出します。
 
-Neovim・Vimのプラグインは、リポジトリの直下に置き (`ftdetect/`・`ftplugin/`・`indent/`・`syntax/`・`autoload/`・`lsp/`・`doc/`)、リポジトリそのものをプラグインとして入れられるようにします。中身はVS Code拡張と同じく、ファイルタイプ (`fxma` と `fxmac`)、語の表から生成する色分け、`fixmarge beaukshi` と同じ字下げです。言語サーバーは、Neovim 0.11からは `lsp/fxma.lua` を置くので `vim.lsp.enable('fxma')` でつながります。勝手にはつなぎません (nvim-lspconfigと同じ)。Vimには言語サーバーをつなぐ機能が組み込まれていないので、yegappan/lspとvim-lspの設定の例をヘルプ (`:help fxma`) に書きます。
+Neovim・Vimのプラグインは、リポジトリの直下に置き (`ftdetect/`・`ftplugin/`・`indent/`・`syntax/`・`autoload/`・`lsp/`・`doc/`)、リポジトリそのものをプラグインとして入れられるようにします。中身はVS Code拡張と同じく、ファイルタイプ (`fixmarge` と `fixmargec`)、語の表から生成する色分け、`fixmarge beaukshi` と同じ字下げです。言語サーバーは、Neovim 0.11からは `lsp/fixmarge.lua` を置くので `vim.lsp.enable('fixmarge')` でつながります。勝手にはつなぎません (nvim-lspconfigと同じ)。Vimには言語サーバーをつなぐ機能が組み込まれていないので、yegappan/lspとvim-lspの設定の例をヘルプ (`:help fixmarge`) に書きます。
 
 ## 配布
 
@@ -1220,7 +1220,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 `GOOS=js GOARCH=wasm` で `fixmarge.wasm` を作り、Go付属の `wasm_exec.js` と組み合わせて配ります。
 
 - **Releases**: `fixmarge_<版>_wasm.zip` に `fixmarge.wasm`、`wasm_exec.js`、`README.md`、ライセンス類を入れる。
-- **npm**: パッケージ `fxma` として公開し、JavaScriptから `run(source, { stdin, files, args })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`files` は名前と中身の組で、`werer` でも `fxma:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
+- **npm**: パッケージ `fixmarge` として公開し、JavaScriptから `run(source, { stdin, files, args })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`files` は名前と中身の組で、`werer` でも `:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
 - **プレイグラウンド**: Cloudflare Workersの静的アセットとして https://fixmargescript.oto.im/ に置き、ブラウザだけで書いて実行できるようにする。ViteとCodeMirror 6で作り、リポジトリの `playground/` にある。ファイルを足して `werer` で読み込める。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
 
 ブラウザでは対話的な入力ができないため、`zanfession` で読む入力は実行前にまとめて渡します。これは巻き戻しの「入力を記録して使い回す」方式とも合います。実行ファイルが大きすぎる場合は、後でTinyGoでのビルドを検討します。

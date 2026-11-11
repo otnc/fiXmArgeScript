@@ -251,7 +251,7 @@ func TestTidy(t *testing.T) {
 	w.publish("github.com/bob/util", release{"v0.2.0", map[string]string{"fixmarge.mod": modOf("github.com/bob/util"), "util.fxma": ""}})
 	m := w.project("ado github.com/me/app\n\nneyo github.com/bob/util v0.2.0\n", map[string]string{
 		"main.fxma":   "\"github.com/alice/strs\" aste strs werer\n\"./lib\" aste lib werer\n",
-		"lib.fxma":    "\"github.com/alice/strs/case\" no upper werer\n\"fxma:meme\" aste meme werer\n",
+		"lib.fxma":    "\"github.com/alice/strs/case\" no upper werer\n\":meme\" aste meme werer\n",
 		"notes.fxmac": "\"github.com/bob/util\" aste u werer\n",
 	})
 	require.NoError(t, m.Tidy())

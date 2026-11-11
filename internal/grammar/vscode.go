@@ -11,9 +11,9 @@ import (
 // LanguageConfigurationFile は VS Code の言語の設定ファイルの名前。字下げの語の綴りが違うので、下書きと清書で別にする。
 func LanguageConfigurationFile(mode lexer.Mode) string {
 	if mode == lexer.Fair {
-		return "fxmac.language-configuration.json"
+		return "fixmargec.language-configuration.json"
 	}
-	return "fxma.language-configuration.json"
+	return "fixmarge.language-configuration.json"
 }
 
 type languageConfiguration struct {
@@ -40,7 +40,7 @@ type indentationRules struct {
 }
 
 // LanguageConfiguration は VS Code の言語の設定 (括弧と字下げ) を JSON で返す。
-// 字下げは Vim の autoload/fxma/indent.vim と同じ語を使う。ただし VS Code は1行を正規表現1つで見るので、語を数えずに
+// 字下げは Vim の autoload/fixmarge/indent.vim と同じ語を使う。ただし VS Code は1行を正規表現1つで見るので、語を数えずに
 // 「開く語があって同じ行に finend がない」行の次を深くする。
 func LanguageConfiguration(mode lexer.Mode) ([]byte, error) {
 	pairs := [][2]string{{"(", ")"}, {"[", "]"}, {"{", "}"}}

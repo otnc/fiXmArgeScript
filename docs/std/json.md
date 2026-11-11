@@ -1,9 +1,9 @@
-# fxma:json
+# :json
 
 JSON。名前は固有名詞なのでそのまま使います。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:json" aste json werer
+":json" aste json werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript |

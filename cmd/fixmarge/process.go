@@ -18,7 +18,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 )
 
-// osProcess は fxma:ieviljio に渡す、このプロセスの情報と魔女 (子プロセス) を生む仕組み。
+// osProcess は :ieviljio に渡す、このプロセスの情報と魔女 (子プロセス) を生む仕組み。
 func osProcess(args []string) *interp.Process {
 	return &interp.Process{
 		Args:     args,

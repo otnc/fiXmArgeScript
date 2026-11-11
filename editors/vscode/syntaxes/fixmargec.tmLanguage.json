@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "fiXmArge Script (清書)",
-  "scopeName": "source.fxmac",
+  "scopeName": "source.fixmargec",
   "patterns": [
     {
       "include": "#comment"
@@ -39,45 +39,45 @@
       "match": "([A-Za-z_]\\w*)(?=\\s*\\()",
       "captures": {
         "1": {
-          "name": "entity.name.function.fxma"
+          "name": "entity.name.function.fixmarge"
         }
       }
     },
     "comment": {
-      "name": "comment.line.number-sign.fxma",
+      "name": "comment.line.number-sign.fixmarge",
       "match": "#.*$"
     },
     "constant": {
-      "name": "constant.language.fxma",
+      "name": "constant.language.fixmarge",
       "match": "(?<![\\w'’~·-])(Vani·tA|TadACt|ULieSo)(?![\\w])"
     },
     "declaration": {
       "match": "(?<![\\w'’~·-])(We-Ho|cUrOi)(?![\\w])\\s+([A-Za-z_]\\w*)",
       "captures": {
         "1": {
-          "name": "storage.type.function.fxma"
+          "name": "storage.type.function.fixmarge"
         },
         "2": {
-          "name": "entity.name.function.fxma"
+          "name": "entity.name.function.fixmarge"
         }
       }
     },
     "escape": {
-      "name": "constant.character.escape.fxma",
+      "name": "constant.character.escape.fixmarge",
       "match": "\\\\(?:u\\{[0-9A-Fa-f]+\\}|.)"
     },
     "interpolation": {
-      "name": "meta.interpolation.fxma",
+      "name": "meta.interpolation.fixmarge",
       "begin": "#\\{",
       "end": "\\}",
       "beginCaptures": {
         "0": {
-          "name": "punctuation.section.interpolation.begin.fxma"
+          "name": "punctuation.section.interpolation.begin.fixmarge"
         }
       },
       "endCaptures": {
         "0": {
-          "name": "punctuation.section.interpolation.end.fxma"
+          "name": "punctuation.section.interpolation.end.fixmarge"
         }
       },
       "patterns": [
@@ -89,41 +89,41 @@
     "keyword": {
       "patterns": [
         {
-          "name": "storage.modifier.fxma",
+          "name": "storage.modifier.fixmarge",
           "match": "(?<![\\w'’~·-])(AbiRyoku|showence|itsver|Oqun)(?![\\w])"
         },
         {
-          "name": "keyword.control.fxma",
+          "name": "keyword.control.fixmarge",
           "match": "(?<![\\w'’~·-])(AccUhEarts|zanfession|Tei-Tance|pray·lee|yOuLugiVe|CaNoSiri|En-NOte|ReDogh'|ShouBeK|aZaGara|sent-ky|FineNd|KetZen|meKaMo|Kei-P|itsWA|weRer|SiVa|aSte|Mof)(?![\\w])"
         }
       ]
     },
     "number": {
-      "name": "constant.numeric.fxma",
+      "name": "constant.numeric.fixmarge",
       "match": "\\b\\d(?:_?\\d)*(?:\\.\\d(?:_?\\d)*)?(?:[eE][+-]?\\d+)?\\b"
     },
     "operator": {
-      "name": "keyword.operator.fxma",
+      "name": "keyword.operator.fixmarge",
       "match": "\\*\\*|//|<<|>>|<=|>=|\\.\\.=?|[-+*/%<>&|^~]"
     },
     "operator-word": {
-      "name": "keyword.operator.word.fxma",
+      "name": "keyword.operator.word.fixmarge",
       "match": "(?<![\\w'’~·-])(SeNaji|S~ond'|Batte|Iz'u|eXi'|N'o|Nii|Owk)(?![\\w])"
     },
     "string": {
       "patterns": [
         {
-          "name": "string.quoted.triple.fxma",
+          "name": "string.quoted.triple.fixmarge",
           "begin": "\"\"\"",
           "end": "\"\"\"",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.string.begin.fxma"
+              "name": "punctuation.definition.string.begin.fixmarge"
             }
           },
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.end.fxma"
+              "name": "punctuation.definition.string.end.fixmarge"
             }
           },
           "patterns": [
@@ -136,17 +136,17 @@
           ]
         },
         {
-          "name": "string.quoted.double.fxma",
+          "name": "string.quoted.double.fixmarge",
           "begin": "\"",
           "end": "\"",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.string.begin.fxma"
+              "name": "punctuation.definition.string.begin.fixmarge"
             }
           },
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.end.fxma"
+              "name": "punctuation.definition.string.end.fixmarge"
             }
           },
           "patterns": [
@@ -163,11 +163,11 @@
     "support": {
       "patterns": [
         {
-          "name": "support.function.fxma",
+          "name": "support.function.fixmarge",
           "match": "(?<![\\w'’~·-])(i·zana-vitedeXi'|FinecloWtKuwPace|madRazysAnAnd|Iz'uKuwPace|Iz'udeFuTai|Lai NeiAlte|MEifKuwPace|BatteKolSu|Sen-choose|eATah·Guy|fOreSeNaji|Divil JIO|FinecloWt|PyusenS'e|Vani·Ell|Ligh-Luw|SodaKast|Sodagu-n|conf-Soy|rEcanRey|Commity|KuwPace|Lai Nei|RacDA-m|Say mAl|ShoJikA|deFuTai|madRazy|mu·Yon|sAiMoku|tSuYoNg|Matill|SaLook|YowEAk|ieyWOO|mOurce|nOzuki|sAgAin|sAnAnd|ChiDd|GoKuu|KolSu|Litto|Tarip|Zelln|nAddY|oNkhe|GoMi|Kast|SurC|gDie|gu-n|nAng|oRei|Ado|Eda|Edo|Hir|LEA)(?![\\w])"
         },
         {
-          "name": "entity.name.namespace.fxma",
+          "name": "entity.name.namespace.fixmarge",
           "match": "(?<![\\w'’~·-])(i·zana-vited|ievil JIO|VariZaMa|dEstiMay|Coword|GE-mon|Memoid|KeyGa|MeMe|Toim)(?![\\w])"
         }
       ]

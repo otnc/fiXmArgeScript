@@ -7,7 +7,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// destimayPackage は fxma:destimay (乱数)。docs/std/destimay.md。
+// destimayPackage は :destimay (乱数)。docs/std/destimay.md。
 // 乱数は入出力と同じ扱いなので、どの関数も abiryoku が要る。結果は記録して、やり直しでは記録を使う。
 func destimayPackage() *Module {
 	return newStd(map[string]stdDef{

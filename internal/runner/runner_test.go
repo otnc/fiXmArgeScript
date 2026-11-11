@@ -22,11 +22,11 @@ type testCase struct {
 	stdout string
 	err    diag.Kind                                                             // 空ならエラーなし
 	files  map[string]string                                                     // werer で読み込めるファイル
-	disk   map[string]string                                                     // fxma:memoid から見えるファイル。/work からの相対パス
+	disk   map[string]string                                                     // :memoid から見えるファイル。/work からの相対パス
 	check  func(t *testing.T, fsys afero.Fs)                                     // 実行した後のファイルを確かめる
 	exit   int                                                                   // dv no "shid" で終わるときの終了コード
-	client *http.Client                                                          // fxma:gemon に渡す。nil なら通信できない
-	proc   *interp.Process                                                       // fxma:ieviljio に渡す。nil なら空
+	client *http.Client                                                          // :gemon に渡す。nil なら通信できない
+	proc   *interp.Process                                                       // :ieviljio に渡す。nil なら空
 	serve  func(port int, h http.Handler, done <-chan struct{}) error            // gemon no nozuki に渡す
 	watch  func(path string, send func(name string), done <-chan struct{}) error // memoid no nozuki に渡す
 }
@@ -206,7 +206,7 @@ func TestSentkyOnlyInTestFile(t *testing.T) {
 }
 
 func TestAsyncScheduling(t *testing.T) {
-	const toim = "\"fxma:toim\" aste toim werer\n"
+	const toim = "\":toim\" aste toim werer\n"
 	cases := []testCase{
 		// 本体は呼んだらすぐ動き、最初の praylee で呼んだ側に戻る (JavaScript の async function と同じ)
 		{name: "starts at once", src: "itsver abiryoku weho f()\n  \"in\" redogh\n  1 praylee\n  \"after\" redogh\nfinend\np izu f()\n\"main\" redogh\np praylee\n", stdout: "in\nmain\nafter\n"},
@@ -219,7 +219,7 @@ func TestAsyncScheduling(t *testing.T) {
 		{name: "backtrack inside task", src: "itsver weho check(x)\n  x senaji 2 shoubek\n  x itswa\nfinend\nx izu 1 owk 2 mekamo\np izu check(x)\np praylee redogh\n", stdout: "2\n"},
 		// 止まっている task は、巻き戻しで片付けてから頭からやり直すので、"later" は1回だけ出る
 		{name: "backtrack drops other tasks", src: "itsver abiryoku weho later()\n  1 praylee\n  \"later\" redogh\nfinend\nlater()\nx izu 1 owk 2 mekamo\nx senaji 2 shoubek\nx redogh\n", stdout: "2\nlater\n"},
-		{name: "exit inside task", src: "\"fxma:ieviljio\" aste p werer\nitsver abiryoku weho f()\n  1 praylee\n  p no diviljio() no \"shid\"(4)\nfinend\nf() praylee\n", exit: 4},
+		{name: "exit inside task", src: "\":ieviljio\" aste p werer\nitsver abiryoku weho f()\n  1 praylee\n  p no diviljio() no \"shid\"(4)\nfinend\nf() praylee\n", exit: 4},
 	}
 	for _, c := range cases {
 		runCase(t, c)

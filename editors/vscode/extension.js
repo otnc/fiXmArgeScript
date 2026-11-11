@@ -7,12 +7,12 @@ const { LanguageClient } = require("vscode-languageclient/node");
 let client;
 
 async function start() {
-  const command = vscode.workspace.getConfiguration("fxma").get("path") || "fixmarge";
+  const command = vscode.workspace.getConfiguration("fixmarge").get("path") || "fixmarge";
   client = new LanguageClient(
-    "fxma",
+    "fixmarge",
     "fiXmArge Script",
     { command, args: ["trench"] },
-    { documentSelector: [{ language: "fxma" }, { language: "fxmac" }] },
+    { documentSelector: [{ language: "fixmarge" }, { language: "fixmargec" }] },
   );
   try {
     await client.start();
@@ -32,7 +32,7 @@ async function stop() {
 async function activate(context) {
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(async (e) => {
-      if (e.affectsConfiguration("fxma.path")) {
+      if (e.affectsConfiguration("fixmarge.path")) {
         await stop();
         await start();
       }

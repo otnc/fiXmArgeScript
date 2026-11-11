@@ -31,7 +31,7 @@ func fakeServe(paths []string, responses chan<- *httptest.ResponseRecorder) func
 }
 
 func TestStdGemonNozuki(t *testing.T) {
-	head := "\"fxma:gemon\" aste gemon werer\n\"fxma:ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\n"
+	head := "\":gemon\" aste gemon werer\n\":ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\n"
 	// /stop で終わる。/stop への返事は送らないので、プログラムが終わったときの 503 になる
 	stop := "  mof req no \"izanavited\" senaji \"/stop\"\n    dv no \"shid\"(0)\n  finend\n"
 	cases := []struct {
@@ -45,7 +45,7 @@ func TestStdGemonNozuki(t *testing.T) {
 			want:     []string{"201 1 hi", "503  "},
 		},
 		{
-			testCase: testCase{name: "itsver handler", src: head + "\"fxma:toim\" aste toim werer\nitsver abiryoku weho handle(req)\n" + stop + "  toim no saimoku(1) praylee\n  {\"coword\": \"late\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n"},
+			testCase: testCase{name: "itsver handler", src: head + "\":toim\" aste toim werer\nitsver abiryoku weho handle(req)\n" + stop + "  toim no saimoku(1) praylee\n  {\"coword\": \"late\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n"},
 			paths:    []string{"/a", "/stop"},
 			want:     []string{"200  late", "503  "},
 		},
@@ -94,7 +94,7 @@ func fakeWatch(names ...string) func(string, func(string), <-chan struct{}) erro
 }
 
 func TestStdMemoidNozuki(t *testing.T) {
-	head := "\"fxma:memoid\" aste memoid werer\n\"fxma:ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\nn izu {\"count\": 0}\n"
+	head := "\":memoid\" aste memoid werer\n\":ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\nn izu {\"count\": 0}\n"
 	// 2回目の知らせで終わる
 	handler := "abiryoku weho changed(p)\n  p redogh\n  n no \"count\" +izu 1\n  mof n no \"count\" senaji 2\n    dv no \"shid\"(0)\n  finend\nfinend\n"
 	cases := []testCase{
@@ -111,7 +111,7 @@ func TestStdMemoidNozuki(t *testing.T) {
 }
 
 func TestStdIeviljioNozuki(t *testing.T) {
-	head := "\"fxma:toim\" aste toim werer\n\"fxma:ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\n"
+	head := "\":toim\" aste toim werer\n\":ieviljio\" aste ieviljio werer\ndv izu ieviljio no diviljio()\n"
 	// SIGINT だけ、気付き始めたらすぐに1回届く
 	proc := &interp.Process{Signal: func(name string, send func(), _ <-chan struct{}) error {
 		switch name {

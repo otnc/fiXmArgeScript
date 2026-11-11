@@ -7,6 +7,7 @@ import (
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/modpath"
 )
 
 // unreachable は shi-des。itswa・ketzen・keip・accuhearts の後ろの文には届かない。
@@ -266,7 +267,7 @@ func (l *linter) hopelessShoubek(stmts []ast.Stmt) {
 		return true
 	})
 	for _, path := range l.importPaths() {
-		if !strings.HasPrefix(path, "fxma:") {
+		if !strings.HasPrefix(path, modpath.StdPrefix) {
 			return
 		}
 	}

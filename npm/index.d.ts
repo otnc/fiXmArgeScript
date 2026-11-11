@@ -1,7 +1,7 @@
 export interface RunOptions {
   /** zanfession で読む入力。ブラウザでは対話的に読めないので、まとめて渡す。 */
   stdin?: string;
-  /** werer と fxma:memoid から見えるファイル。名前 → 中身。 */
+  /** werer と :memoid から見えるファイル。名前 → 中身。 */
   files?: Record<string, string>;
   /** dv no "conwa" になるコマンドライン引数。 */
   args?: string[];

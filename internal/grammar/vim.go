@@ -17,9 +17,9 @@ scriptencoding utf-8
 // VimFiletype は Vim のファイルタイプの名前。下書きと清書で別にする (語の書き方が違うため)。
 func VimFiletype(mode lexer.Mode) string {
 	if mode == lexer.Fair {
-		return "fxmac"
+		return "fixmargec"
 	}
-	return "fxma"
+	return "fixmarge"
 }
 
 // VimSyntax は Vim の syntax ファイルを返す。グループの並びは TextMate 文法と同じで、
@@ -31,42 +31,42 @@ func VimSyntax(mode lexer.Mode) []byte {
 	b.WriteString("syntax iskeyword @,48-57,_\n\n")
 	match := func(group, pattern string) { fmt.Fprintf(&b, "syntax match %s /%s/\n", group, pattern) }
 
-	match("fxmaOperator", `\*\*\|\/\/\|<<\|>>\|<=\|>=\|\.\.=\=\|[-+*\/%<>&|^~]`)
-	match("fxmaNumber", `\<\d\%(_\=\d\)*\%(\.\d\%(_\=\d\)*\)\=\%([eE][+-]\=\d\+\)\=\>`)
-	match("fxmaCall", `\<\h\w*\ze\s*(`)
-	match("fxmaNamespace", vimWords(uses(lexicon.Package), mode))
-	match("fxmaBuiltin", vimWords(uses(lexicon.Builtin|lexicon.Function|lexicon.Compound), mode))
-	match("fxmaKeyword", vimWords(otherKeywords(), mode))
-	match("fxmaModifier", vimWords(modifiers, mode))
-	match("fxmaOperatorWord", vimWords(operators, mode))
-	match("fxmaConstant", vimWords(constants, mode))
-	match("fxmaDeclare", vimWords(declares, mode))
-	match("fxmaFunctionName", `\%(`+vimWords(declares, mode)+`\s\+\)\@<=\h\w*`)
-	b.WriteString("syntax match fxmaComment /#.*$/ contains=@Spell\n")
-	b.WriteString(`syntax match fxmaEscape /\\\%(u{\x\+}\|.\)/ contained
-syntax region fxmaInterpolation matchgroup=fxmaInterpolationDelimiter start=/#{/ end=/}/ contained contains=TOP
-syntax region fxmaString matchgroup=fxmaStringDelimiter start=/"/ skip=/\\./ end=/"/ contains=fxmaEscape,fxmaInterpolation,@Spell
-syntax region fxmaString matchgroup=fxmaStringDelimiter start=/"""/ end=/"""/ contains=fxmaEscape,fxmaInterpolation,@Spell
+	match("fixmargeOperator", `\*\*\|\/\/\|<<\|>>\|<=\|>=\|\.\.=\=\|[-+*\/%<>&|^~]`)
+	match("fixmargeNumber", `\<\d\%(_\=\d\)*\%(\.\d\%(_\=\d\)*\)\=\%([eE][+-]\=\d\+\)\=\>`)
+	match("fixmargeCall", `\<\h\w*\ze\s*(`)
+	match("fixmargeNamespace", vimWords(uses(lexicon.Package), mode))
+	match("fixmargeBuiltin", vimWords(uses(lexicon.Builtin|lexicon.Function|lexicon.Compound), mode))
+	match("fixmargeKeyword", vimWords(otherKeywords(), mode))
+	match("fixmargeModifier", vimWords(modifiers, mode))
+	match("fixmargeOperatorWord", vimWords(operators, mode))
+	match("fixmargeConstant", vimWords(constants, mode))
+	match("fixmargeDeclare", vimWords(declares, mode))
+	match("fixmargeFunctionName", `\%(`+vimWords(declares, mode)+`\s\+\)\@<=\h\w*`)
+	b.WriteString("syntax match fixmargeComment /#.*$/ contains=@Spell\n")
+	b.WriteString(`syntax match fixmargeEscape /\\\%(u{\x\+}\|.\)/ contained
+syntax region fixmargeInterpolation matchgroup=fixmargeInterpolationDelimiter start=/#{/ end=/}/ contained contains=TOP
+syntax region fixmargeString matchgroup=fixmargeStringDelimiter start=/"/ skip=/\\./ end=/"/ contains=fixmargeEscape,fixmargeInterpolation,@Spell
+syntax region fixmargeString matchgroup=fixmargeStringDelimiter start=/"""/ end=/"""/ contains=fixmargeEscape,fixmargeInterpolation,@Spell
 `)
 
 	b.WriteString("\n")
 	for _, link := range [][2]string{
-		{"fxmaOperator", "Operator"},
-		{"fxmaNumber", "Number"},
-		{"fxmaCall", "Function"},
-		{"fxmaNamespace", "Type"},
-		{"fxmaBuiltin", "Function"},
-		{"fxmaKeyword", "Keyword"},
-		{"fxmaModifier", "StorageClass"},
-		{"fxmaOperatorWord", "Operator"},
-		{"fxmaConstant", "Constant"},
-		{"fxmaDeclare", "Keyword"},
-		{"fxmaFunctionName", "Function"},
-		{"fxmaComment", "Comment"},
-		{"fxmaEscape", "SpecialChar"},
-		{"fxmaInterpolationDelimiter", "Delimiter"},
-		{"fxmaStringDelimiter", "String"},
-		{"fxmaString", "String"},
+		{"fixmargeOperator", "Operator"},
+		{"fixmargeNumber", "Number"},
+		{"fixmargeCall", "Function"},
+		{"fixmargeNamespace", "Type"},
+		{"fixmargeBuiltin", "Function"},
+		{"fixmargeKeyword", "Keyword"},
+		{"fixmargeModifier", "StorageClass"},
+		{"fixmargeOperatorWord", "Operator"},
+		{"fixmargeConstant", "Constant"},
+		{"fixmargeDeclare", "Keyword"},
+		{"fixmargeFunctionName", "Function"},
+		{"fixmargeComment", "Comment"},
+		{"fixmargeEscape", "SpecialChar"},
+		{"fixmargeInterpolationDelimiter", "Delimiter"},
+		{"fixmargeStringDelimiter", "String"},
+		{"fixmargeString", "String"},
 	} {
 		fmt.Fprintf(&b, "highlight default link %s %s\n", link[0], link[1])
 	}
@@ -75,31 +75,31 @@ syntax region fxmaString matchgroup=fxmaStringDelimiter start=/"""/ end=/"""/ co
 }
 
 // VimModFiletype は fixmarge.mod の Vim のファイルタイプの名前。
-const VimModFiletype = "fxmamod"
+const VimModFiletype = "fixmargemod"
 
 // VimModSyntax は fixmarge.mod の syntax ファイルを返す。TextMate の ModTextMate と同じく、行の頭の項目名と文字列だけに色を付ける。
 func VimModSyntax() []byte {
 	var b strings.Builder
 	b.WriteString(vimHeader)
 	b.WriteString("if exists('b:current_syntax')\n  finish\nendif\n\n")
-	fmt.Fprintf(&b, "syntax match fxmamodField /^\\s*\\zs%s/\n", vimWords(modFields(), lexer.Draft))
-	b.WriteString("syntax region fxmamodString start=/\"/ skip=/\\\\./ end=/\"/ oneline\n\n")
-	b.WriteString("highlight default link fxmamodField Keyword\n")
-	b.WriteString("highlight default link fxmamodString String\n")
+	fmt.Fprintf(&b, "syntax match fixmargemodField /^\\s*\\zs%s/\n", vimWords(modFields(), lexer.Draft))
+	b.WriteString("syntax region fixmargemodString start=/\"/ skip=/\\\\./ end=/\"/ oneline\n\n")
+	b.WriteString("highlight default link fixmargemodField Keyword\n")
+	b.WriteString("highlight default link fixmargemodString String\n")
 	fmt.Fprintf(&b, "\nlet b:current_syntax = '%s'\n", VimModFiletype)
 	return []byte(b.String())
 }
 
-// VimWords は字下げ (indent/fxma.vim) が使う、ブロックの語の正規表現を下書きと清書の両方について返す。
+// VimWords は字下げ (indent/fixmarge.vim) が使う、ブロックの語の正規表現を下書きと清書の両方について返す。
 func VimWords() []byte {
 	var b strings.Builder
 	b.WriteString(vimHeader)
-	b.WriteString("\n\" ブロックを開く語・閉じる語・区切る語の正規表現。ファイルタイプ (fxma か fxmac) ごとに返す。\n")
-	b.WriteString("function! fxma#words#Block(filetype) abort\n")
+	b.WriteString("\n\" ブロックを開く語・閉じる語・区切る語の正規表現。ファイルタイプ (fixmarge か fixmargec) ごとに返す。\n")
+	b.WriteString("function! fixmarge#words#Block(filetype) abort\n")
 	for _, mode := range []lexer.Mode{lexer.Fair, lexer.Draft} {
 		indent := "  "
 		if mode == lexer.Fair {
-			b.WriteString("  if a:filetype ==# 'fxmac'\n")
+			b.WriteString("  if a:filetype ==# 'fixmargec'\n")
 			indent = "    "
 		}
 		pairs := [][2]string{
@@ -120,8 +120,8 @@ func VimWords() []byte {
 	b.WriteString("endfunction\n")
 
 	b.WriteString("\n\" 行の頭に来たら1段浅く書く語。打ち終えたら字下げし直す (indentkeys)。\n")
-	b.WriteString("function! fxma#words#Dedent(filetype) abort\n")
-	fmt.Fprintf(&b, "  if a:filetype ==# 'fxmac'\n    return %s\n  endif\n  return %s\nendfunction\n",
+	b.WriteString("function! fixmarge#words#Dedent(filetype) abort\n")
+	fmt.Fprintf(&b, "  if a:filetype ==# 'fixmargec'\n    return %s\n  endif\n  return %s\nendfunction\n",
 		vimList(dedentWords, lexer.Fair), vimList(dedentWords, lexer.Draft))
 	return []byte(b.String())
 }

@@ -52,9 +52,9 @@ func include(name string) rule { return rule{Include: "#" + name} }
 // File は文法のファイルの名前。下書きと清書で別の文法にする (語の書き方が違うため)。
 func File(mode lexer.Mode) string {
 	if mode == lexer.Fair {
-		return "fxmac.tmLanguage.json"
+		return "fixmargec.tmLanguage.json"
 	}
-	return "fxma.tmLanguage.json"
+	return "fixmarge.tmLanguage.json"
 }
 
 // TextMate は下書きか清書の文法を JSON で返す。
@@ -62,61 +62,61 @@ func TextMate(mode lexer.Mode) ([]byte, error) {
 	g := grammar{
 		Schema:    "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 		Name:      "fiXmArge Script",
-		ScopeName: "source.fxma",
+		ScopeName: "source.fixmarge",
 		Patterns: []rule{
 			include("comment"), include("string"), include("number"), include("declaration"),
 			include("constant"), include("operator-word"), include("keyword"), include("support"),
 			include("call"), include("operator"),
 		},
 		Repository: map[string]rule{
-			"comment": {Name: "comment.line.number-sign.fxma", Match: `#.*$`},
+			"comment": {Name: "comment.line.number-sign.fixmarge", Match: `#.*$`},
 			"string": {Patterns: []rule{
-				stringRule(`"""`, "string.quoted.triple.fxma"),
-				stringRule(`"`, "string.quoted.double.fxma"),
+				stringRule(`"""`, "string.quoted.triple.fixmarge"),
+				stringRule(`"`, "string.quoted.double.fixmarge"),
 			}},
-			"escape": {Name: "constant.character.escape.fxma", Match: `\\(?:u\{[0-9A-Fa-f]+\}|.)`},
+			"escape": {Name: "constant.character.escape.fixmarge", Match: `\\(?:u\{[0-9A-Fa-f]+\}|.)`},
 			"interpolation": {
 				Begin:         `#\{`,
 				End:           `\}`,
-				BeginCaptures: map[string]capture{"0": {"punctuation.section.interpolation.begin.fxma"}},
-				EndCaptures:   map[string]capture{"0": {"punctuation.section.interpolation.end.fxma"}},
-				Name:          "meta.interpolation.fxma",
+				BeginCaptures: map[string]capture{"0": {"punctuation.section.interpolation.begin.fixmarge"}},
+				EndCaptures:   map[string]capture{"0": {"punctuation.section.interpolation.end.fixmarge"}},
+				Name:          "meta.interpolation.fixmarge",
 				Patterns:      []rule{{Include: "$self"}},
 			},
-			"number": {Name: "constant.numeric.fxma", Match: `\b\d(?:_?\d)*(?:\.\d(?:_?\d)*)?(?:[eE][+-]?\d+)?\b`},
+			"number": {Name: "constant.numeric.fixmarge", Match: `\b\d(?:_?\d)*(?:\.\d(?:_?\d)*)?(?:[eE][+-]?\d+)?\b`},
 			"declaration": {
 				Match: words(declares, mode) + `\s+` + identifier,
 				Captures: map[string]capture{
-					"1": {"storage.type.function.fxma"},
-					"2": {"entity.name.function.fxma"},
+					"1": {"storage.type.function.fixmarge"},
+					"2": {"entity.name.function.fixmarge"},
 				},
 			},
-			"constant":      {Name: "constant.language.fxma", Match: words(constants, mode)},
-			"operator-word": {Name: "keyword.operator.word.fxma", Match: words(operators, mode)},
+			"constant":      {Name: "constant.language.fixmarge", Match: words(constants, mode)},
+			"operator-word": {Name: "keyword.operator.word.fixmarge", Match: words(operators, mode)},
 			"keyword": {Patterns: []rule{
-				{Name: "storage.modifier.fxma", Match: words(modifiers, mode)},
-				{Name: "keyword.control.fxma", Match: words(otherKeywords(), mode)},
+				{Name: "storage.modifier.fixmarge", Match: words(modifiers, mode)},
+				{Name: "keyword.control.fixmarge", Match: words(otherKeywords(), mode)},
 			}},
 			"support": {Patterns: []rule{
-				{Name: "support.function.fxma", Match: words(uses(lexicon.Builtin|lexicon.Function|lexicon.Compound), mode)},
-				{Name: "entity.name.namespace.fxma", Match: words(uses(lexicon.Package), mode)},
+				{Name: "support.function.fixmarge", Match: words(uses(lexicon.Builtin|lexicon.Function|lexicon.Compound), mode)},
+				{Name: "entity.name.namespace.fixmarge", Match: words(uses(lexicon.Package), mode)},
 			}},
 			"call": {
 				Match:    identifier + `(?=\s*\()`,
-				Captures: map[string]capture{"1": {"entity.name.function.fxma"}},
+				Captures: map[string]capture{"1": {"entity.name.function.fixmarge"}},
 			},
-			"operator": {Name: "keyword.operator.fxma", Match: `\*\*|//|<<|>>|<=|>=|\.\.=?|[-+*/%<>&|^~]`},
+			"operator": {Name: "keyword.operator.fixmarge", Match: `\*\*|//|<<|>>|<=|>=|\.\.=?|[-+*/%<>&|^~]`},
 		},
 	}
 	if mode == lexer.Fair {
 		g.Name += " (清書)"
-		g.ScopeName = "source.fxmac"
+		g.ScopeName = "source.fixmargec"
 	}
 	return marshal(g)
 }
 
 // ModFile は fixmarge.mod の文法のファイルの名前。
-const ModFile = "fxma-mod.tmLanguage.json"
+const ModFile = "fixmarge-mod.tmLanguage.json"
 
 // ModTextMate は fixmarge.mod の文法を JSON で返す。行の頭の項目名 (lexicon の ModField) と文字列だけに色を付ける。
 func ModTextMate() ([]byte, error) {
@@ -124,15 +124,15 @@ func ModTextMate() ([]byte, error) {
 	return marshal(grammar{
 		Schema:    "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 		Name:      "fiXmArge Script (fixmarge.mod)",
-		ScopeName: "source.fxma-mod",
+		ScopeName: "source.fixmarge-mod",
 		Patterns:  []rule{include("field"), include("string")},
 		Repository: map[string]rule{
 			"field": {
 				Match:    `^\s*` + words(fields, lexer.Draft),
-				Captures: map[string]capture{"1": {"keyword.other.fxma-mod"}},
+				Captures: map[string]capture{"1": {"keyword.other.fixmarge-mod"}},
 			},
 			"string": {
-				Name:  "string.quoted.double.fxma-mod",
+				Name:  "string.quoted.double.fixmarge-mod",
 				Match: `"(?:[^"\\]|\\.)*"`,
 			},
 		},
@@ -163,8 +163,8 @@ func stringRule(quote, scope string) rule {
 		Name:          scope,
 		Begin:         quote,
 		End:           quote,
-		BeginCaptures: map[string]capture{"0": {"punctuation.definition.string.begin.fxma"}},
-		EndCaptures:   map[string]capture{"0": {"punctuation.definition.string.end.fxma"}},
+		BeginCaptures: map[string]capture{"0": {"punctuation.definition.string.begin.fixmarge"}},
+		EndCaptures:   map[string]capture{"0": {"punctuation.definition.string.end.fixmarge"}},
 		Patterns:      []rule{include("escape"), include("interpolation")},
 	}
 }

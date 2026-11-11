@@ -55,7 +55,7 @@ func TestHak(t *testing.T) {
 		},
 		{
 			name:   "exit",
-			stdin:  "\"fxma:ieviljio\" aste p werer\np no diviljio() no \"shid\"(3)\n1\n",
+			stdin:  "\":ieviljio\" aste p werer\np no diviljio() no \"shid\"(3)\n1\n",
 			code:   3,
 			stdout: "> > ",
 		},

@@ -1,0 +1,27 @@
+{
+  "iconDefinitions": {
+    "fixmarge": {
+      "iconPath": "./fixmarge.svg"
+    },
+    "fixmarge-mod": {
+      "iconPath": "./fixmarge-mod.svg"
+    },
+    "fixmarge-sum": {
+      "iconPath": "./fixmarge-sum.svg"
+    }
+  },
+  "languageIds": {
+    "fixmarge": "fixmarge",
+    "fixmargec": "fixmarge",
+    "fixmarge-mod": "fixmarge-mod",
+    "fixmarge-sum": "fixmarge-sum"
+  },
+  "fileExtensions": {
+    "fxma": "fixmarge",
+    "fxmac": "fixmarge"
+  },
+  "fileNames": {
+    "fixmarge.mod": "fixmarge-mod",
+    "fixmarge.sum": "fixmarge-sum"
+  }
+}

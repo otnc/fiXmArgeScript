@@ -10,6 +10,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/interp"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/modpath"
 	"github.com/otnc/fiXmArgeScript/internal/parser"
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
@@ -163,7 +164,7 @@ func name(id *ast.Ident, ok bool) string {
 }
 
 func stdCallee(path, name string) callee {
-	pkg, ok := strings.CutPrefix(path, "fxma:")
+	pkg, ok := strings.CutPrefix(path, modpath.StdPrefix)
 	if !ok {
 		return callee{}
 	}
@@ -196,5 +197,5 @@ func (l *linter) isEda(x ast.Expr) bool {
 		}
 		path, fn = l.aliases[x.Name], key.Name
 	}
-	return fn == "eda" && (path == "fxma:coword" || path == "fxma:varizama")
+	return fn == "eda" && (path == ":coword" || path == ":varizama")
 }

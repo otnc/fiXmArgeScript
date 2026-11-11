@@ -19,7 +19,7 @@ jobs:
       - run: go test -race ./...
         env:
           FXMA_DICT_CHECK: "1"
-      # サンプルを fxma 自身で検査し、テストする
+      # サンプルを fixmarge 自身で検査し、テストする
       - run: go run ./cmd/fixmarge lavi examples
       - run: go run ./cmd/fixmarge coatain examples
       - run: shellcheck installer/public/install.sh scripts/*.sh

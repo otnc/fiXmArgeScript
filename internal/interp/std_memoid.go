@@ -14,7 +14,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// memoidPackage は fxma:memoid (ファイル、Node.js の fs と fs-extra)。docs/std/memoid.md。
+// memoidPackage は :memoid (ファイル、Node.js の fs と fs-extra)。docs/std/memoid.md。
 // ファイルは Options.FS を通して触る。どの関数も入出力なので abiryoku が要る。
 func memoidPackage() *Module {
 	return newStd(map[string]stdDef{

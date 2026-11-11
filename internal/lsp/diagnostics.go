@@ -10,7 +10,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/lint"
 )
 
-const source = "fxma"
+const source = "fixmarge"
 
 // diagnostics はエラーと lavi の指摘を LSP の診断にする。
 // 文言はコンソールと同じくフィクスマージ語だけにし、位置はエディタが範囲で示すので書かない。

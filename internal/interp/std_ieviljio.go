@@ -63,7 +63,7 @@ type Exit struct{ Code int }
 
 func (e *Exit) Error() string { return "exit" }
 
-// ieviljioPackage は fxma:ieviljio (プロセス、Node.js の process)。docs/std/ieviljio.md。
+// ieviljioPackage は :ieviljio (プロセス、Node.js の process)。docs/std/ieviljio.md。
 // 魔女を殺す murm は大魔女の辞書にだけ入れ、パッケージからは直接呼べない (権限を値として渡す)。
 func ieviljioPackage() *Module {
 	return newStd(map[string]stdDef{

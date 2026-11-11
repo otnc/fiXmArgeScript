@@ -16,7 +16,7 @@ import (
 )
 
 // definition は位置の名前の定義の場所を返す。werer で読み込んだ名前は、読み込み先のファイルの定義に飛ぶ。
-// 標準パッケージ (fxma:) の中身は fxma に組み込まれているので、飛び先はない。
+// 標準パッケージ (":名前") の中身は fxma に組み込まれているので、飛び先はない。
 func (s *Server) definition(d *document, p protocol.Position) (protocol.Location, bool) {
 	t, ok := d.tokenAt(p)
 	if !ok || t.Kind != token.Ident {

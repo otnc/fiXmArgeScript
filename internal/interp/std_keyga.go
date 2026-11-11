@@ -15,7 +15,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// keygaPackage は fxma:keyga (暗号、Node.js の crypto)。docs/std/keyga.md。
+// keygaPackage は :keyga (暗号、Node.js の crypto)。docs/std/keyga.md。
 // 暗号の処理は自分で書かず、Go の crypto の各パッケージを呼ぶ。乱数は入出力なので abiryoku が要る。
 func keygaPackage() *Module {
 	return newStd(map[string]stdDef{

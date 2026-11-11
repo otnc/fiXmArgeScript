@@ -1,9 +1,9 @@
-# fxma:coword
+# :coword
 
 文字列。辞書の意味は「言葉」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:coword" aste coword werer
+":coword" aste coword werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript |

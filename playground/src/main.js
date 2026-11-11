@@ -9,7 +9,7 @@ import { fxmaLanguage } from "./language.js";
 
 const mainFile = "main.fxma";
 
-// 開いているファイル。main.fxma は消せない。ほかのファイルは werer でも fxma:memoid でも読める
+// 開いているファイル。main.fxma は消せない。ほかのファイルは werer でも :memoid でも読める
 const files = new Map([[mainFile, sample]]);
 let current = mainFile;
 
@@ -128,7 +128,7 @@ runButton.addEventListener("click", () =>
     const others = Object.fromEntries([...files].filter(([name]) => name !== mainFile));
     const r = await run(files.get(mainFile), { stdin: stdin.value, files: others });
     show(r.stdout, r.stderr, `shid ${r.exitCode}`);
-    // fxma:memoid で書いたファイルもタブに出す
+    // :memoid で書いたファイルもタブに出す
     for (const [name, content] of Object.entries(r.files)) files.set(name, content);
     // 開いているファイルが書き換わったときだけ作り直す (取り消しの履歴を消さないため)
     if (files.get(current) !== view.state.doc.toString()) view.setState(stateFor(files.get(current)));

@@ -1,9 +1,9 @@
-# fxma:destimay
+# :destimay
 
 乱数。辞書の意味は「運命」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:destimay" aste destimay werer
+":destimay" aste destimay werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript |

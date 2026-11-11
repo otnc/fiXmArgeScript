@@ -35,19 +35,19 @@ type Options struct {
 	External func(path string) (string, error)
 	// WorkDir は今いる場所 (izanavited no defutai、memoid の相対パス)。空ならブラウザ版と同じく /。
 	WorkDir string
-	// FS は fxma:memoid が使うファイル。nil なら memoid の関数は Ca-nay (ブラウザ版)。
+	// FS は :memoid が使うファイル。nil なら memoid の関数は Ca-nay (ブラウザ版)。
 	FS afero.Fs
 	// Watch は memoid no nozuki が使う。path (今いる場所を足した絶対パス) のファイルか、フォルダの直下が変わるたびに、
 	// 変わったものの名前 (フォルダの中なら最後の部分) を send に渡し、done が閉じたら止める。すぐに戻る。nil なら Ca-nay。
 	Watch func(path string, send func(name string), done <-chan struct{}) error
-	// Process は fxma:ieviljio が使う今のプロセスの情報。nil なら空の情報で、魔女は生めない (ブラウザ版)。
+	// Process は :ieviljio が使う今のプロセスの情報。nil なら空の情報で、魔女は生めない (ブラウザ版)。
 	Process *Process
-	// HTTPClient は fxma:gemon が使う。nil なら通信は Ca-nay。
+	// HTTPClient は :gemon が使う。nil なら通信は Ca-nay。
 	HTTPClient *http.Client
 	// Serve は gemon no nozuki が使う。port で受け付けを始めてすぐに戻り、リクエストを handler に渡し、done が閉じたら止める。
 	// nil ならサーバーは Ca-nay。
 	Serve func(port int, handler http.Handler, done <-chan struct{}) error
-	// Now と Location は時刻とタイムゾーン (fxma:toim)。nil なら time.Now と time.Local。
+	// Now と Location は時刻とタイムゾーン (:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
 }

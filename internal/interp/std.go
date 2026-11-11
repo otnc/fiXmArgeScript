@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
-// stdPackages は "fxma:名前" で読み込める標準パッケージ。キーは lexicon の骨格。
+// stdPackages は ":名前" で読み込める標準パッケージ。キーは lexicon の骨格。
 // 標準パッケージの関数が werer の処理を呼び返すので、変数の初期化の循環を避けて init で入れる。
 var stdPackages map[string]func() *Module
 
@@ -68,7 +68,7 @@ type StdFuncInfo struct {
 	Itsver   bool // praylee で待つ
 }
 
-// StdFunc は "fxma:pkg" の name が関数ならその性質を返す。pkg は "meme" のような骨格。
+// StdFunc は ":pkg" の name が関数ならその性質を返す。pkg は "meme" のような骨格。
 func StdFunc(pkg, name string) (StdFuncInfo, bool) {
 	newPkg, ok := stdPackages[pkg]
 	if !ok {
@@ -81,7 +81,7 @@ func StdFunc(pkg, name string) (StdFuncInfo, bool) {
 	return StdFuncInfo{Abiryoku: b.Abiryoku, Itsver: b.Itsver}, true
 }
 
-// StdMembers は "fxma:pkg" の中の名前を並べて返す。pkg は "meme" のような骨格。なければ nil。
+// StdMembers は ":pkg" の中の名前を並べて返す。pkg は "meme" のような骨格。なければ nil。
 func StdMembers(pkg string) []string {
 	newPkg, ok := stdPackages[pkg]
 	if !ok {

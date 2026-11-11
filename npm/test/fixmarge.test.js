@@ -15,14 +15,14 @@ test("run reports errors", async () => {
 });
 
 test("files are shared by werer and memoid", async () => {
-  const src = '"./util" no double werer\n"fxma:memoid" aste memoid werer\nmemoid no surc("out.txt", "#{double(21)}")\n';
+  const src = '"./util" no double werer\n":memoid" aste memoid werer\nmemoid no surc("out.txt", "#{double(21)}")\n';
   const r = await run(src, { files: { "util.fxma": "oqun weho double(n)\n  n * 2 itswa\nfinend\n" } });
   assert.equal(r.stderr, "");
   assert.equal(r.files["out.txt"], "42");
 });
 
 test("exit code and args", async () => {
-  const src = '"fxma:ieviljio" aste p werer\ndv izu p no diviljio()\ndv no "conwa" redogh\ndv no "wid" redogh\ndv no "shid"(3)\n';
+  const src = '":ieviljio" aste p werer\ndv izu p no diviljio()\ndv no "conwa" redogh\ndv no "wid" redogh\ndv no "shid"(3)\n';
   const r = await run(src, { args: ["a"] });
   assert.deepEqual([r.stdout, r.exitCode], ['["a"]\nnode\n', 3]);
 });

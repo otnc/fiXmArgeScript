@@ -29,15 +29,15 @@
 
 `.fxma`・`.fxmac`・`fixmarge.mod` (パッケージのファイル)・`fixmarge.sum` (ロックファイル) にアイコンが付きます。vscode-icons などのアイコンテーマを使っていても、テーマがアイコンを持っていないファイルにはこの拡張のアイコンが出ます。
 
-アイコンテーマを使っていないなら、「ファイル アイコンのテーマ」で「fiXmArge Script のファイルアイコン (補助)」を選ぶと、fxma のファイルにだけアイコンが付きます。
+アイコンテーマを使っていないなら、「ファイル アイコンのテーマ」で「fiXmArge Script のファイルアイコン (補助)」を選ぶと、fiXmArge Script のファイルにだけアイコンが付きます。
 
 ## 設定
 
 | 設定 | 既定 | 説明 |
 | --- | --- | --- |
-| `fxma.path` | `fixmarge` | 言語サーバーとして動かす `fixmarge` の場所。既定では `PATH` から探します |
+| `fixmarge.path` | `fixmarge` | 言語サーバーとして動かす `fixmarge` の場所。既定では `PATH` から探します |
 
-`Nii eXi' fixmarge` と出たら、`fixmarge` が見つかっていません。`fixmarge` を入れるか、`fxma.path` に場所を書いてください。
+`Nii eXi' fixmarge` と出たら、`fixmarge` が見つかっていません。`fixmarge` を入れるか、`fixmarge.path` に場所を書いてください。
 
 ## ライセンス
 

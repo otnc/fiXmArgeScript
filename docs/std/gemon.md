@@ -1,9 +1,9 @@
-# fxma:gemon
+# :gemon
 
 通信。辞書の意味は「門」。外の世界との出入り口なので「門」にしました。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
 
 ```
-"fxma:gemon" aste gemon werer
+":gemon" aste gemon werer
 ```
 
 | 書き方 | 清書 | 辞書の意味 | 中身 | JavaScript (Node.js) |

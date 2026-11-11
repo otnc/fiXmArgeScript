@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// StdPrefix は標準パッケージの読み込み先の頭 (Node.js の node: と同じ)。
-const StdPrefix = "fxma:"
+// StdPrefix は標準パッケージの読み込み先の頭 (Node.js の node: から node を省いた形)。
+const StdPrefix = ":"
 
 // Local は "./util" や "../lib/util" を、読み込む側のファイル from からの相対パスとして解決する。
 // ./ か ../ で始まらなければ false。

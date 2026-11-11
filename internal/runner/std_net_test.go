@@ -10,7 +10,7 @@ import (
 )
 
 func TestStdKeyga(t *testing.T) {
-	head := "\"fxma:keyga\" aste keyga werer\n"
+	head := "\":keyga\" aste keyga werer\n"
 	cases := []testCase{
 		{name: "sha256", src: head + "keyga no hex(keyga no sha256(\"abc\")) redogh\nnang(keyga no sha512(sanand(\"abc\"))) redogh\n", stdout: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\n64\n"},
 		{name: "hmac", src: head + "keyga no hex(keyga no hmac(\"key\", \"The quick brown fox jumps over the lazy dog\")) redogh\nnang(keyga no hmac(\"key\", \"x\", \"sha512\")) redogh\n", stdout: "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8\n64\n"},
@@ -37,12 +37,12 @@ func TestStdGemon(t *testing.T) {
 		io.WriteString(w, r.Method+" "+r.URL.Path+" "+string(body))
 	}))
 	defer server.Close()
-	head := "\"fxma:gemon\" aste gemon werer\nurl izu \"" + server.URL + "\"\n"
+	head := "\":gemon\" aste gemon werer\nurl izu \"" + server.URL + "\"\n"
 	cases := []testCase{
 		{name: "get", src: head + "r izu gemon no fineclowt(url + \"/hello\") praylee\nr no \"emojoh\" redogh\nr no \"coword\" redogh\n", stdout: "200\nGET /hello \n"},
 		{name: "post", src: head + "r izu gemon no fineclowt(url, {\"hate\": \"post\", \"coword\": \"hi\", \"fayo\": {\"X-Name\": \"fxma\"}}) praylee\nr no \"coword\" redogh\nr no \"fayo\" no \"x-echo\" redogh\n", stdout: "POST / hi\nfxma\n"},
 		{name: "404 is not an error", src: head + "(gemon no fineclowt(url + \"/missing\") praylee) no \"emojoh\" redogh\n", stdout: "404\n"},
-		{name: "unreachable", src: "\"fxma:gemon\" aste gemon werer\nteitance\n  gemon no fineclowt(\"http://127.0.0.1:1/\") praylee\nyoulugive e\n  e no \"chidd\" redogh\nfinend\n", stdout: "Ca-nay\n"},
+		{name: "unreachable", src: "\":gemon\" aste gemon werer\nteitance\n  gemon no fineclowt(\"http://127.0.0.1:1/\") praylee\nyoulugive e\n  e no \"chidd\" redogh\nfinend\n", stdout: "Ca-nay\n"},
 		{name: "unknown key", src: head + "gemon no fineclowt(url, {\"zzz\": 1})\n", err: diag.NiiExi},
 		{name: "server not yet", src: head + "gemon no nozuki(8080, weho (req) {} itswa finend)\n", err: diag.CaNay},
 	}
@@ -50,7 +50,7 @@ func TestStdGemon(t *testing.T) {
 		c.client = server.Client()
 		runCase(t, c)
 	}
-	runCase(t, testCase{name: "no client", src: "\"fxma:gemon\" aste gemon werer\ngemon no fineclowt(\"http://x\")\n", err: diag.CaNay})
+	runCase(t, testCase{name: "no client", src: "\":gemon\" aste gemon werer\ngemon no fineclowt(\"http://x\")\n", err: diag.CaNay})
 
 	// 取得した後の選択肢で巻き戻っても、送り直さない
 	sent = 0
