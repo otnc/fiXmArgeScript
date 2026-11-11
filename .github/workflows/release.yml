@@ -62,6 +62,43 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+  # npm の Trusted Publishing で公開する。トークンを置かずに済み、provenance も付く
+  npm:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      TAG: ${{ needs.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: node npm/build.mjs
+      - name: Publish
+        working-directory: npm
+        run: |
+          version=${TAG#v}
+          # dist-tag はプレリリースなら識別子 (0.2.0-rc.1 なら rc)、正式版なら latest
+          case "$version" in
+            *-*)
+              dist_tag=${version#*-}
+              dist_tag=${dist_tag%%.*}
+              ;;
+            *) dist_tag=latest ;;
+          esac
+          # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
+          npm pkg set version="$version"
+          npm publish --tag "$dist_tag"
+
   # Inno Setup は Windows でしか動かないので、Releases の Windows 向けの zip からセットアップを作って足す
   installer:
     needs: release
@@ -118,3 +155,10 @@ jobs:
           gh release download "$TAG" -p checksums.txt --clobber
           sha256sum "$vsix" >> checksums.txt
           gh release upload "$TAG" "$vsix" checksums.txt --clobber
+      # Marketplace は 0.2.0-rc.1 のようなプレリリースの版を受け付けないので、正式版だけ出す
+      - name: Publish to Marketplace
+        if: ${{ !contains(needs.release.outputs.tag, '-') }}
+        working-directory: editors/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --packagePath "fixmarge_${TAG#v}_vscode.vsix"
