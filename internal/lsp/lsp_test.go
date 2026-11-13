@@ -125,6 +125,46 @@ func TestDefinition(t *testing.T) {
 	}, got)
 }
 
+// 外部パッケージは、読み込み先に書いた版 (@1 と @2) ごとに、.fixmarge の別のフォルダの定義に飛ぶ。
+func TestDefinitionInVersionedPackage(t *testing.T) {
+	server, e := connect(t)
+	dir := t.TempDir()
+	write := func(name, text string) string {
+		path := filepath.Join(dir, filepath.FromSlash(name))
+		require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
+		require.NoError(t, os.WriteFile(path, []byte(text), 0o644))
+		return path
+	}
+	write("fixmarge.mod", "ado github.com/me/app\n\nneyo github.com/alice/strs v1.2.0\nneyo github.com/alice/strs v2.0.1\n")
+	const strs = "oqun weho shout(s)\n  s itswa\nfinend\n"
+	v1 := write(".fixmarge/github.com/alice/strs@v1.2.0/strs.fxma", strs)
+	v2 := write(".fixmarge/github.com/alice/strs@v2.0.1/strs.fxma", "\n"+strs)
+	mainPath := filepath.Join(dir, "main.fxma")
+	diags := open(t, server, e, mainPath, "\"github.com/alice/strs@1\" aste old werer\n\"github.com/alice/strs@2\" no shout werer\nold no shout(\"a\") redogh\nshout(\"b\") redogh\n")
+	require.Empty(t, diags)
+
+	for _, c := range []struct {
+		pos  protocol.TextDocumentPositionParams
+		file string
+		line uint32
+	}{
+		{at(mainPath, 2, 8), v1, 0},
+		{at(mainPath, 3, 2), v2, 1},
+	} {
+		got, err := server.Definition(t.Context(), &protocol.DefinitionParams{TextDocumentPositionParams: c.pos})
+		require.NoError(t, err)
+		require.Equal(t, &protocol.Location{
+			URI:   uri.File(c.file),
+			Range: protocol.Range{Start: protocol.Position{Line: c.line, Character: 10}, End: protocol.Position{Line: c.line, Character: 15}},
+		}, got)
+	}
+
+	// 補完にも、その版が公開している名前が出る
+	list, err := server.Completion(t.Context(), &protocol.CompletionParams{TextDocumentPositionParams: at(mainPath, 2, 7)})
+	require.NoError(t, err)
+	require.Contains(t, labels(t, list), "shout")
+}
+
 func TestHover(t *testing.T) {
 	server, _, mainPath, _ := setup(t)
 	got, err := server.Hover(t.Context(), &protocol.HoverParams{TextDocumentPositionParams: at(mainPath, 5, 17)})
