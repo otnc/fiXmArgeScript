@@ -2,6 +2,7 @@ package interp
 
 import (
 	"errors"
+	"slices"
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/diag"
@@ -326,16 +327,9 @@ func (in *Interp) assignIndex(s *ast.Assign, t *ast.Index, value Value, env *Env
 	}
 	switch c := container.(type) {
 	case *Array:
-		i, ok := toIndex(key)
-		if !ok {
-			return in.errorf(diag.ImJune, t.Pos, Display(key))
-		}
-		n := int64(len(c.Elems))
-		if i < 0 {
-			i += n
-		}
-		if i < 0 || i >= n {
-			return in.errorf(diag.NiiExi, t.Pos, Display(key))
+		i, err := in.position(key, len(c.Elems), t.Pos)
+		if err != nil {
+			return err
 		}
 		c.Elems[i] = value
 		return nil
@@ -368,8 +362,6 @@ func (in *Interp) assignSlice(s *ast.Assign, t *ast.Slice, value Value, env *Env
 	if err != nil {
 		return err
 	}
-	elems := append([]Value(nil), arr.Elems[:lo]...)
-	elems = append(elems, repl.Elems...)
-	arr.Elems = append(elems, arr.Elems[hi:]...)
+	arr.Elems = slices.Concat(arr.Elems[:lo], repl.Elems, arr.Elems[hi:])
 	return nil
 }

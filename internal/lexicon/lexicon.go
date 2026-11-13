@@ -162,10 +162,10 @@ func Meaning(name string) string {
 
 // Words は表の語をすべて返す。
 func Words() []Word {
-	return append([]Word(nil), words...)
+	return slices.Clone(words)
 }
 
 // Entries は2語の名前も含めた、下書きに書ける名前をすべて返す。
 func Entries() []Entry {
-	return append([]Entry(nil), longestFirst...)
+	return slices.Clone(longestFirst)
 }

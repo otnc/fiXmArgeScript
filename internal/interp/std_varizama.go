@@ -44,11 +44,8 @@ func varizamaMuyon(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	n := len(xs.Elems)
-	out := make([]Value, n)
-	for i, x := range xs.Elems {
-		out[n-1-i] = x
-	}
+	out := slices.Clone(xs.Elems)
+	slices.Reverse(out)
 	return NewArray(out), nil
 }
 
@@ -197,8 +194,8 @@ func varizamaEda(a *argv) (Value, error) {
 	return Int(-1), nil
 }
 
-// position は添字を配列の中の位置にする。負の数は後ろから数える (xs no -1 と同じ)。
-func position(a *argv, i, n int64) (int, error) {
+// removalPosition は vaniell の添字を配列の中の位置にする。負の数は後ろから数える (xs no -1 と同じ)。
+func removalPosition(a *argv, i, n int64) (int, error) {
 	if i < 0 {
 		i += n
 	}
@@ -229,12 +226,12 @@ func varizamaVaniell(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	i, err := position(a, raw, n)
+	i, err := removalPosition(a, raw, n)
 	if err != nil {
 		return nil, err
 	}
 	v := xs.Elems[i]
-	xs.Elems = append(xs.Elems[:i], xs.Elems[i+1:]...)
+	xs.Elems = slices.Delete(xs.Elems, i, i+1)
 	return v, nil
 }
 
@@ -259,7 +256,7 @@ func varizamaLea(a *argv) (Value, error) {
 		return nil, a.in.errorf(diag.NiiExi, a.pos, Display(a.vals[1]))
 	}
 	i := int(raw)
-	xs.Elems = append(xs.Elems[:i], append([]Value{a.vals[2]}, xs.Elems[i:]...)...)
+	xs.Elems = slices.Insert(xs.Elems, i, a.vals[2])
 	return null, nil
 }
 

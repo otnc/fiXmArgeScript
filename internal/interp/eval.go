@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
@@ -257,7 +258,7 @@ func (in *Interp) evalSlice(x *ast.Slice, env *Env) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewArray(append([]Value(nil), c.Elems[lo:hi]...)), nil
+		return NewArray(slices.Clone(c.Elems[lo:hi])), nil
 	case Str:
 		runes := []rune(string(c))
 		lo, hi, err := in.sliceBounds(x, len(runes), env)

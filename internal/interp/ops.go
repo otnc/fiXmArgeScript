@@ -5,6 +5,7 @@ import (
 	"math"
 	"slices"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
@@ -464,36 +465,42 @@ func (r *Range) next(i int64) (int64, bool) {
 	return n, (n > i) == (r.Step > 0) && r.contains(n)
 }
 
+// position は添字 key を、長さ n の並びの中の位置にする。負の数は後ろから数える (xs no -1)。
+// 添字に使えない値なら imJune、並びの外なら Nii eXi'。
+func (in *Interp) position(key Value, n int, pos token.Pos) (int, error) {
+	i, ok := toIndex(key)
+	if !ok {
+		return 0, in.errorf(diag.ImJune, pos, Display(key))
+	}
+	if i < 0 {
+		i += int64(n)
+	}
+	if i < 0 || i >= int64(n) {
+		return 0, in.errorf(diag.NiiExi, pos, Display(key))
+	}
+	return int(i), nil
+}
+
 // index は A no B。
 func (in *Interp) index(container, key Value, pos token.Pos) (Value, error) {
 	switch c := container.(type) {
 	case *Array:
-		i, ok := toIndex(key)
-		if !ok {
-			return nil, in.errorf(diag.ImJune, pos, Display(key))
-		}
-		n := int64(len(c.Elems))
-		if i < 0 {
-			i += n
-		}
-		if i < 0 || i >= n {
-			return nil, in.errorf(diag.NiiExi, pos, Display(key))
+		i, err := in.position(key, len(c.Elems), pos)
+		if err != nil {
+			return nil, err
 		}
 		return c.Elems[i], nil
 	case Str:
-		i, ok := toIndex(key)
-		if !ok {
-			return nil, in.errorf(diag.ImJune, pos, Display(key))
+		i, err := in.position(key, utf8.RuneCountInString(string(c)), pos)
+		if err != nil {
+			return nil, err
 		}
-		runes := []rune(string(c))
-		n := int64(len(runes))
-		if i < 0 {
-			i += n
+		for _, r := range string(c) {
+			if i == 0 {
+				return Str(string(r)), nil
+			}
+			i--
 		}
-		if i < 0 || i >= n {
-			return nil, in.errorf(diag.NiiExi, pos, Display(key))
-		}
-		return Str(string(runes[i])), nil
 	case *Dict:
 		k, ok := key.(Str)
 		if !ok {
