@@ -115,11 +115,7 @@ func importFile(from, path string) (string, bool) {
 	if !modpath.External(path) {
 		return "", false
 	}
-	root, err := modfetch.DefaultRoot()
-	if err != nil {
-		return "", false
-	}
-	m, err := modload.Load(filepath.Dir(filepath.FromSlash(from)), &modfetch.Fetcher{Root: root})
+	m, err := modload.Load(filepath.Dir(filepath.FromSlash(from)), &modfetch.Fetcher{})
 	if err != nil {
 		return "", false
 	}

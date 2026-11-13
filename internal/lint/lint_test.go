@@ -14,7 +14,7 @@ func lint(t *testing.T, src string, allowed ...string) []string {
 		t.Fatalf("%q: %v", src, err)
 	}
 	var out []string
-	for _, fd := range File(f, src, allowed) {
+	for _, fd := range File(f, src, allowed, nil) {
 		out = append(out, fd.String())
 	}
 	return out
@@ -74,7 +74,23 @@ func TestShoubekInTest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := File(f, "", nil); len(got) != 0 {
+	if got := File(f, "", nil, nil); len(got) != 0 {
 		t.Errorf("%v", got)
+	}
+}
+
+// グローバルに入れたパッケージを補欠として読む werer を WiD で指摘する。
+func TestGlobalImport(t *testing.T) {
+	src := "\"github.com/alice/strs\" aste strs werer\n\"github.com/bob/util\" aste util werer\n\"./lib\" aste lib werer\nstrs redogh\nutil redogh\nlib redogh\n"
+	f, err := parser.Parse(src, "main.fxma")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := File(f, src, nil, func(importPath string) bool { return importPath == "github.com/bob/util" })
+	if len(got) != 1 || got[0].String() != "LaVI WiD main.fxma:2:1 github.com/bob/util" {
+		t.Errorf("%v", got)
+	}
+	if got := File(f, src, []string{WiD}, func(string) bool { return true }); len(got) != 0 {
+		t.Errorf("youlugive wid でも指摘した: %v", got)
 	}
 }

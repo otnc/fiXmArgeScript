@@ -23,6 +23,10 @@ const (
 	Sum  = "fixmarge.sum"
 )
 
+// PackagesDir は取ってきたパッケージを置くフォルダ (npm の node_modules)。fixmarge.mod と同じ場所に作る。
+// 中は github.com/alice/strs@v1.2.0 のように、名前と版のフォルダを並べる。
+const PackagesDir = ".fixmarge"
+
 // 項目名。語の表 (ModField) にあるものだけを使う。
 var (
 	fieldModule  = field("ado")
@@ -161,7 +165,10 @@ func (f *File) ReplaceDir(path string) string {
 func (f *File) Format() []byte {
 	var b strings.Builder
 	line := func(format string, args ...any) { fmt.Fprintf(&b, format+"\n", args...) }
-	line("%s %s", fieldModule, f.Module)
+	// グローバルに入れたパッケージの一覧 (fixmarge werer --wid) には名前がない
+	if f.Module != "" {
+		line("%s %s", fieldModule, f.Module)
+	}
 	if f.Purpose != "" {
 		line("%s %s", fieldPurpose, strconv.Quote(f.Purpose))
 	}

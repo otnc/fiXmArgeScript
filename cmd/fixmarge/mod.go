@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/urfave/cli/v3"
@@ -44,17 +45,87 @@ func checkPackages(dir string) error {
 	return err
 }
 
+// loadModule は dir から上にたどった fixmarge.mod のパッケージ。fixmarge.mod に合う版のない読み込み先は、
+// グローバルに入れたもの (fixmarge werer --wid) を補欠にする。
+// fixmarge.mod がなければ、グローバルに入れたものだけを読める (使い捨てのファイルと fixmarge hak のため)。
 func loadModule(dir string) (*modload.Module, error) {
-	root, err := modfetch.DefaultRoot()
+	m, err := modload.Load(dir, &modfetch.Fetcher{})
+	if err != nil {
+		if g := globalModule(); g != nil && modfile.Find(dir) == "" {
+			return g, nil
+		}
+		return nil, err
+	}
+	m.FxmaVersion = moduleVersion()
+	m.Global = globalModule
+	return m, nil
+}
+
+// globalDir はグローバルに入れたパッケージの置き場所。fixmarge.mod と fixmarge.sum と .fixmarge を持つ、プロジェクトと同じ形のフォルダ。
+// 環境変数 FIXMARGE_WID があればそこ、なければ OS の設定の場所の fixmarge/wid。
+func globalDir() (string, error) {
+	if dir := os.Getenv("FIXMARGE_WID"); dir != "" {
+		return dir, nil
+	}
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "fixmarge", "wid"), nil
+}
+
+// globalModule はグローバルに入れたパッケージ。まだ何も入れていないか、読めなければ nil。
+var globalModule = sync.OnceValue(func() *modload.Module {
+	dir, err := globalDir()
+	if err != nil {
+		return nil
+	}
+	if _, err := os.Stat(filepath.Join(dir, modfile.Name)); err != nil {
+		return nil
+	}
+	m, err := modload.Load(dir, &modfetch.Fetcher{})
+	if err != nil {
+		return nil
+	}
+	m.FxmaVersion = moduleVersion()
+	return m
+})
+
+// newGlobalModule は fixmarge werer --wid と fixmarge unneyo --wid が書き換えるグローバルのパッケージ。なければ空の一覧を作る。
+func newGlobalModule() (*modload.Module, error) {
+	dir, err := globalDir()
 	if err != nil {
 		return nil, err
 	}
-	m, err := modload.Load(dir, &modfetch.Fetcher{Root: root})
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return nil, err
+	}
+	name := filepath.Join(dir, modfile.Name)
+	if _, err := os.Stat(name); err != nil {
+		if err := os.WriteFile(name, nil, 0o644); err != nil {
+			return nil, err
+		}
+	}
+	m, err := modload.Load(dir, &modfetch.Fetcher{})
 	if err != nil {
 		return nil, err
 	}
 	m.FxmaVersion = moduleVersion()
 	return m, nil
+}
+
+// fromGlobal は、ファイル path の werer がグローバルに入れたものを補欠として読むかを調べる関数を返す (fixmarge lavi の WiD)。
+// fixmarge.mod のないファイルは、グローバルから読むのがふつうなので調べない。
+func fromGlobal(path string) func(importPath string) bool {
+	dir := filepath.Dir(path)
+	if modfile.Find(dir) == "" {
+		return nil
+	}
+	m, err := loadModule(dir)
+	if err != nil {
+		return nil
+	}
+	return func(importPath string) bool { return m.FromGlobal(path, importPath) }
 }
 
 // werer は fixmarge werer [<パッケージ>[@<版>]]。取ってきて fixmarge.mod と fixmarge.sum に書く。
@@ -64,7 +135,7 @@ func (s streams) werer(_ context.Context, cmd *cli.Command) error {
 		s.usage(s.stderr)
 		return exitCode(2)
 	}
-	m, err := s.workModule()
+	m, err := s.workModule(cmd)
 	switch {
 	case err != nil:
 	case cmd.Args().Len() == 0:
@@ -81,7 +152,7 @@ func (s streams) unneyo(_ context.Context, cmd *cli.Command) error {
 		s.usage(s.stderr)
 		return exitCode(2)
 	}
-	m, err := s.workModule()
+	m, err := s.workModule(cmd)
 	if err == nil {
 		err = m.Remove(modfile.SplitSpec(cmd.Args().First()))
 	}
@@ -108,21 +179,29 @@ func (s streams) adoMeif(_ context.Context, cmd *cli.Command) error {
 }
 
 // adoSaymal は fixmarge ado saymal。ソースの werer に合わせて fixmarge.mod と fixmarge.sum をそろえ直す。
-func (s streams) adoSaymal(context.Context, *cli.Command) error {
-	m, err := s.workModule()
+func (s streams) adoSaymal(_ context.Context, cmd *cli.Command) error {
+	m, err := s.workModule(cmd)
 	if err == nil {
 		err = m.Tidy()
 	}
 	return s.report(err)
 }
 
-// workModule は今いる場所から上にたどった fixmarge.mod のパッケージ。
-func (s streams) workModule() (*modload.Module, error) {
+// workModule はコマンドが書き換えるパッケージ。--wid ならグローバル、なければ今いる場所から上にたどった fixmarge.mod のもの。
+func (s streams) workModule(cmd *cli.Command) (*modload.Module, error) {
+	if cmd.Bool("wid") {
+		return newGlobalModule()
+	}
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-	return loadModule(wd)
+	m, err := modload.Load(wd, &modfetch.Fetcher{})
+	if err != nil {
+		return nil, err
+	}
+	m.FxmaVersion = moduleVersion()
+	return m, nil
 }
 
 // report はエラーがあれば出して終了コード1にする。

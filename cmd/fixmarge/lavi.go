@@ -51,7 +51,7 @@ func (s streams) lintFile(path string) bool {
 		fmt.Fprintln(s.stderr, err)
 		return false
 	}
-	findings := lint.File(f, string(src), modfile.AllowedRules(filepath.Dir(path)))
+	findings := lint.File(f, string(src), modfile.AllowedRules(filepath.Dir(path)), fromGlobal(path))
 	for _, fd := range findings {
 		fmt.Fprintln(s.stdout, fd)
 	}

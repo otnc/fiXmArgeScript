@@ -841,7 +841,7 @@ twice("Mof" redogh)  # Mof を2回出力する
 
 ## パッケージとモジュール
 
-1つのファイルが1つのパッケージです。読み込みは「名前を付ける」か「個別に読み込む」の2通りだけで、名前を付けずに読み込む形はありません。外部パッケージは、Goと同じくGitのリポジトリから取ってきますが、版の決め方はnpmに近い仕組みです。
+1つのファイルが1つのパッケージです。読み込みは「名前を付ける」か「個別に読み込む」の2通りだけで、名前を付けずに読み込む形はありません。外部パッケージは、Goと同じくGitのリポジトリから取ってきますが、版の決め方と置き場所はnpmに近い仕組みです。取ってきたものはプロジェクトごとのフォルダに置き、パソコンで共有する置き場所は持ちません。
 
 ### 読み込みと公開
 
@@ -989,7 +989,9 @@ import * as strs from "strs";
 - `fixmarge unneyo` で外すものが入っていなければ `Nii eXi'` です。シェルによっては `@*` を引用符で囲みます。
 - どのコマンドも、`fixmarge.mod` を書き換えた後に、そこからたどれるパッケージをすべて取ってきて `fixmarge.sum` を作り直します。途中で失敗したら、どちらのファイルも書き換えません。
 - ダウンロードするのは `fixmarge werer` と `fixmarge ado saymal` のときだけで、`fixmarge keeon` の途中ではダウンロードしません。
-- ダウンロードしたものはOSのキャッシュの場所 (Linuxは `~/.cache/fixmarge/mod`、Windowsは `%LocalAppData%\fixmarge\mod`、macOSは `~/Library/Caches/fixmarge/mod`) に置き、プロジェクトの間で使い回します。環境変数 `FIXMARGE_CACHE` を設定すると、その下の `mod` に置きます。`fixmarge unneyo` はキャッシュからは消しません。
+- ダウンロードしたものは、`fixmarge.mod` と同じ場所の `.fixmarge` フォルダに置きます (npmの `node_modules`)。中は `github.com/alice/strs@v1.2.0` のように名前と版のフォルダが並び、間接的に使うものも同じ所に並びます。プロジェクトの間で使い回す置き場所はないので、ほかのプロジェクトの影響を受けず、プロジェクトのフォルダを消せば全部消えます。
+- どのコマンドも、もう使わない版のフォルダを `.fixmarge` から消します。
+- `.fixmarge` はGitに入れません (`.gitignore` に書きます)。入れるのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` で同じものをそろえます。
 - `fixmarge.sum` のハッシュはGoの `go.sum` と同じ `h1:` の形です (ファイルごとのSHA-256をまとめたもの)。
 - `lainei` で手元のフォルダに置き換えたパッケージは、ダウンロードもハッシュの確認もせず、`fixmarge.sum` にも書きません。
 - `fixmarge ado saymal` は、パッケージの下書き (`.fxma`) の `werer` を集めて使う版を決め直します。清書 (`.fxmac`)、`.` で始まるフォルダ、別の `fixmarge.mod` があるフォルダは見ません。合う版が入っていない `werer` は、名前の長い方からリポジトリを探して、合ういちばん新しい版を足します。どの `werer` も指していない版は外します。読み込み先のファイルがなければ、その `werer` の位置で `Nii eXi'` です。
@@ -999,7 +1001,7 @@ import * as strs from "strs";
 
 | 確かめること | 合わないとき |
 | --- | --- |
-| `fixmarge.mod` からたどれるパッケージが、どれもキャッシュにある | `Nii eXi'` (引数なしの `fixmarge werer` で取ってくる) |
+| `fixmarge.mod` からたどれるパッケージが、どれも `.fixmarge` にある | `Nii eXi'` (引数なしの `fixmarge werer` で取ってくる) |
 | たどれるパッケージの一覧が、`fixmarge.sum` の一覧と同じ (足りなくても余っていても合わない) | `CraeyTA'` |
 | 読み込むパッケージの中身のハッシュが `fixmarge.sum` と同じ (読み込むときに確かめる) | `CraeyTA'` |
 
@@ -1010,8 +1012,36 @@ import * as strs from "strs";
 | `"github.com/alice/strs" aste strs werer` | パッケージの直下の `strs.fxma` (名前の最後と同じ) | `import * as strs from "strs"` |
 | `"github.com/alice/strs/case" aste c werer` | パッケージの直下の `case.fxma` | `import * as c from "strs/case"` |
 
-- 外部パッケージは、清書を実行しているときも下書き (`.fxma`) を読みます。キャッシュの中身は書き換えないためです。
+- 外部パッケージは、清書を実行しているときも下書き (`.fxma`) を読みます。`.fixmarge` の中身は書き換えないためです。
 - 外部パッケージの中の `"./util"` は、そのパッケージの中のファイルを読みます。
+
+### グローバルに入れる (fixmarge werer --wid)
+
+JavaScript:
+
+```
+npm install -g strs
+```
+
+フィクスマージ語:
+
+```
+fixmarge werer --wid github.com/alice/strs
+fixmarge unneyo --wid github.com/alice/strs
+```
+
+- `--wid` (`WiD`、世界。英語の別名は `--global` と `-g`) を付けると、今いるプロジェクトではなく、グローバルの置き場所に入れます。置き場所はOSの設定の場所の `fixmarge/wid` (Windowsは `%AppData%\fixmarge\wid`、Linuxは `~/.config/fixmarge/wid`、macOSは `~/Library/Application Support/fixmarge/wid`) で、環境変数 `FIXMARGE_WID` で変えられます。
+- グローバルの置き場所は、`fixmarge.mod`・`fixmarge.sum`・`.fixmarge` を持つ、プロジェクトと同じ形のフォルダです。版の書き方も、同じパッケージの版をいくつも入れられることも同じです。
+- グローバルに入れたものを読めるのは、次の2つの場合です。
+
+| 読み込む側 | 読めるか |
+| --- | --- |
+| `fixmarge.mod` のないフォルダのファイルと `fixmarge hak` | 読める。使い捨てのスクリプトのため |
+| プロジェクトのファイル | 自分の `fixmarge.mod` に合う版がないときだけ、補欠として読める |
+| 取ってきたパッケージの中のファイル | 読めない (`Nii eXi'`) |
+
+- 公開するパッケージで、グローバルに入れたものを補欠として使うのは勧めません。自分のパソコンでは動きますが、そのパッケージを取ってきた人の所では読めないからです。`fixmarge lavi` が `WiD` の規則で指摘します (`LaVI WiD main.fxma:1:1 github.com/alice/strs`)。直すには `fixmarge werer` か `fixmarge ado saymal` で自分の `fixmarge.mod` に入れます。
+- 補欠として読むときも、中身のハッシュはグローバルの `fixmarge.sum` と比べます。グローバルの一覧が合っているか (起動時の確認) は、`fixmarge.mod` のないファイルを実行するときにだけ確かめます。グローバルが壊れていても、補欠を使わないプロジェクトは止まりません。
 
 取ってくるときのエラーは次のとおりです。
 
@@ -1173,7 +1203,7 @@ fixmarge sinruits --karady --os linux-arm64 main.fxma
 - 実行ファイルの中のファイルの名前は、`main.fxma` のあるフォルダからの相対パス (`lib/stats.fxmac`) と、外部パッケージの `github.com/alice/strs@v1.0.0/strs.fxma` です。手元の絶対パスを入れないためで、エラーの場所にもこの名前が出ます。
 - 実行ファイルに渡した引数は、オプションも含めてすべてプログラムに渡します (`dv no "conwa"`)。fixmargeのコマンドとしては動きません。
 - `--os` (`deno compile` と同じ `--target` でも書ける。短い形は `-o` と `-t`) で、作る先のOSとCPUを `linux-amd64` の形で選べます。選べるのは、リリースで配っている `linux`・`darwin`・`windows` と `amd64`・`arm64` の組み合わせです。省くと今のOS向けに作ります。
-- 今と違うOS向けに作るときは、手元のfixmargeと同じ版をGitHubのリリースから取ってきて、`checksums.txt` と合うかを確かめてから使います。取ってきたものはキャッシュ (`fixmarge.mod` のパッケージと同じ場所の `karady`) に置き、次からは取り直しません。タグから作った版でなければ、どの版を取ればよいか決まらないので `Ca-nay` です。
+- 今と違うOS向けに作るときは、手元のfixmargeと同じ版をGitHubのリリースから取ってきて、`checksums.txt` と合うかを確かめてから使います。取ってきたものはOSのキャッシュの場所の `fixmarge/karady` (環境変数 `FIXMARGE_CACHE` があればその下の `karady`) に置き、次からは取り直しません。タグから作った版でなければ、どの版を取ればよいか決まらないので `Ca-nay` です。
 
 ### 整形 (fixmarge beaukshi)
 
@@ -1205,6 +1235,7 @@ fixmarge sinruits --karady --os linux-arm64 main.fxma
 | `JokeDan` | 冗談 | 型が違うので必ず `ulieso` になる比較。`"1" senaji 1` など | TypeScriptの「常に false」の指摘 |
 | `sAiMoku` | 沈黙 | 中身のないブロック。例外を黙って握りつぶすのを防ぐ | ESLintの `no-empty` |
 | `dEs·lee` | 絶望 | 戻れる選択肢 (`mekamo`) がない場所の `shoubek`。偽になると必ず `Co-Jundic` になる | なし。この言語だけの指摘 |
+| `WiD` | 世界 | `fixmarge.mod` に入れていないパッケージを、グローバルに入れたもの (`fixmarge werer --wid`) から読んでいる `werer`。取ってきた人の所では読めない | ESLintの `import/no-extraneous-dependencies` |
 
 - 指摘の形は `LaVI <規則> <ファイル>:<行>:<列> <対象>` です (`LaVI anxAn main.fxma:12:3 greet`)。
 - ファイルやフォルダを渡せて、省くと今いる場所より下の `.fxma` を全部調べます (`fixmarge coatain` と同じ探し方)。

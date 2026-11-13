@@ -1,5 +1,5 @@
 // Package lint は、エラーにはならないけれど間違いのもとになる書き方を見つける (fixmarge lavi、法の悪魔)。
-// 規則は docs/RFC.md の「法の悪魔」の10個。実行せずに構文木を調べ、確かにそうだと言えるときだけ指摘する。
+// 規則は docs/RFC.md の「法の悪魔」の11個。実行せずに構文木を調べ、確かにそうだと言えるときだけ指摘する。
 package lint
 
 import (
@@ -27,6 +27,7 @@ const (
 	JokeDan  = "jokedan"
 	SAiMoku  = "saimoku"
 	DesLee   = "deslee"
+	WiD      = "wid"
 )
 
 // Finding は指摘1つ。
@@ -47,7 +48,9 @@ func (f Finding) String() string {
 }
 
 // File はファイル1つを調べる。src は行末の # lavi: を読むために使う。allowed は fixmarge.mod の youlugive で許した規則。
-func File(f *parser.File, src string, allowed []string) []Finding {
+// fromGlobal は、外部パッケージの読み込み先が、グローバルに入れたもの (fixmarge werer --wid) を読むことになるかを返す。
+// nil なら調べない。
+func File(f *parser.File, src string, allowed []string, fromGlobal func(importPath string) bool) []Finding {
 	l := newLinter(f)
 	for _, w := range f.Warnings {
 		l.report(DowGuil, w.Pos, w.From)
@@ -60,6 +63,9 @@ func File(f *parser.File, src string, allowed []string) []Finding {
 	l.uncheckedEda(f.Stmts)
 	l.comparisons(f.Stmts)
 	l.hopelessShoubek(f.Stmts)
+	if fromGlobal != nil {
+		l.globalImports(f.Stmts, fromGlobal)
+	}
 
 	silenced := silencedLines(src)
 	var out []Finding
@@ -115,6 +121,16 @@ func newLinter(f *parser.File) *linter {
 		return true
 	})
 	return l
+}
+
+// globalImports は、fixmarge.mod に入れていないパッケージを、グローバルに入れたものから読んでいる werer を指摘する。
+// 自分のパソコンでは動くが、このパッケージを取ってきた人の所では読めない。
+func (l *linter) globalImports(stmts []ast.Stmt, fromGlobal func(importPath string) bool) {
+	for _, imp := range ast.Imports(stmts) {
+		if modpath.External(imp.Path) && fromGlobal(imp.Path) {
+			l.report(WiD, imp.Pos, imp.Path)
+		}
+	}
 }
 
 func (l *linter) report(rule string, pos token.Pos, target string) {

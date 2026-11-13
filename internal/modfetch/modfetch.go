@@ -26,20 +26,12 @@ import (
 
 // Fetcher はパッケージの取得とキャッシュの場所を受け持つ。
 type Fetcher struct {
-	Root string                   // キャッシュのフォルダ (…/fixmarge/mod)
+	Root string                   // パッケージを置くフォルダ (プロジェクトの .fixmarge)
 	URL  func(path string) string // パッケージの名前から Git の URL を作る。nil なら https://<名前>
 }
 
-// DefaultRoot はパッケージのキャッシュのフォルダ。CacheDir の下の mod。
-func DefaultRoot() (string, error) {
-	dir, err := CacheDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(dir, "mod"), nil
-}
-
-// CacheDir は fixmarge のキャッシュのフォルダ。環境変数 FIXMARGE_CACHE があればそこ、なければ OS のキャッシュの場所の fixmarge。
+// CacheDir は fixmarge のキャッシュのフォルダ。外部パッケージではなく、sinruits --karady がほかの OS 向けに取ってくる fixmarge を置く。
+// 環境変数 FIXMARGE_CACHE があればそこ、なければ OS のキャッシュの場所の fixmarge。
 func CacheDir() (string, error) {
 	if dir := os.Getenv("FIXMARGE_CACHE"); dir != "" {
 		return dir, nil

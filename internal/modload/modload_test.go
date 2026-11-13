@@ -43,7 +43,7 @@ func newWorld(t *testing.T) *world {
 }
 
 func (w *world) fetcher() *modfetch.Fetcher {
-	return &modfetch.Fetcher{Root: w.cache, URL: func(p string) string { return "fxmatest://local/" + p + "/.git" }}
+	return &modfetch.Fetcher{URL: func(p string) string { return "fxmatest://local/" + p + "/.git" }}
 }
 
 // publish はパッケージ path のリポジトリを作り、releases を順にコミットしてタグを付ける。
@@ -342,4 +342,47 @@ func mustRead(t *testing.T, name string) string {
 	data, err := os.ReadFile(filepath.FromSlash(name))
 	require.NoError(t, err)
 	return string(data)
+}
+
+// 取ってきたものは fixmarge.mod と同じ場所の .fixmarge に置く。グローバルに入れたものは、自分のファイルの補欠にだけなる。
+func TestProjectFolderAndGlobalFallback(t *testing.T) {
+	w := newWorld(t)
+	strsRepo(w)
+	w.publish("github.com/bob/util", release{"v0.2.0", map[string]string{
+		"fixmarge.mod": modOf("github.com/bob/util"),
+		"util.fxma":    "\"github.com/alice/strs\" aste strs werer\noqun weho loud(s)\n  strs no shout(s) itswa\nfinend\n",
+	}})
+	global := w.project("", nil)
+	_, err := global.Get("github.com/alice/strs", "1.0")
+	require.NoError(t, err)
+
+	m := w.project("ado github.com/me/app\n", map[string]string{
+		"main.fxma": "\"github.com/alice/strs\" aste strs werer\nstrs no shout(\"a\") redogh\n",
+	})
+	main := filepath.ToSlash(filepath.Join(m.Dir, "main.fxma"))
+	_, err = m.Resolve(main, "github.com/alice/strs")
+	require.Equal(t, diag.NiiExi, kindOf(err), "グローバルを渡していなければ読めない")
+
+	m.Global = func() *Module { return global }
+	name, err := m.Resolve(main, "github.com/alice/strs")
+	require.NoError(t, err)
+	require.True(t, strings.HasPrefix(name, filepath.ToSlash(filepath.Join(global.Dir, modfile.PackagesDir))+"/"), name)
+	require.True(t, m.FromGlobal(main, "github.com/alice/strs"))
+
+	// 自分の fixmarge.mod に入れれば、自分の .fixmarge のものを読む
+	_, err = m.Get("github.com/alice/strs", "")
+	require.NoError(t, err)
+	name, err = m.Resolve(main, "github.com/alice/strs")
+	require.NoError(t, err)
+	require.Equal(t, filepath.ToSlash(filepath.Join(m.Dir, modfile.PackagesDir, "github.com/alice/strs@v1.1.0/strs.fxma")), name)
+	require.False(t, m.FromGlobal(main, "github.com/alice/strs"))
+
+	// 取ってきたパッケージの中のファイルは、補欠を使えない
+	require.NoError(t, m.Remove("github.com/alice/strs", "*"))
+	_, err = m.Get("github.com/bob/util", "")
+	require.NoError(t, err)
+	util, err := m.Resolve(main, "github.com/bob/util")
+	require.NoError(t, err)
+	_, err = m.Resolve(util, "github.com/alice/strs")
+	require.Equal(t, diag.NiiExi, kindOf(err))
 }

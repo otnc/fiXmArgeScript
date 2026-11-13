@@ -102,7 +102,39 @@ func (m *Module) sync(require []modfile.Version) error {
 		return err
 	}
 	m.deps, m.depsErr, m.collected = deps, nil, true
-	return m.save()
+	if err := m.save(); err != nil {
+		return err
+	}
+	return m.prune()
+}
+
+// prune は .fixmarge から、もう使わないパッケージのフォルダを消す (fixmarge unneyo で外したものなど)。
+func (m *Module) prune() error {
+	keep := map[string]bool{}
+	for v := range m.deps {
+		if dir, err := m.Fetcher.Dir(v); err == nil {
+			keep[dir] = true
+		}
+	}
+	root := m.Fetcher.Root
+	return filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			if p == root {
+				return nil // まだ何も取ってきていない
+			}
+			return err
+		}
+		// パッケージのフォルダは <名前>@<版>。名前に @ は入らない
+		if !d.IsDir() || !strings.Contains(d.Name(), "@") {
+			return nil
+		}
+		if !keep[p] {
+			if err := os.RemoveAll(p); err != nil {
+				return err
+			}
+		}
+		return filepath.SkipDir
+	})
 }
 
 // readPackage は dir に置いた版 v の fixmarge.mod を読む。

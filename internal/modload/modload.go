@@ -4,6 +4,7 @@
 // 版の決め方は npm に近い。fixmarge.mod には、そのパッケージのソースが直接読み込むパッケージの版を正確に書き、
 // 読み込み先の版は、読み込む側のパッケージの fixmarge.mod で決める。同じパッケージの違う版は、別のものとして両方読み込む。
 // 間接的に使うものまで含めた一覧とハッシュは fixmarge.sum に書く (npm の package-lock.json)。
+// 取ってきたものは、fixmarge.mod と同じ場所の .fixmarge に置く (npm の node_modules)。パソコンで共有する置き場所は持たない。
 package modload
 
 import (
@@ -28,6 +29,9 @@ type Module struct {
 	File    *modfile.File
 	Sums    Sums
 	Fetcher *modfetch.Fetcher
+	// Global はグローバルに入れたパッケージ (fixmarge werer --wid) を返す。nil か、返す値が nil なら使わない。
+	// いま作っているパッケージのファイルが、fixmarge.mod に合う版のない読み込み先を書いたときの補欠になる。
+	Global func() *Module
 	// FxmaVersion は手元の fxma の版。開発中の版 (空や (devel) や疑似版) なら neyo fxma の範囲を確かめない。
 	FxmaVersion string
 
@@ -43,10 +47,16 @@ type Module struct {
 }
 
 // Load は dir から上にたどって fixmarge.mod を探して読む。なければ Nii eXi' fixmarge.mod。
+// fetcher の Root が空なら、パッケージは見つけたフォルダの .fixmarge に置く。
 func Load(dir string, fetcher *modfetch.Fetcher) (*Module, error) {
 	root := modfile.Find(dir)
 	if root == "" {
 		return nil, diag.NewUnplaced(diag.NiiExi, modfile.Name)
+	}
+	if fetcher.Root == "" {
+		local := *fetcher
+		local.Root = filepath.Join(root, modfile.PackagesDir)
+		fetcher = &local
 	}
 	data, err := os.ReadFile(filepath.Join(root, modfile.Name))
 	if err != nil {
@@ -99,21 +109,33 @@ func (m *Module) Check() error {
 // "github.com/alice/strs" のようにパッケージだけなら、名前の最後と同じ strs.fxma を読む。
 // 外部パッケージは清書を実行しているときも下書きを読む (キャッシュは書き換えないため)。
 func (m *Module) Locate(from, importPath string) (string, modfile.Version, error) {
-	v, rest, err := m.choose(from, importPath)
+	name, _, v, err := m.locate(from, importPath)
+	return name, v, err
+}
+
+// locate は Locate の中身。owner は選んだ版を持っているほう (m か、補欠のグローバル)。
+func (m *Module) locate(from, importPath string) (name string, owner *Module, v modfile.Version, err error) {
+	owner, v, rest, err := m.choose(from, importPath)
 	if err != nil {
-		return "", v, err
+		return "", nil, v, err
 	}
-	dir, err := m.dir(v)
+	dir, err := owner.dir(v)
 	if err != nil {
-		return "", v, err
+		return "", nil, v, err
 	}
-	return filepath.ToSlash(filepath.Join(dir, filepath.FromSlash(rest))) + ".fxma", v, nil
+	return filepath.ToSlash(filepath.Join(dir, filepath.FromSlash(rest))) + ".fxma", owner, v, nil
+}
+
+// FromGlobal は、from に書いた読み込み先 importPath が、グローバルに入れたパッケージを補欠として読むことになるかを返す。
+func (m *Module) FromGlobal(from, importPath string) bool {
+	owner, _, _, err := m.choose(from, importPath)
+	return err == nil && owner != m
 }
 
 // Bundled は from に書いた読み込み先 importPath を、単体の実行ファイル (sinruits --karady) の中での名前にする。
 // 手元のキャッシュの場所を実行ファイルに残さないよう、"github.com/alice/strs@v1.0.0/strs.fxma" のようにパッケージと版から作る。
 func (m *Module) Bundled(from, importPath string) (string, error) {
-	v, rest, err := m.choose(from, importPath)
+	_, v, rest, err := m.choose(from, importPath)
 	if err != nil {
 		return "", err
 	}
@@ -123,43 +145,72 @@ func (m *Module) Bundled(from, importPath string) (string, error) {
 // Resolve は Locate と同じく読むファイルを返すが、置いてある中身が fixmarge.sum と合うかを先に確かめる (合わなければ CraeyTA')。
 // 取ってきていなければ Nii eXi' (fixmarge werer で取ってくる)。
 func (m *Module) Resolve(from, importPath string) (string, error) {
-	name, v, err := m.Locate(from, importPath)
+	name, owner, v, err := m.locate(from, importPath)
 	if err != nil {
 		return "", err
 	}
+	return name, owner.verify(v)
+}
+
+// verify は、置いてある版 v の中身が fixmarge.sum と合うかを確かめる。一度確かめた版は覚えておく。
+func (m *Module) verify(v modfile.Version) error {
 	if m.File.ReplaceDir(v.Path) != "" || m.verified[v] {
-		return name, nil
+		return nil
 	}
 	dir, _ := m.dir(v)
 	if _, err := os.Stat(dir); err != nil {
-		return "", diag.NewUnplaced(diag.NiiExi, v.String())
+		return diag.NewUnplaced(diag.NiiExi, v.String())
 	}
 	got, err := modfetch.Hash(dir, v)
 	if err != nil {
-		return "", err
+		return err
 	}
 	if want, ok := m.Sums[v]; !ok || got != want {
-		return "", diag.NewUnplaced(diag.CraeyTA, v.String())
+		return diag.NewUnplaced(diag.CraeyTA, v.String())
 	}
 	if m.verified == nil {
 		m.verified = map[modfile.Version]bool{}
 	}
 	m.verified[v] = true
-	return name, nil
+	return nil
 }
 
 // choose は from に書いた読み込み先 importPath ("github.com/alice/strs/case@1.2") が指すパッケージの版と、
 // その中のファイルのパス (拡張子なし) を返す。版は、from のあるパッケージの fixmarge.mod に並べた中から選ぶ。
-func (m *Module) choose(from, importPath string) (modfile.Version, string, error) {
+// owner は選んだ版を持っているほうで、ふつうは m。いま作っているパッケージのファイルが、合う版のない読み込み先を書いたときだけ、
+// グローバルに入れたものを補欠にする。取ってきたパッケージの中のファイルは補欠を使えない (入れた人の環境に頼らないため)。
+func (m *Module) choose(from, importPath string) (owner *Module, v modfile.Version, rest string, err error) {
 	target, spec := modfile.SplitSpec(importPath)
 	if !modfile.ValidSpec(spec) {
-		return modfile.Version{}, "", diag.NewUnplaced(diag.AyAmis, importPath)
+		return nil, v, "", diag.NewUnplaced(diag.AyAmis, importPath)
 	}
-	v, rest, ok := pick(m.requirer(from), target, spec)
-	if !ok {
-		return v, "", diag.NewUnplaced(diag.NiiExi, importPath)
+	global := m.global()
+	if global != nil && global.holds(from) {
+		return global.choose(from, importPath)
 	}
-	return v, rest, nil
+	requirer := m.requirer(from)
+	if v, rest, ok := pick(requirer, target, spec); ok {
+		return m, v, rest, nil
+	}
+	if requirer == m.File && global != nil {
+		if v, rest, ok := pick(global.File, target, spec); ok {
+			return global, v, rest, nil
+		}
+	}
+	return nil, v, "", diag.NewUnplaced(diag.NiiExi, importPath)
+}
+
+func (m *Module) global() *Module {
+	if m.Global == nil {
+		return nil
+	}
+	return m.Global()
+}
+
+// holds は、ファイル from が m のフォルダ (m が取ってきたパッケージも含む) の中にあるかを返す。
+func (m *Module) holds(from string) bool {
+	abs, err := filepath.Abs(filepath.FromSlash(from))
+	return err == nil && inside(abs, m.Dir)
 }
 
 // pick は f の neyo から、読み込み先 target を含むパッケージ (名前がいちばん長いもの) の、spec に合ういちばん新しい版を選ぶ。

@@ -124,7 +124,7 @@ var words = []Word{
 	{"ConWa", "会話", Key},
 	{"LowhEll", "牢屋", Key},
 	{"shid", "死んだ", Key},
-	{"WiD", "世界", Key},
+	{"WiD", "世界", Key | LintRule},
 	{"nEYar", "年", Key | Command},
 	{"hAte", "手", Key},
 	{"eMoJoh", "感情", Key},

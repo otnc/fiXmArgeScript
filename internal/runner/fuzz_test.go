@@ -58,7 +58,7 @@ func FuzzFrontend(f *testing.F) {
 		file, err := Prepare(src, "main.fxma", nil)
 		if file != nil {
 			scope.Resolve(file.Stmts)
-			lint.File(file, src, nil)
+			lint.File(file, src, nil, nil)
 		}
 		formatted, ferr := format.Format(src, "main.fxma")
 		if ferr == nil && err == nil {

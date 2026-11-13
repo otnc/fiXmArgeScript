@@ -71,7 +71,7 @@ func (d *document) analyze() {
 			d.refs[t.Pos] = b
 		}
 	}
-	d.findings = lint.File(f, d.text, modfile.AllowedRules(filepath.Dir(d.uri.FsPath())))
+	d.findings = lint.File(f, d.text, modfile.AllowedRules(filepath.Dir(d.uri.FsPath())), nil)
 }
 
 // flatten は文字列の #{} の中を字句に分けて、外の字句と一緒にソースの順に並べる。

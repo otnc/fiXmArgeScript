@@ -103,8 +103,8 @@ func (s streams) app() *cli.Command {
 				Flags:   []cli.Flag{&cli.BoolFlag{Name: "curoi", Aliases: []string{"expand", "c", "e"}}},
 				Action:  s.beaukshi,
 			},
-			{Name: "werer", Aliases: []string{"get", "install"}, Action: s.werer},
-			{Name: "unneyo", Aliases: []string{"uninstall", "remove"}, Action: s.unneyo},
+			{Name: "werer", Aliases: []string{"get", "install"}, Flags: []cli.Flag{widFlag()}, Action: s.werer},
+			{Name: "unneyo", Aliases: []string{"uninstall", "remove"}, Flags: []cli.Flag{widFlag()}, Action: s.unneyo},
 			{
 				Name:    "ado",
 				Aliases: []string{"mod"},
@@ -127,6 +127,11 @@ func (s streams) app() *cli.Command {
 		}
 	}
 	return app
+}
+
+// widFlag は --wid (世界)。プロジェクトではなく、グローバルに入れたパッケージを書き換える (npm の -g)。
+func widFlag() cli.Flag {
+	return &cli.BoolFlag{Name: "wid", Aliases: []string{"global", "g"}}
 }
 
 // usageError は知らないオプションなどのとき。urfave/cli のエラー文は英語なので出さず、使い方を出す。
@@ -287,6 +292,9 @@ func (s streams) usage(w io.Writer) {
   fixmarge werer <パッケージ>[@<版>]  外部パッケージを取ってきて fixmarge.mod に足す (install)。版は 1、1.2、1.2.0、1.2.0-rc.0 の形で、
                                  合ういちばん新しい版を足す。省くといちばん新しい版
   fixmarge werer                 fixmarge.mod に書いてあるパッケージをすべて取ってくる
+                                 取ってきたものは fixmarge.mod と同じ場所の .fixmarge に置く
+  fixmarge werer --wid <パッケージ>  どこからでも読めるように入れる (--global、-g)。fixmarge.mod のないファイルと、
+                                 fixmarge.mod に合う版がないときの補欠に使う。unneyo にも付けられる
   fixmarge unneyo <パッケージ>[@<版>]  入っている版のうち、合ういちばん新しい版を fixmarge.mod から外す (uninstall)。@* なら全部の版
   fixmarge ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りない版を足し、使っていない版を外す
   fixmarge hak                   対話モード。1行ずつ打って実行する (repl)
