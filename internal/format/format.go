@@ -154,7 +154,8 @@ func (p *printer) logicalLine(tokens []token.Token, trailing string) {
 	comment := commentIn(trailing)
 	indent := p.depth
 	if dedentsLine(tokens[0]) {
-		indent--
+		// 開いたブロックがないのに siva や finend が来ても、字下げは 0 より浅くしない
+		indent = max(0, indent-1)
 	}
 	if indent > ast.MaxDepth {
 		p.tooDeep = &tokens[0]
@@ -201,7 +202,7 @@ func (p *printer) startLine(indent int) {
 	}
 	p.blank = false
 	p.output = true
-	p.b.WriteString(strings.Repeat(indentUnit, max(0, indent)))
+	p.b.WriteString(strings.Repeat(indentUnit, indent))
 }
 
 // breakInside は括弧の中の改行を書く。すき間のコメントは残し、空行は消す。
