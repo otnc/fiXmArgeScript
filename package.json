@@ -9,7 +9,7 @@
     "url": "git+https://github.com/otnc/fiXmArgeScript.git"
   },
   "license": "MIT OR Apache-2.0",
-  "description": "fiXmArge Script の開発用の道具 (公開はしない)。",
+  "description": "fiXmArge Script の開発用",
   "private": true,
   "devDependencies": {
     "migenv": "^0.2.2"
