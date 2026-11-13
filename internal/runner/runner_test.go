@@ -197,6 +197,23 @@ func TestAsync(t *testing.T) {
 	}
 }
 
+// 自分自身を中に持つ配列や辞書でも、出したり比べたりして止まらなくならない。
+func TestSelfReference(t *testing.T) {
+	cases := []testCase{
+		{name: "display array", src: "xs izu [1]\nxs no 0 izu xs\nxs redogh\n[xs, xs] redogh\n", stdout: "[[...]]\n[[[...]], [[...]]]\n"},
+		{name: "display dict", src: "d izu {}\nd no \"me\" izu d\nd redogh\n", stdout: "{\"me\": {...}}\n"},
+		{name: "equal", src: "xs izu [1]\nxs no 0 izu xs\nys izu [1]\nys no 0 izu ys\nxs senaji xs redogh\nxs senaji ys redogh\nxs senaji [1] redogh\n", stdout: "TadACt\nTadACt\nULieSo\n"},
+		{name: "json", src: "\":json\" aste json werer\nxs izu [1]\nxs no 0 izu xs\njson no salook(xs)\n", err: diag.ImJune},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}
+
+func TestHugeStringIsOverflow(t *testing.T) {
+	runCase(t, testCase{name: "repeat", src: "\"ab\" * 3 redogh\n\"\" * 10 ** 18 redogh\n\"a\" * 10 ** 15 redogh\n", stdout: "ababab\n\n", err: diag.Bavellabion})
+}
+
 func TestInput(t *testing.T) {
 	runCase(t, testCase{name: "zanfession", src: "name izu \"名前は? \" zanfession\n\"weRer, \" + name redogh\nrest izu zanfession\nrest exi redogh\n", stdin: "fxma\n", stdout: "名前は? weRer, fxma\nULieSo\n"})
 }

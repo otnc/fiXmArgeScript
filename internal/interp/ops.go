@@ -60,25 +60,38 @@ func (in *Interp) binary(op string, a, b Value, pos token.Pos) (Value, error) {
 			}
 		}
 	case "*":
-		if s, ok := a.(Str); ok {
-			if n, ok := b.(Int); ok {
-				return repeat(s, n), nil
-			}
+		s, n, ok := strAndInt(a, b)
+		if !ok {
+			s, n, ok = strAndInt(b, a)
 		}
-		if s, ok := b.(Str); ok {
-			if n, ok := a.(Int); ok {
-				return repeat(s, n), nil
+		if ok {
+			repeated, fits := repeat(s, n)
+			if !fits {
+				return nil, in.errorf(diag.Bavellabion, pos, op)
 			}
+			return repeated, nil
 		}
 	}
 	return nil, in.errorf(diag.ImJune, pos, op)
 }
 
-func repeat(s Str, n Int) Str {
-	if n <= 0 {
-		return ""
+func strAndInt(a, b Value) (Str, Int, bool) {
+	s, isStr := a.(Str)
+	n, isInt := b.(Int)
+	return s, n, isStr && isInt
+}
+
+// maxStringBytes は文字列の繰り返しで作れる長さの上限。超えると Bavellabion (メモリを取り切って落ちる前に止める)。
+const maxStringBytes = 1 << 30
+
+func repeat(s Str, n Int) (Str, bool) {
+	if n <= 0 || s == "" {
+		return "", true
 	}
-	return Str(strings.Repeat(string(s), int(n)))
+	if n > Int(maxStringBytes/len(s)) {
+		return "", false
+	}
+	return Str(strings.Repeat(string(s), int(n))), true
 }
 
 func (in *Interp) intOp(op string, x, y int64, pos token.Pos) (Value, error) {
@@ -319,7 +332,11 @@ func cmpFloat(x, y float64) int {
 }
 
 // equal は senaji。Python の == と同じだが、真偽値と数は別の型として扱う (RFC の等しさ)。
-func equal(a, b Value) bool {
+func equal(a, b Value) bool { return equalNested(a, b, nil) }
+
+// equalNested は equal の中身。open は今比べている途中の配列と辞書の組で、自分自身を中に持つものを
+// もう一度比べ始めたら、ほかの要素で決まるものとして等しいとみなす (比べ続けると終わらないため)。
+func equalNested(a, b Value, open [][2]Value) bool {
 	if x, ok := toFloat(a); ok {
 		if y, ok := toFloat(b); ok {
 			if xi, ok := a.(Int); ok {
@@ -349,8 +366,12 @@ func equal(a, b Value) bool {
 		if !ok || len(a.Elems) != len(b.Elems) {
 			return false
 		}
+		if a == b || slices.Contains(open, [2]Value{a, b}) {
+			return true
+		}
+		open = append(open, [2]Value{a, b})
 		for i := range a.Elems {
-			if !equal(a.Elems[i], b.Elems[i]) {
+			if !equalNested(a.Elems[i], b.Elems[i], open) {
 				return false
 			}
 		}
@@ -360,9 +381,13 @@ func equal(a, b Value) bool {
 		if !ok || a.Len() != b.Len() {
 			return false
 		}
+		if a == b || slices.Contains(open, [2]Value{a, b}) {
+			return true
+		}
+		open = append(open, [2]Value{a, b})
 		for _, k := range a.keys {
 			bv, ok := b.values[k]
-			if !ok || !equal(a.values[k], bv) {
+			if !ok || !equalNested(a.values[k], bv, open) {
 				return false
 			}
 		}

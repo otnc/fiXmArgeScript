@@ -3,6 +3,7 @@ package interp
 import (
 	"encoding/hex"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -18,7 +19,11 @@ func Display(v Value) string {
 }
 
 // inner は配列や辞書の中に入った値の形。文字列は " で囲む (JSON に近い形)。
-func inner(v Value) string {
+func inner(v Value) string { return nested(v, nil) }
+
+// nested は inner の中身。open は今たどっている途中の配列と辞書で、自分自身を中に持つものをもう一度たどらないために使う
+// (Python と同じく [...] と {...} で出す)。
+func nested(v Value, open []Value) string {
 	switch v := v.(type) {
 	case Int:
 		return strconv.FormatInt(int64(v), 10)
@@ -34,15 +39,23 @@ func inner(v Value) string {
 	case Null:
 		return lexicon.Spell("vanita")
 	case *Array:
+		if slices.Contains(open, Value(v)) {
+			return "[...]"
+		}
+		open = append(open, v)
 		parts := make([]string, len(v.Elems))
 		for i, e := range v.Elems {
-			parts[i] = inner(e)
+			parts[i] = nested(e, open)
 		}
 		return "[" + strings.Join(parts, ", ") + "]"
 	case *Dict:
+		if slices.Contains(open, Value(v)) {
+			return "{...}"
+		}
+		open = append(open, v)
 		parts := make([]string, 0, v.Len())
 		for _, k := range v.keys {
-			parts = append(parts, quote(k)+": "+inner(v.values[k]))
+			parts = append(parts, quote(k)+": "+nested(v.values[k], open))
 		}
 		return "{" + strings.Join(parts, ", ") + "}"
 	case Bytes:
