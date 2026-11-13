@@ -1388,7 +1388,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
   - 次の版は最新のタグより新しくなければならず、プレリリースの識別子は英小文字だけにする (`0.1.1-0` のような数字だけの識別子はdist-tagにできないため)。
 - **同梱するライセンス**: `THIRD_PARTY_LICENSES` は、リリースのときにGo本体のライセンスと、`go-licenses` で集めた依存のライセンスから作ります。CLIとWebAssembly版で同じファイルを使います。
 - **npmのパッケージ**: リポジトリの `package.json` の `version` は `0.0.0` のままにし、リリースのときだけ書き換えて公開します (コミットはしません)。dist-tagは、プレリリースなら識別子 (`0.2.0-rc.1` なら `rc`)、正式版なら `latest` です。
-- **VS Code拡張**: Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。VSIXファイル (`fixmarge_<版>_vscode.vsix`) は、どの版でもReleasesに添付します。
+- **VS Code拡張**: Marketplaceは `0.2.0-rc.1` のようなプレリリースの版を受け付けないので、Marketplaceには正式版だけを出します。VSCodiumやCursorなどのために、同じVSIXをOpen VSXにも出します。VSIXファイル (`fixmarge_<版>_vscode.vsix`) は、どの版でもReleasesに添付します。
 - **Neovim・Vimのプラグイン**: 版のファイルは持たず、リポジトリのタグをそのまま使います。lazy.nvimの `version` もNeovimの `vim.pack` も、Gitのタグで版を選びます。
 - **インストーラ**: Inno Setupには、ビルドのときに版を渡します (`iscc /DAppVersion=0.2.0`)。`install.sh` はReleasesの最新版を見るので、版を持ちません。
 

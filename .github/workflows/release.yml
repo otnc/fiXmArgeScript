@@ -162,3 +162,10 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx vsce publish --packagePath "fixmarge_${TAG#v}_vscode.vsix"
+      # VSCodium や Cursor などは Marketplace を使えないので、Open VSX にも同じ VSIX を出す
+      - name: Publish to Open VSX
+        if: ${{ !contains(needs.release.outputs.tag, '-') }}
+        working-directory: editors/vscode
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx ovsx@1.4.0 --pat "$OVSX_PAT" publish "fixmarge_${TAG#v}_vscode.vsix"
