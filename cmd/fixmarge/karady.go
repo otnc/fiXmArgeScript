@@ -21,7 +21,7 @@ import (
 )
 
 // karady は sinruits --karady。下書きと読み込み先を fixmarge の実行ファイルの後ろに付けて、単体の実行ファイルにする。
-// --mokpose で今と違う OS を選ぶと、同じ版の fixmarge をリリースから取ってきて使う。
+// --os で今と違う OS を選ぶと、同じ版の fixmarge をリリースから取ってきて使う。
 func (s streams) karady(cmd *cli.Command) error {
 	if cmd.Args().Len() != 1 || !strings.HasSuffix(cmd.Args().First(), ".fxma") {
 		s.usage(s.stderr)
@@ -29,7 +29,7 @@ func (s streams) karady(cmd *cli.Command) error {
 	}
 	entry := cmd.Args().First()
 	target := karady.Target{OS: runtime.GOOS, Arch: runtime.GOARCH}
-	if t := cmd.String("mokpose"); t != "" {
+	if t := cmd.String("os"); t != "" {
 		var err error
 		if target, err = karady.ParseTarget(t); err != nil {
 			return s.report(err)

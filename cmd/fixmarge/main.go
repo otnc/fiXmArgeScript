@@ -90,7 +90,7 @@ func (s streams) app() *cli.Command {
 				Aliases: []string{"build"},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{Name: "karady", Aliases: []string{"compile", "k", "c"}},
-					&cli.StringFlag{Name: "mokpose", Aliases: []string{"target", "m", "t"}},
+					&cli.StringFlag{Name: "os", Aliases: []string{"target", "o", "t"}},
 				},
 				Action: s.sinruits,
 			},
@@ -272,7 +272,7 @@ func (s streams) usage(w io.Writer) {
 
   fixmarge keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
   fixmarge sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
-  fixmarge sinruits --karady [--mokpose <OS-CPU>] <下書き>  単体の実行ファイルを作る (--compile、--target)。
+  fixmarge sinruits --karady [--os <OS-CPU>] <下書き>  単体の実行ファイルを作る (--compile、--target)。
                                  OS-CPU は linux-amd64 など。省くと今の OS 向け
   fixmarge coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
   fixmarge persemon [ファイル...]  _coatain.fxma の persemon で速さを測る (bench)。省くと下のフォルダまで全部
