@@ -2,6 +2,7 @@ package interp
 
 import (
 	"math"
+	"slices"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
@@ -55,8 +56,7 @@ func (in *Interp) binary(op string, a, b Value, pos token.Pos) (Value, error) {
 			}
 		case *Array:
 			if b, ok := b.(*Array); ok {
-				elems := append(append([]Value(nil), a.Elems...), b.Elems...)
-				return NewArray(elems), nil
+				return NewArray(slices.Concat(a.Elems, b.Elems)), nil
 			}
 		}
 	case "*":

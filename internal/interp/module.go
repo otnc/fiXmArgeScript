@@ -220,8 +220,8 @@ func (in *Interp) runModule(path string, f *parser.File) (*Module, error) {
 	if err != nil {
 		return nil, err
 	}
-	for name, v := range env.vars {
-		m.members[name] = v.value
+	for _, v := range env.vars {
+		m.members[v.name] = v.value
 	}
 	return m, nil
 }

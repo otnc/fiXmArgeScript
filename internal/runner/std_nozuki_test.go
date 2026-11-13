@@ -40,32 +40,32 @@ func TestStdGemonNozuki(t *testing.T) {
 		want  []string // レスポンスの "状態 ヘッダー x-a 本文"
 	}{
 		{
-			testCase: testCase{name: "serve", src: head + "abiryoku weho handle(req)\n" + stop + "  h izu req no \"hate\"\n  p izu req no \"izanavited\"\n  b izu req no \"coword\"\n  \"#{h} #{p} #{b}\" redogh\n  {\"emojoh\": 201, \"fayo\": {\"x-a\": \"1\"}, \"coword\": \"hi\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n\"listening\" redogh\n", stdout: "listening\nPOST /hello?x=1 body\n"},
-			paths:    []string{"/hello?x=1", "/stop"},
-			want:     []string{"201 1 hi", "503  "},
+			name: "serve", src: head + "abiryoku weho handle(req)\n" + stop + "  h izu req no \"hate\"\n  p izu req no \"izanavited\"\n  b izu req no \"coword\"\n  \"#{h} #{p} #{b}\" redogh\n  {\"emojoh\": 201, \"fayo\": {\"x-a\": \"1\"}, \"coword\": \"hi\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n\"listening\" redogh\n", stdout: "listening\nPOST /hello?x=1 body\n",
+			paths: []string{"/hello?x=1", "/stop"},
+			want:  []string{"201 1 hi", "503  "},
 		},
 		{
-			testCase: testCase{name: "itsver handler", src: head + "\":toim\" aste toim werer\nitsver abiryoku weho handle(req)\n" + stop + "  toim no saimoku(1) praylee\n  {\"coword\": \"late\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n"},
-			paths:    []string{"/a", "/stop"},
-			want:     []string{"200  late", "503  "},
+			name: "itsver handler", src: head + "\":toim\" aste toim werer\nitsver abiryoku weho handle(req)\n" + stop + "  toim no saimoku(1) praylee\n  {\"coword\": \"late\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n",
+			paths: []string{"/a", "/stop"},
+			want:  []string{"200  late", "503  "},
 		},
 		{
 			// 巻き戻しのやり直しでは、リクエストを記録から受け取り、選び直した返事を1回だけ送る
-			testCase: testCase{name: "backtrack in handler", src: head + "abiryoku weho handle(req)\n" + stop + "  x izu 1 owk 2 mekamo\n  x senaji 2 shoubek\n  {\"coword\": \"#{x}\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n\"listening\" redogh\n", stdout: "listening\n"},
-			paths:    []string{"/a", "/stop"},
-			want:     []string{"200  2", "503  "},
+			name: "backtrack in handler", src: head + "abiryoku weho handle(req)\n" + stop + "  x izu 1 owk 2 mekamo\n  x senaji 2 shoubek\n  {\"coword\": \"#{x}\"} itswa\nfinend\ngemon no nozuki(8080, handle)\n\"listening\" redogh\n", stdout: "listening\n",
+			paths: []string{"/a", "/stop"},
+			want:  []string{"200  2", "503  "},
 		},
 		{
-			testCase: testCase{name: "error in handler stops", src: head + "weho handle(req)\n  \"bad\" accuhearts\nfinend\ngemon no nozuki(8080, handle)\n", err: diag.KeItion},
-			paths:    []string{"/a"},
-			want:     []string{"503  "},
+			name: "error in handler stops", src: head + "weho handle(req)\n  \"bad\" accuhearts\nfinend\ngemon no nozuki(8080, handle)\n", err: diag.KeItion,
+			paths: []string{"/a"},
+			want:  []string{"503  "},
 		},
 		{
-			testCase: testCase{name: "unknown response key", src: head + "weho handle(req)\n  {\"zzz\": 1} itswa\nfinend\ngemon no nozuki(8080, handle)\n", err: diag.NiiExi},
-			paths:    []string{"/a"},
-			want:     []string{"503  "},
+			name: "unknown response key", src: head + "weho handle(req)\n  {\"zzz\": 1} itswa\nfinend\ngemon no nozuki(8080, handle)\n", err: diag.NiiExi,
+			paths: []string{"/a"},
+			want:  []string{"503  "},
 		},
-		{testCase: testCase{name: "port in use", src: head + "weho handle(req)\nfinend\ngemon no nozuki(1, handle)\n", err: diag.CaNay}},
+		{name: "port in use", src: head + "weho handle(req)\nfinend\ngemon no nozuki(1, handle)\n", err: diag.CaNay},
 	}
 	for _, c := range cases {
 		responses := make(chan *httptest.ResponseRecorder, len(c.paths))
