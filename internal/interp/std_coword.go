@@ -39,7 +39,7 @@ func cowordSalook(a *argv) (Value, error) {
 	}
 	switch v := a.vals[0].(type) {
 	case Int, Float:
-		return Str(Display(v)), nil
+		return Str(atom(v)), nil
 	case Str:
 		f, err := strconv.ParseFloat(strings.TrimSpace(string(v)), 64)
 		if err != nil || math.IsInf(f, 0) || math.IsNaN(f) {
@@ -89,8 +89,14 @@ func cowordRecanrey(a *argv) (Value, error) {
 		return nil, err
 	}
 	parts := make([]string, len(xs.Elems))
+	size := 0
 	for i, x := range xs.Elems {
-		parts[i] = Display(x)
+		if parts[i], err = a.in.text(x, a.pos, a.name); err != nil {
+			return nil, err
+		}
+		if size += len(parts[i]) + len(sep); size > maxStringBytes {
+			return nil, a.fail(diag.Bavellabion)
+		}
 	}
 	return Str(strings.Join(parts, sep)), nil
 }
@@ -107,6 +113,14 @@ func replaceFunc(n int) stdFunc {
 			if s[i], err = a.str(i); err != nil {
 				return nil, err
 			}
+		}
+		// 置き換える数だけ長くなるので、作る前に長さを確かめる
+		count := strings.Count(s[0], s[1])
+		if n >= 0 {
+			count = min(count, n)
+		}
+		if grow := len(s[2]) - len(s[1]); grow > 0 && count > (maxStringBytes-len(s[0]))/grow {
+			return nil, a.fail(diag.Bavellabion)
 		}
 		return Str(strings.Replace(s[0], s[1], s[2], n)), nil
 	}

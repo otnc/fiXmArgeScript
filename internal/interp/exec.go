@@ -59,7 +59,15 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 		if err != nil {
 			return flowNormal, nil, err
 		}
-		in.emit(s.Stderr, Display(v)+"\n")
+		keyword := "redogh"
+		if s.Stderr {
+			keyword = "canosiri"
+		}
+		text, err := in.text(v, s.Pos, lexicon.Spell(keyword))
+		if err != nil {
+			return flowNormal, nil, err
+		}
+		in.emit(s.Stderr, text+"\n")
 		return flowNormal, nil, nil
 	case *ast.Return:
 		if s.X == nil {
@@ -380,6 +388,10 @@ func (in *Interp) assignSlice(s *ast.Assign, t *ast.Slice, value Value, env *Env
 	lo, hi, err := in.sliceBounds(t, len(arr.Elems), env)
 	if err != nil {
 		return err
+	}
+	// xs no 0...0 izu xs を繰り返すと1回ごとに倍になる
+	if len(arr.Elems)-(hi-lo)+len(repl.Elems) > maxArrayLen {
+		return in.errorf(diag.Bavellabion, t.Pos, lexicon.Spell("no"))
 	}
 	arr.Elems = slices.Concat(arr.Elems[:lo], repl.Elems, arr.Elems[hi:])
 	return nil

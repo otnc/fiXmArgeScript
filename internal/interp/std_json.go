@@ -114,10 +114,25 @@ func jsonArg(a *argv, i, indentAt int) (string, error) {
 		}
 	}
 	s, err := formatJSON(a.vals[i], indent)
+	if errors.Is(err, errTooLong) {
+		return "", a.fail(diag.Bavellabion)
+	}
 	if err != nil {
 		return "", a.fail(diag.ImJune)
 	}
 	return s, nil
+}
+
+var errTooLong = errors.New("too long")
+
+// boundedText は maxStringBytes までしか書けない書き先。同じ配列を何度も入れた値は、JSON にすると倍々に大きくなる。
+type boundedText struct{ strings.Builder }
+
+func (b *boundedText) Write(p []byte) (int, error) {
+	if b.Len()+len(p) > maxStringBytes {
+		return 0, errTooLong
+	}
+	return b.Builder.Write(p)
 }
 
 // formatJSON は JSON.stringify と同じ形で書き出す。字下げは JavaScript と同じく 10 までで、1 未満なら1行。
@@ -126,7 +141,7 @@ func formatJSON(v Value, indent int64) (string, error) {
 	if indent >= 1 {
 		opts = []jsontext.Options{jsontext.WithIndent(strings.Repeat(" ", int(min(indent, 10))))}
 	}
-	var b strings.Builder
+	var b boundedText
 	if err := encodeJSON(jsontext.NewEncoder(&b, opts...), v); err != nil {
 		return "", err
 	}

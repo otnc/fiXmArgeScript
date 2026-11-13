@@ -11,19 +11,31 @@ import (
 
 // Display は redogh や #{} で出す形を返す。文字列はそのまま出す。
 func Display(v Value) string {
+	s, _ := display(v)
+	return s
+}
+
+// display は Display の形と、それが maxStringBytes に収まったかを返す。収まらなければ途中までの形。
+func display(v Value) (string, bool) {
 	if s, ok := v.(Str); ok {
-		return string(s)
+		return string(s), true
 	}
-	return inner(v)
+	return nested(v)
 }
 
 // inner は配列や辞書の中に入った値の形。文字列は " で囲む (JSON に近い形)。
 func inner(v Value) string {
+	s, _ := nested(v)
+	return s
+}
+
+// nested は inner の形と、それが maxStringBytes に収まったかを返す。
+func nested(v Value) (string, bool) {
 	switch v.(type) {
 	case *Array, *Dict:
 		return container(v)
 	}
-	return atom(v)
+	return atom(v), true
 }
 
 // pendingText は container がこれから書くもの1つ。v が nil なら text をそのまま書き、closes があればその配列か辞書を書き終える。
@@ -35,11 +47,15 @@ type pendingText struct {
 
 // container は配列と辞書の形。自分自身を中に持つものは、Python と同じく [...] と {...} で出す。
 // 入れ子はいくらでも深く作れるので、再帰ではなく、これから書くものを積んでおいて順に書く。
-func container(root Value) string {
+// 同じ配列を何度も入れた値 (x izu [x, x] の繰り返し) は、小さくても形は倍々に大きくなるので、maxStringBytes で打ち切って false を返す。
+func container(root Value) (string, bool) {
 	var b strings.Builder
 	open := map[Value]bool{} // 今書いている途中の配列と辞書
 	todo := []pendingText{{v: root}}
 	for len(todo) > 0 {
+		if b.Len() > maxStringBytes {
+			return b.String(), false
+		}
 		next := todo[len(todo)-1]
 		todo = todo[:len(todo)-1]
 		switch v := next.v.(type) {
@@ -79,7 +95,7 @@ func container(root Value) string {
 			b.WriteString(atom(v))
 		}
 	}
-	return b.String()
+	return b.String(), b.Len() <= maxStringBytes
 }
 
 // atom は配列と辞書以外の値の形。

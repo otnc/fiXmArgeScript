@@ -80,7 +80,11 @@ func (s *Session) exec(stmts []ast.Stmt) error {
 		}
 		if v != null {
 			// 文字列は配列の中と同じく " で囲み、redogh の出力と見分けられるようにする
-			s.in.emit(false, inner(v)+"\n")
+			text, ok := nested(v)
+			if !ok {
+				return s.in.errorf(diag.Bavellabion, last.X.Position(), "")
+			}
+			s.in.emit(false, text+"\n")
 		}
 	}
 	// 入力を実行し終えたら、ファイルの一番外側と同じく、動いている task と外の処理を待つ

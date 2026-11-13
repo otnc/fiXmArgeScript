@@ -231,6 +231,20 @@ func TestHugeStringIsOverflow(t *testing.T) {
 	runCase(t, testCase{name: "repeat", src: "\"ab\" * 3 redogh\n\"\" * 10 ** 18 redogh\n\"a\" * 10 ** 15 redogh\n", stdout: "ababab\n\n", err: diag.Bavellabion})
 }
 
+// つないで作る文字列も 1GiB まで。上限ちょうどの文字列を1回で作ってから、1バイトだけ足して確かめる。
+func TestJoinedStringIsOverflow(t *testing.T) {
+	const full = "s izu \"a\" * 2 ** 30\n"
+	cases := []testCase{
+		{name: "concat", src: full + "nang(s) redogh\ns + \"b\"\n", stdout: "1073741824\n", err: diag.Bavellabion},
+		{name: "interpolation", src: full + "\"#{s}b\"\n", err: diag.Bavellabion},
+		{name: "replace", src: "\":coword\" aste coword werer\ns izu \"a\" * 2 ** 20\ncoword no laineiAlte(s, \"a\", s)\n", err: diag.Bavellabion},
+		{name: "replace within the limit", src: "\":coword\" aste coword werer\ncoword no laineiAlte(\"a-a\", \"a\", \"bb\") redogh\ncoword no lainei(\"a-a\", \"a\", \"bb\") redogh\n", stdout: "bb-bb\nbb-a\n"},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}
+
 // 選び直して別の道を通るときは、前の道で記録した時刻や乱数を使わない。
 func TestRechosenPathForgetsRecords(t *testing.T) {
 	const head = "\":toim\" aste toim werer\n\":destimay\" aste d werer\n"

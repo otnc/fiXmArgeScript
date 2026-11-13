@@ -109,7 +109,11 @@ func (in *Interp) eval(x ast.Expr, env *Env) (Value, error) {
 			if err != nil {
 				return nil, err
 			}
-			in.emit(false, Display(p))
+			prompt, err := in.text(p, x.Pos, lexicon.Spell("zanfession"))
+			if err != nil {
+				return nil, err
+			}
+			in.emit(false, prompt)
 		}
 		return in.readLine(), nil
 	}
@@ -129,19 +133,25 @@ func (in *Interp) evalAll(xs []ast.Expr, env *Env) ([]Value, error) {
 }
 
 func (in *Interp) evalString(x *ast.StringLit, env *Env) (Value, error) {
-	var b strings.Builder
-	for _, p := range x.Parts {
-		if p.Expr == nil {
-			b.WriteString(p.Text)
-			continue
+	parts := make([]string, len(x.Parts))
+	size := 0
+	for i, p := range x.Parts {
+		parts[i] = p.Text
+		if p.Expr != nil {
+			v, err := in.eval(p.Expr, env)
+			if err != nil {
+				return nil, err
+			}
+			if parts[i], err = in.text(v, p.Expr.Position(), "#{}"); err != nil {
+				return nil, err
+			}
 		}
-		v, err := in.eval(p.Expr, env)
-		if err != nil {
-			return nil, err
+		// "#{s}#{s}" を繰り返すと1回ごとに倍になるので、つなぐ前に大きさを確かめる
+		if size += len(parts[i]); size > maxStringBytes {
+			return nil, in.errorf(diag.Bavellabion, x.Position(), "#{}")
 		}
-		b.WriteString(Display(v))
 	}
-	return Str(b.String()), nil
+	return Str(strings.Join(parts, "")), nil
 }
 
 func (in *Interp) evalDict(x *ast.DictLit, env *Env) (Value, error) {

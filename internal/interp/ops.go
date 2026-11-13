@@ -51,15 +51,8 @@ func (in *Interp) binary(op string, a, b Value, pos token.Pos) (Value, error) {
 	}
 	switch op {
 	case "+":
-		switch a := a.(type) {
-		case Str:
-			if b, ok := b.(Str); ok {
-				return a + b, nil
-			}
-		case *Array:
-			if b, ok := b.(*Array); ok {
-				return NewArray(slices.Concat(a.Elems, b.Elems)), nil
-			}
+		if v, ok, err := in.concat(a, b, pos); ok {
+			return v, err
 		}
 	case "*":
 		s, n, ok := strAndInt(a, b)
@@ -83,8 +76,42 @@ func strAndInt(a, b Value) (Str, Int, bool) {
 	return s, n, isStr && isInt
 }
 
-// maxStringBytes は、長さを数で指定して作る文字列とバイト列の上限。超えると Bavellabion (メモリを取り切って落ちる前に止める)。
+// maxStringBytes は、プログラムが作る文字列とバイト列の上限。超えると Bavellabion (メモリを取り切って落ちる前に止める)。
+// JavaScript が長すぎる文字列で RangeError を投げるのと同じ役目。
 const maxStringBytes = 1 << 30
+
+// maxArrayLen は、つないで作る配列の要素数の上限。要素1つが16バイトなので、maxStringBytes と同じ大きさになる。
+const maxArrayLen = maxStringBytes / 16
+
+// concat は + でつなぐ。s izu s + s のように繰り返すと1回ごとに倍になるので、大きさを先に確かめる。
+func (in *Interp) concat(a, b Value, pos token.Pos) (Value, bool, error) {
+	switch a := a.(type) {
+	case Str:
+		if b, ok := b.(Str); ok {
+			if len(a)+len(b) > maxStringBytes {
+				return nil, true, in.errorf(diag.Bavellabion, pos, "+")
+			}
+			return a + b, true, nil
+		}
+	case *Array:
+		if b, ok := b.(*Array); ok {
+			if len(a.Elems)+len(b.Elems) > maxArrayLen {
+				return nil, true, in.errorf(diag.Bavellabion, pos, "+")
+			}
+			return NewArray(slices.Concat(a.Elems, b.Elems)), true, nil
+		}
+	}
+	return nil, false, nil
+}
+
+// text は Display と同じ形を返す。maxStringBytes を超えるなら、target を対象にした Bavellabion。
+func (in *Interp) text(v Value, pos token.Pos, target string) (string, error) {
+	s, ok := display(v)
+	if !ok {
+		return "", in.errorf(diag.Bavellabion, pos, target)
+	}
+	return s, nil
+}
 
 func repeat(s Str, n Int) (Str, bool) {
 	if n <= 0 || s == "" {
