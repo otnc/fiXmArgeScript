@@ -29,6 +29,10 @@ import (
 func init() { cli.HelpFlag = nil }
 
 func main() {
+	// sinruits --karady で作った実行ファイルなら、fixmarge のコマンドではなく、まとめたプログラムとして動く
+	if b := embeddedBundle(); b != nil {
+		os.Exit(streams{os.Stdin, os.Stdout, os.Stderr}.runBundle(b, os.Args[1:]))
+	}
 	os.Exit(run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr))
 }
 
@@ -84,8 +88,11 @@ func (s streams) app() *cli.Command {
 			{
 				Name:    "sinruits",
 				Aliases: []string{"build"},
-				Flags:   []cli.Flag{&cli.BoolFlag{Name: "karady", Aliases: []string{"compile", "k", "c"}}},
-				Action:  s.sinruits,
+				Flags: []cli.Flag{
+					&cli.BoolFlag{Name: "karady", Aliases: []string{"compile", "k", "c"}},
+					&cli.StringFlag{Name: "mokpose", Aliases: []string{"target", "m", "t"}},
+				},
+				Action: s.sinruits,
 			},
 			{Name: "coatain", Aliases: []string{"test"}, Action: s.coatain},
 			{Name: "persemon", Aliases: []string{"bench"}, Action: s.persemon},
@@ -197,6 +204,11 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 	if err == nil {
 		err = interp.Run(f, s.options(cmd.Args().First(), cmd.Args().Tail()))
 	}
+	return s.finishRun(err)
+}
+
+// finishRun は実行の結果を終了コードにする。捕まらなかったエラーは出す。
+func (s streams) finishRun(err error) error {
 	if exit, ok := errors.AsType[*interp.Exit](err); ok {
 		return exitCode(exit.Code)
 	}
@@ -209,9 +221,7 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 
 func (s streams) sinruits(_ context.Context, cmd *cli.Command) error {
 	if cmd.Bool("karady") {
-		// 単体の実行ファイルにするのは後の版で作る
-		fmt.Fprintln(s.stderr, diag.CaNay.Spelling(), "--"+lexicon.Spell("karady"))
-		return exitCode(1)
+		return s.karady(cmd)
 	}
 	if cmd.Args().Len() != 1 || !strings.HasSuffix(cmd.Args().First(), ".fxma") {
 		s.usage(s.stderr)
@@ -262,6 +272,8 @@ func (s streams) usage(w io.Writer) {
 
   fixmarge keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
   fixmarge sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
+  fixmarge sinruits --karady [--mokpose <OS-CPU>] <下書き>  単体の実行ファイルを作る (--compile、--target)。
+                                 OS-CPU は linux-amd64 など。省くと今の OS 向け
   fixmarge coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
   fixmarge persemon [ファイル...]  _coatain.fxma の persemon で速さを測る (bench)。省くと下のフォルダまで全部
   fixmarge beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部

@@ -30,16 +30,25 @@ type Fetcher struct {
 	URL  func(path string) string // パッケージの名前から Git の URL を作る。nil なら https://<名前>
 }
 
-// DefaultRoot はキャッシュのフォルダ。環境変数 FIXMARGE_CACHE があればその下の mod、なければ OS のキャッシュの場所の fixmarge/mod。
+// DefaultRoot はパッケージのキャッシュのフォルダ。CacheDir の下の mod。
 func DefaultRoot() (string, error) {
+	dir, err := CacheDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "mod"), nil
+}
+
+// CacheDir は fixmarge のキャッシュのフォルダ。環境変数 FIXMARGE_CACHE があればそこ、なければ OS のキャッシュの場所の fixmarge。
+func CacheDir() (string, error) {
 	if dir := os.Getenv("FIXMARGE_CACHE"); dir != "" {
-		return filepath.Join(dir, "mod"), nil
+		return dir, nil
 	}
 	dir, err := os.UserCacheDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "fixmarge", "mod"), nil
+	return filepath.Join(dir, "fixmarge"), nil
 }
 
 func (f *Fetcher) url(p string) string {

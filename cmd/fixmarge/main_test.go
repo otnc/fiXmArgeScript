@@ -19,7 +19,8 @@ func TestRun(t *testing.T) {
 		{args: []string{"explain", "nothing"}, code: 1, stderr: "Nii eXi' nothing"},
 		{args: []string{"zzz"}, code: 2, stderr: "Nii eXi' zzz"},
 		{args: []string{"sinruits", "--bogus", "a.fxma"}, code: 2, stderr: "fiXmArge Script (fxma) の使い方"},
-		{args: []string{"build", "-c", "a.fxma"}, code: 1, stderr: "Ca-nay --KaRaDy"},
+		{args: []string{"build", "-c", "a.fxma"}, code: 1, stderr: "Nii eXi' a.fxma"},
+		{args: []string{"build", "-c", "-t", "plan9-amd64", "a.fxma"}, code: 1, stderr: "Nii eXi' plan9-amd64"},
 		{args: []string{"run", "nothing.fxma"}, code: 1, stderr: "Nii eXi' nothing.fxma"},
 	}
 	for _, c := range cases {

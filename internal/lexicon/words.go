@@ -172,7 +172,7 @@ var words = []Word{
 	{"Trench", "友達", Command},
 
 	// fixmarge.mod の項目
-	{"MokpOSe", "目的", ModField},
+	{"MokpOSe", "目的", ModField | Option},
 	{"neYO", "必要", ModField},
 	{"UnneYO", "要らない", ModField},
 	{"forYulvu", "許可する", ModField},

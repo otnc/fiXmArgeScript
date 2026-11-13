@@ -1060,7 +1060,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `fixmarge keeon main.fxma` | 続ける | `run` | 下書きをメモリ上でビルドし、その清書を実行する | `go run` |
 | `fixmarge keeon main.fxmac` | 続ける | `run` | 清書をそのまま実行する | ビルド済みのファイルを実行 |
 | `fixmarge sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き (`./` か `../` で始まるもの) も、たどってまとめて清書する | `go build`、`tsc` |
-| `fixmarge sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する | `deno compile`、`bun build --compile` |
+| `fixmarge sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する。下の「単体の実行ファイル」 | `deno compile`、`bun build --compile` |
 | `fixmarge coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す。ファイルやフォルダを渡せて、省くと今いる場所より下のフォルダまで全部探す (隠しフォルダと `node_modules` は飛ばす) | `go test`、vitest |
 | `fixmarge beaukshi main.fxma` | 美しい | `fmt` | 下書きを整形してファイルを書き換える。下の「整形」 | `go fmt`、`deno fmt` |
 | `fixmarge beaukshi --curoi main.fxma` | 呪い | `--expand` | 呪い (マクロ) を展開した結果を表示する | `cargo expand` |
@@ -1094,6 +1094,21 @@ Nii eXi' main.fxma:3:5 cnt
 - エラーになった入力は、なかったことにします。その入力で代入した変数は前の値に戻ります。ただし、もう出した出力と、ファイルを書く、入力を読むなどの外の世界とのやり取りは戻りません。
 - エラーの場所は `hak:<行>:<列>` です。行は始めてからの通し番号で、なかったことにした入力の行も数えます。
 - 入力の終わり (macOSとLinuxでは Ctrl+D、Windowsでは Ctrl+Z の後に Enter) か、`:ieviljio` の `shid` で終わります。
+
+### 単体の実行ファイル (fixmarge sinruits --karady)
+
+`fixmarge sinruits --karady main.fxma` は、fiXmArge Scriptを入れていない人でも動かせる実行ファイルを作ります。`deno compile` や `bun build --compile` と同じく、fixmargeの実行ファイルの後ろにプログラムを付け足します。できる実行ファイルは `main` (Windowsでは `main.exe`) です。
+
+```
+fixmarge sinruits --karady main.fxma
+fixmarge sinruits --karady --mokpose linux-arm64 main.fxma
+```
+
+- まとめるのは、`main.fxma` と `werer` でたどれるファイル全部です。手元の下書きは `fixmarge sinruits` と同じく清書にし、外部パッケージは実行するときと同じく下書きのまま入れます。
+- 実行ファイルの中のファイルの名前は、`main.fxma` のあるフォルダからの相対パス (`lib/stats.fxmac`) と、外部パッケージの `github.com/alice/strs@v1.0.0/strs.fxma` です。手元の絶対パスを入れないためで、エラーの場所にもこの名前が出ます。
+- 実行ファイルに渡した引数は、オプションも含めてすべてプログラムに渡します (`dv no "conwa"`)。fixmargeのコマンドとしては動きません。
+- `--mokpose` (`MokpOSe`、目的。英語の別名は `--target`、短い形は `-m` と `-t`) で、作る先のOSとCPUを `linux-amd64` の形で選べます。選べるのは、リリースで配っている `linux`・`darwin`・`windows` と `amd64`・`arm64` の組み合わせです。省くと今のOS向けに作ります。
+- 今と違うOS向けに作るときは、手元のfixmargeと同じ版をGitHubのリリースから取ってきて、`checksums.txt` と合うかを確かめてから使います。取ってきたものはキャッシュ (`fixmarge.mod` のパッケージと同じ場所の `karady`) に置き、次からは取り直しません。タグから作った版でなければ、どの版を取ればよいか決まらないので `Ca-nay` です。
 
 ### 整形 (fixmarge beaukshi)
 

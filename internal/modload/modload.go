@@ -74,6 +74,19 @@ func (m *Module) Locate(importPath string) (string, modfile.Version, error) {
 	return filepath.ToSlash(filepath.Join(dir, filepath.FromSlash(rest))) + ".fxma", v, nil
 }
 
+// Bundled は外部パッケージの読み込み先 importPath を、単体の実行ファイル (sinruits --karady) の中での名前にする。
+// 手元のキャッシュの場所を実行ファイルに残さないよう、"github.com/alice/strs@v1.0.0/strs.fxma" のようにパッケージと版から作る。
+func (m *Module) Bundled(importPath string) (string, error) {
+	v, rest, ok := m.match(importPath)
+	if !ok {
+		return "", diag.NewUnplaced(diag.NiiExi, importPath)
+	}
+	if rest == "" {
+		rest = path.Base(v.Path)
+	}
+	return v.String() + "/" + rest + ".fxma", nil
+}
+
 // Resolve は Locate と同じく読むファイルを返すが、置いてある中身が fixmarge.sum と合うかを先に確かめる (合わなければ CraeyTA')。
 // 取ってきていなければ Nii eXi' (fixmarge werer で取ってくる)。
 func (m *Module) Resolve(importPath string) (string, error) {

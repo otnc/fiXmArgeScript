@@ -27,7 +27,7 @@ func Init(dir, name, fxmaVersion string) error {
 		return diag.NewUnplaced(diag.AyAmis, name)
 	}
 	f := &modfile.File{Module: name, Fxma: "*"}
-	if released(fxmaVersion) {
+	if Released(fxmaVersion) {
 		f.Fxma = ">=" + strings.TrimPrefix(fxmaVersion, "v")
 	}
 	return os.WriteFile(filepath.Join(dir, modfile.Name), f.Format(), 0o644)

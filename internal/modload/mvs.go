@@ -131,7 +131,7 @@ func (m *Module) checkFxma(v modfile.Version, f *modfile.File) error {
 	if err != nil {
 		return diag.New(diag.AyAmis, name, pos, f.Fxma)
 	}
-	if !released(m.FxmaVersion) {
+	if !Released(m.FxmaVersion) {
 		return nil
 	}
 	cur, err := semver.NewVersion(m.FxmaVersion)
@@ -141,8 +141,8 @@ func (m *Module) checkFxma(v modfile.Version, f *modfile.File) error {
 	return nil
 }
 
-// released はタグから作った fxma の版か。開発中の版は範囲と比べられないので確かめない。
-func released(v string) bool {
+// Released はタグから作った fxma の版か。開発中の版は範囲と比べられないので確かめない。
+func Released(v string) bool {
 	return gosemver.IsValid(v) && !module.IsPseudoVersion(v) && gosemver.Build(v) == ""
 }
 
