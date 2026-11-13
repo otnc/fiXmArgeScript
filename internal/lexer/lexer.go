@@ -26,9 +26,16 @@ func ModeOf(file string) Mode {
 	return Draft
 }
 
-// Lex はソース全体を字句に分ける。
+// bom は Windows のエディタがファイルの頭に付けることがある印。
+const bom = "\uFEFF"
+
+// Lex はソース全体を字句に分ける。頭の BOM は Go や Python と同じく読み飛ばす。
 func Lex(src, file string, mode Mode) ([]token.Token, []diag.Warning, error) {
-	return LexRange(src, 0, len(src), token.Pos{Line: 1, Col: 1}, file, mode)
+	start := 0
+	if strings.HasPrefix(src, bom) {
+		start = len(bom)
+	}
+	return LexRange(src, start, len(src), token.Pos{Line: 1, Col: 1}, file, mode)
 }
 
 // LexRange はソースの一部 [start, end) を字句に分ける。文字列の #{} の中を読むのに使う。

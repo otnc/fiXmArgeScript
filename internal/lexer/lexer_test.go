@@ -85,3 +85,14 @@ func TestNewlinesInsideBracketsAreIgnored(t *testing.T) {
 		t.Errorf("改行の字句が %d 個", newlines)
 	}
 }
+
+// Windows のエディタが頭に付ける BOM は読み飛ばし、位置は1行目の1列目から数える。
+func TestLeadingBOMIsSkipped(t *testing.T) {
+	tokens, _, err := Lex("\uFEFFx izu 1\n", "main.fxma", Draft)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first := tokens[0]; first.Name != "x" || first.Pos != (token.Pos{Line: 1, Col: 1}) {
+		t.Errorf("first token = %+v", first)
+	}
+}
