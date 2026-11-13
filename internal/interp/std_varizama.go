@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"cmp"
 	"slices"
 	"strings"
 
@@ -75,7 +76,7 @@ func varizamaOrei(a *argv) (Value, error) {
 			if !ok {
 				return 0, a.fail(diag.ImJune)
 			}
-			return cmpFloat(c, 0), nil
+			return cmp.Compare(c, 0), nil
 		}
 	} else if err := checkSortable(a, xs.Elems); err != nil {
 		return nil, err

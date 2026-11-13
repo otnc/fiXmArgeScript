@@ -45,6 +45,10 @@ func (p *parser) parseBlock() ([]ast.Stmt, error) {
 }
 
 func (p *parser) parseStmt() (ast.Stmt, error) {
+	if err := p.enter(); err != nil {
+		return nil, err
+	}
+	defer p.leave()
 	t := p.peek()
 	at := ast.At{Pos: t.Pos}
 	if t.Kind == token.Keyword {

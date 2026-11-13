@@ -74,8 +74,17 @@ func (l *lexer) lexString() error {
 	return nil
 }
 
+// maxStringNesting は、文字列の #{} の中にまた文字列を書ける深さの上限。超えると Bavellabion。
+// 中の文字列は外側を読むたびに読み直すので、深いほど読むのに時間がかかる。
+const maxStringNesting = 100
+
 // skipCode は #{ の後ろから、対応する } の手前まで進む。
 func (l *lexer) skipCode(stringPos token.Pos) error {
+	l.stringNesting++
+	defer func() { l.stringNesting-- }()
+	if l.stringNesting > maxStringNesting {
+		return l.errorf(diag.Bavellabion, stringPos, "#{")
+	}
 	depth := 0
 	for l.i < len(l.src) {
 		switch l.src[l.i] {

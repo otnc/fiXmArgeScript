@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"cmp"
 	"math"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
@@ -122,7 +123,7 @@ func extremum(sign int) stdFunc {
 func cmpNumbers(a *argv, x, y Value) (int, error) {
 	if xi, ok := x.(Int); ok {
 		if yi, ok := y.(Int); ok {
-			return cmpInt(int64(xi), int64(yi)), nil
+			return cmp.Compare(xi, yi), nil
 		}
 	}
 	xf, ok1 := toFloat(x)
@@ -130,7 +131,7 @@ func cmpNumbers(a *argv, x, y Value) (int, error) {
 	if !ok1 || !ok2 {
 		return 0, a.fail(diag.ImJune)
 	}
-	return cmpFloat(xf, yf), nil
+	return cmp.Compare(xf, yf), nil
 }
 
 func memeZelln(a *argv) (Value, error) {

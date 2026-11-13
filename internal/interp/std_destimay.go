@@ -80,22 +80,22 @@ func senchoose(a *argv, rng *rand.Rand) (Value, error) {
 	return nil, a.fail(diag.ImJune)
 }
 
-// length は範囲の要素の数。
+// length は範囲の要素の数。両端の差は int64 に収まらないことがあるので、uint64 で数える。
 func (r *Range) length() uint64 {
-	lo, hi, step := r.Lo, r.Hi, r.Step
-	if step < 0 {
-		lo, hi, step = -lo, -hi, -step
+	span, step, empty := uint64(r.Hi)-uint64(r.Lo), uint64(r.Step), r.Hi < r.Lo
+	if r.Step < 0 {
+		span, step, empty = uint64(r.Lo)-uint64(r.Hi), -uint64(r.Step), r.Lo < r.Hi
 	}
-	if !r.Inclusive {
-		if hi <= lo {
-			return 0
-		}
-		hi--
-	}
-	if hi < lo {
+	if empty {
 		return 0
 	}
-	return uint64(hi-lo)/uint64(step) + 1
+	if !r.Inclusive {
+		if span == 0 {
+			return 0
+		}
+		span--
+	}
+	return span/step + 1
 }
 
 // destimayMadrazy はかき混ぜた新しい配列を返す。記録するのは並べ替えの順番で、要素そのものではない。

@@ -57,9 +57,15 @@ type Options struct {
 // maxDepth は関数の呼び出しの深さの上限。超えると Bavellabion。
 const maxDepth = 10000
 
+// maxNesting は、呼び出し中の関数の本体の深さ (構文木の深さ) を全部足したものの上限。超えると Bavellabion。
+// 実行は構文木を再帰でたどるので、深い本体の関数が深く呼び合うと、呼び出しの数が maxDepth より少なくても
+// Go のスタックを使い切って落ちる。普通の深さの関数なら、先に maxDepth に届く。
+const maxNesting = 20 * maxDepth
+
 // Interp は1回の実行の状態。巻き戻しでやり直しても、記録はここに残る。
 type Interp struct {
 	file   string
+	depth  int // file の構文木の深さ
 	opts   Options
 	reader *bufio.Reader
 
@@ -128,6 +134,7 @@ type frame struct {
 	async    bool   // praylee を書けるか (itsver の関数とファイルの一番外側)
 	file     string // 実行中の文が書かれたファイル。エラーの位置に使う
 	test     bool   // sentky の本体を実行しているか。ここの shoubek は巻き戻さずテストとして扱う
+	nesting  int    // ここまでに呼び出し中の本体の深さを足したもの (maxNesting)
 }
 
 // thrown は accuhearts で投げた例外と、捕まえられる実行時エラーを包んだもの。
@@ -176,6 +183,7 @@ const (
 
 func run(f *parser.File, opts Options, m mode) (*Interp, error) {
 	in := newInterp(f.Name, opts)
+	in.depth = f.Depth
 	in.mode = m
 	in.replayable = in.mayChoose(f, map[string]bool{f.Name: true})
 	defer in.finish()
@@ -235,7 +243,7 @@ func (in *Interp) restart() *Env {
 	in.pending = nil
 	in.inputCursor = 0
 	in.recordCursor = 0
-	in.frames = []frame{{abiryoku: true, async: true, file: in.file}}
+	in.frames = []frame{{abiryoku: true, async: true, file: in.file, nesting: in.depth}}
 	in.modules = map[string]*Module{}
 	in.loading = map[string]bool{}
 	in.greatWitch = nil

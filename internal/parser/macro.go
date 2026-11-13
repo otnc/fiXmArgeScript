@@ -11,6 +11,10 @@ import (
 // maxMacroDepth は呪いが呪いを呼べる深さの上限。超えると Bavellabion。
 const maxMacroDepth = 64
 
+// maxExpandedTokens は、1つのファイルで呪いの展開が作れる字句の数の上限。超えると Bavellabion。
+// 引数を何度も使う呪いを入れ子で呼ぶと、展開した結果は呼ぶたびに何倍にもなる。
+const maxExpandedTokens = 1_000_000
+
 // macro は curoi で定義した呪い1つ。本体は字句の並びのまま持ち、呼ばれた所に引数を当てはめて差し込む (Rust の macro_rules! と同じ型はめ式)。
 type macro struct {
 	params []string
@@ -23,6 +27,8 @@ type expander struct {
 	macros map[string]*macro
 	// renamed は呪いの中で作った名前に付ける番号。展開のたびに別の名前にして、呼び出し側の変数とぶつからないようにする
 	renamed int
+	// produced はここまでに展開で作った字句の数 (maxExpandedTokens)
+	produced int
 }
 
 // expandMacros は curoi の定義を字句の並びから取り除き、呼び出しを展開する。
@@ -126,7 +132,12 @@ func (e *expander) expand(tokens []token.Token, depth int) ([]token.Token, error
 		if len(args) != len(m.params) {
 			return nil, diag.New(diag.AyAmis, e.p.file, t.Pos, e.p.text(t))
 		}
-		expanded, err := e.expand(e.substitute(m, args), depth+1)
+		body := e.substitute(m, args)
+		e.produced += len(body)
+		if e.produced > maxExpandedTokens {
+			return nil, diag.New(diag.Bavellabion, e.p.file, t.Pos, e.p.text(t))
+		}
+		expanded, err := e.expand(body, depth+1)
 		if err != nil {
 			return nil, err
 		}

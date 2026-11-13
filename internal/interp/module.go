@@ -210,7 +210,7 @@ func (in *Interp) runModule(path string, f *parser.File) (*Module, error) {
 		return nil, diag.New(diag.CaNay, f.Name, s.Position(), "")
 	}
 	env := newEnv(nil, false)
-	in.frames = append(in.frames, frame{file: f.Name})
+	in.frames = append(in.frames, frame{file: f.Name, nesting: in.frame().nesting + f.Depth})
 	_, _, err := in.execBlock(f.Stmts, env)
 	in.popFrame()
 	if err != nil {

@@ -12,6 +12,7 @@ import (
 type File struct {
 	Name     string
 	Stmts    []ast.Stmt
+	Depth    int // Stmts の木の深さ
 	Warnings []diag.Warning
 }
 
@@ -33,7 +34,11 @@ func Parse(src, file string) (*File, error) {
 	if t := p.peek(); t.Kind != token.EOF {
 		return nil, p.unexpected(t)
 	}
-	return &File{Name: file, Stmts: stmts, Warnings: warnings}, nil
+	depth, tooDeep := ast.Measure(stmts)
+	if tooDeep != nil {
+		return nil, diag.New(diag.Bavellabion, file, tooDeep.Position(), "")
+	}
+	return &File{Name: file, Stmts: stmts, Depth: depth, Warnings: warnings}, nil
 }
 
 type parser struct {
@@ -42,9 +47,23 @@ type parser struct {
 	mode   lexer.Mode
 	tokens []token.Token
 	i      int
+	// depth は今読んでいる入れ子の深さ。ast.MaxDepth を超えたら読むのをやめる (読む処理も再帰なので)
+	depth int
 	// macros はこのファイルの呪い。#{} の中を読むときにも展開に使う
 	macros *expander
 }
+
+// enter は入れ子を1段深くする。深すぎれば Bavellabion。戻るときに leave を呼ぶ。
+func (p *parser) enter() error {
+	p.depth++
+	if p.depth > ast.MaxDepth {
+		t := p.peek()
+		return diag.New(diag.Bavellabion, p.file, t.Pos, p.text(t))
+	}
+	return nil
+}
+
+func (p *parser) leave() { p.depth-- }
 
 func (p *parser) peek() token.Token { return p.tokens[p.i] }
 

@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/lexer"
 	"github.com/otnc/fiXmArgeScript/internal/parser"
@@ -21,7 +22,10 @@ func Format(src, file string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	out := (&printer{src: src, keepGaps: true}).print(tokens)
+	out, err := (&printer{src: src, keepGaps: true}).format(tokens, file)
+	if err != nil {
+		return "", err
+	}
 	if err := sameTokens(tokens, out, file); err != nil {
 		return "", err
 	}
@@ -35,7 +39,7 @@ func Expand(src, file string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return (&printer{src: src}).print(tokens), nil
+	return (&printer{src: src}).format(tokens, file)
 }
 
 // sameTokens は、整えた結果を読み直した字句の並びが元と同じかを調べる。改行は続いた空行をまとめるので、続く改行は1つとして比べる。
@@ -73,6 +77,8 @@ type printer struct {
 	depth  int  // ブロックの深さ
 	blank  bool // 空行を1つためている
 	output bool // 何か書いたか (ファイルの頭の空行を消すため)
+	// tooDeep は字下げが ast.MaxDepth を超えた所の字句。深すぎる入れ子は、行ごとの字下げだけで出力が膨れ上がるので、そこで書くのをやめる
+	tooDeep *token.Token
 }
 
 // open は1つの文の中で開いているもの (括弧かブロック) と、それを開いた物理行の番号。
@@ -81,10 +87,22 @@ type open struct {
 	line  int
 }
 
+// format は tokens を整えて返す。入れ子が深すぎれば Bavellabion。
+func (p *printer) format(tokens []token.Token, file string) (string, error) {
+	out := p.print(tokens)
+	if t := p.tooDeep; t != nil {
+		return "", diag.New(diag.Bavellabion, file, t.Pos, p.text(*t))
+	}
+	return out, nil
+}
+
 func (p *printer) print(tokens []token.Token) string {
 	var line []token.Token
 	prevEnd := 0
 	for _, t := range tokens {
+		if p.tooDeep != nil {
+			break
+		}
 		if t.Kind == token.Newline || t.Kind == token.EOF {
 			if len(line) > 0 {
 				p.logicalLine(line, p.gap(line[len(line)-1].End, t.Start))
@@ -138,6 +156,10 @@ func (p *printer) logicalLine(tokens []token.Token, trailing string) {
 	if dedentsLine(tokens[0]) {
 		indent--
 	}
+	if indent > ast.MaxDepth {
+		p.tooDeep = &tokens[0]
+		return
+	}
 	p.startLine(indent)
 
 	var stack []open
@@ -147,6 +169,9 @@ func (p *printer) logicalLine(tokens []token.Token, trailing string) {
 			g := p.gap(tokens[i-1].End, t.Start)
 			if strings.Contains(g, "\n") {
 				p.breakInside(g, tokens, i, stack, indent)
+				if p.tooDeep != nil {
+					return
+				}
 				physLine++
 			} else if needsSpace(tokens, i) {
 				p.b.WriteByte(' ')
@@ -195,6 +220,10 @@ func (p *printer) breakInside(g string, tokens []token.Token, next int, stack []
 		view = view[:len(view)-1]
 	}
 	levels := indent + distinctLines(view)
+	if levels > ast.MaxDepth {
+		p.tooDeep = &tokens[next]
+		return
+	}
 	for _, row := range rows[1 : len(rows)-1] {
 		if c := commentIn(row); c != "" {
 			p.b.WriteString("\n" + strings.Repeat(indentUnit, levels) + c)

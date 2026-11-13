@@ -3,7 +3,6 @@ package interp
 import (
 	"encoding/hex"
 	"math"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -19,11 +18,72 @@ func Display(v Value) string {
 }
 
 // inner は配列や辞書の中に入った値の形。文字列は " で囲む (JSON に近い形)。
-func inner(v Value) string { return nested(v, nil) }
+func inner(v Value) string {
+	switch v.(type) {
+	case *Array, *Dict:
+		return container(v)
+	}
+	return atom(v)
+}
 
-// nested は inner の中身。open は今たどっている途中の配列と辞書で、自分自身を中に持つものをもう一度たどらないために使う
-// (Python と同じく [...] と {...} で出す)。
-func nested(v Value, open []Value) string {
+// pendingText は container がこれから書くもの1つ。v が nil なら text をそのまま書き、closes があればその配列か辞書を書き終える。
+type pendingText struct {
+	v      Value
+	text   string
+	closes Value
+}
+
+// container は配列と辞書の形。自分自身を中に持つものは、Python と同じく [...] と {...} で出す。
+// 入れ子はいくらでも深く作れるので、再帰ではなく、これから書くものを積んでおいて順に書く。
+func container(root Value) string {
+	var b strings.Builder
+	open := map[Value]bool{} // 今書いている途中の配列と辞書
+	todo := []pendingText{{v: root}}
+	for len(todo) > 0 {
+		next := todo[len(todo)-1]
+		todo = todo[:len(todo)-1]
+		switch v := next.v.(type) {
+		case nil:
+			b.WriteString(next.text)
+			delete(open, next.closes)
+		case *Array:
+			if open[v] {
+				b.WriteString("[...]")
+				continue
+			}
+			open[v] = true
+			b.WriteByte('[')
+			todo = append(todo, pendingText{text: "]", closes: v})
+			for i := len(v.Elems) - 1; i >= 0; i-- {
+				todo = append(todo, pendingText{v: v.Elems[i]})
+				if i > 0 {
+					todo = append(todo, pendingText{text: ", "})
+				}
+			}
+		case *Dict:
+			if open[v] {
+				b.WriteString("{...}")
+				continue
+			}
+			open[v] = true
+			b.WriteByte('{')
+			todo = append(todo, pendingText{text: "}", closes: v})
+			for i := len(v.keys) - 1; i >= 0; i-- {
+				k := v.keys[i]
+				todo = append(todo, pendingText{v: v.values[k]}, pendingText{text: quote(k) + ": "})
+				if i > 0 {
+					todo = append(todo, pendingText{text: ", "})
+				}
+			}
+		default:
+			b.WriteString(atom(v))
+		}
+	}
+	return b.String()
+}
+
+// atom は配列と辞書以外の値の形。
+func atom(v Value) string {
 	switch v := v.(type) {
 	case Int:
 		return strconv.FormatInt(int64(v), 10)
@@ -38,26 +98,6 @@ func nested(v Value, open []Value) string {
 		return lexicon.Spell("ulieso")
 	case Null:
 		return lexicon.Spell("vanita")
-	case *Array:
-		if slices.Contains(open, Value(v)) {
-			return "[...]"
-		}
-		open = append(open, v)
-		parts := make([]string, len(v.Elems))
-		for i, e := range v.Elems {
-			parts[i] = nested(e, open)
-		}
-		return "[" + strings.Join(parts, ", ") + "]"
-	case *Dict:
-		if slices.Contains(open, Value(v)) {
-			return "{...}"
-		}
-		open = append(open, v)
-		parts := make([]string, 0, v.Len())
-		for _, k := range v.keys {
-			parts = append(parts, quote(k)+": "+nested(v.values[k], open))
-		}
-		return "{" + strings.Join(parts, ", ") + "}"
 	case Bytes:
 		return lexicon.Spell("sanand") + "(" + quote(hex.EncodeToString(v)) + ", " + quote("hex") + ")"
 	case *Range:
@@ -127,14 +167,7 @@ func formatFloat(f float64) string {
 	if n-1 < 0 {
 		expSign = "-"
 	}
-	return sign + s + "e" + expSign + strconv.Itoa(abs(n-1))
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return -n
-	}
-	return n
+	return sign + s + "e" + expSign + strconv.Itoa(max(n-1, 1-n))
 }
 
 func quote(s string) string {

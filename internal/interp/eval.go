@@ -352,7 +352,7 @@ func callName(fn ast.Expr) string {
 
 // call は関数を呼ぶ。abiryoku の関数と、abiryoku の関数を渡す呼び出しは、入出力をしてよい場所でしか書けない。
 func (in *Interp) call(fn Value, args []Value, pos token.Pos, name string) (Value, error) {
-	if len(in.frames) > maxDepth {
+	if len(in.frames) > maxDepth || in.frame().nesting > maxNesting {
 		return nil, in.errorf(diag.Bavellabion, pos, name)
 	}
 	passesAbiryoku := false
@@ -365,7 +365,7 @@ func (in *Interp) call(fn Value, args []Value, pos token.Pos, name string) (Valu
 
 	switch f := fn.(type) {
 	case *Builtin:
-		in.frames = append(in.frames, frame{abiryoku: f.Abiryoku || passesAbiryoku, file: in.frame().file})
+		in.frames = append(in.frames, frame{abiryoku: f.Abiryoku || passesAbiryoku, file: in.frame().file, nesting: in.frame().nesting + 1})
 		defer in.popFrame()
 		return f.Call(in, pos, args)
 	case *Func:
@@ -385,7 +385,7 @@ func (in *Interp) callFunc(f *Func, args []Value, pos token.Pos, passesAbiryoku 
 	for i, p := range lit.Params {
 		env.define(p, args[i], false)
 	}
-	fr := frame{abiryoku: lit.Abiryoku || passesAbiryoku, async: lit.Itsver, file: f.File}
+	fr := frame{abiryoku: lit.Abiryoku || passesAbiryoku, async: lit.Itsver, file: f.File, nesting: in.frame().nesting + lit.Depth + 1}
 	if lit.Itsver {
 		// 捕まえられるエラーは praylee したときに起きる (spawn が Promise に入れる)
 		return in.spawn(fr, func() (Value, error) {

@@ -130,6 +130,7 @@ type (
 		Body     []Stmt
 		Abiryoku bool
 		Itsver   bool
+		Depth    int // 本体の木の深さ。Measure が書き込む
 	}
 	// Choice は a owk b owk c mekamo。
 	Choice struct {

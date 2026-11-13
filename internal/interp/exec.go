@@ -179,7 +179,7 @@ func (in *Interp) each(v Value, at ast.Node, f func(Value) (bool, error)) error 
 			}
 		}
 	case *Range:
-		for i := v.Lo; v.contains(i); i += v.Step {
+		for i, ok := v.Lo, v.contains(v.Lo); ok; i, ok = v.next(i) {
 			if stop, err := f(Int(i)); stop || err != nil {
 				return err
 			}

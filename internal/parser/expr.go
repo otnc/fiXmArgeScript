@@ -41,14 +41,29 @@ func (p *parser) parseExprWithEnd() (ast.Expr, error) {
 }
 
 // candidates は mekamo の文の owk を候補の区切りとして読む。括弧の中の owk は「または」のまま。
+// owk は左から順に組んであるので、左へたどりながら右の候補を集める。
 func candidates(x ast.Expr) []ast.Expr {
-	if l, ok := x.(*ast.Logical); ok && l.Op == "owk" {
-		return append(candidates(l.X), candidates(l.Y)...)
+	var out []ast.Expr
+	for {
+		l, ok := x.(*ast.Logical)
+		if !ok || l.Op != "owk" {
+			break
+		}
+		out = append(out, l.Y)
+		x = l.X
 	}
-	return []ast.Expr{x}
+	out = append(out, x)
+	slices.Reverse(out)
+	return out
 }
 
-func (p *parser) parseExpr() (ast.Expr, error) { return p.parseOr() }
+func (p *parser) parseExpr() (ast.Expr, error) {
+	if err := p.enter(); err != nil {
+		return nil, err
+	}
+	defer p.leave()
+	return p.parseOr()
+}
 
 func (p *parser) parseOr() (ast.Expr, error)  { return p.parseLogical("owk", p.parseAnd) }
 func (p *parser) parseAnd() (ast.Expr, error) { return p.parseLogical("sond", p.parseNot) }
@@ -72,6 +87,10 @@ func (p *parser) parseLogical(op string, operand func() (ast.Expr, error)) (ast.
 func (p *parser) parseNot() (ast.Expr, error) {
 	if t := p.peek(); t.IsKeyword("nii") {
 		p.next()
+		if err := p.enter(); err != nil {
+			return nil, err
+		}
+		defer p.leave()
 		x, err := p.parseNot()
 		if err != nil {
 			return nil, err
@@ -187,6 +206,10 @@ func (p *parser) parseUnary() (ast.Expr, error) {
 	t := p.peek()
 	if t.IsOp("-") || t.IsOp("+") || t.IsOp("~") {
 		p.next()
+		if err := p.enter(); err != nil {
+			return nil, err
+		}
+		defer p.leave()
 		x, err := p.parseUnary()
 		if err != nil {
 			return nil, err
@@ -438,7 +461,7 @@ func (p *parser) parseString(t token.Token) (ast.Expr, error) {
 				return nil, err
 			}
 		}
-		sub := &parser{src: p.src, file: p.file, mode: p.mode, tokens: tokens, macros: p.macros}
+		sub := &parser{src: p.src, file: p.file, mode: p.mode, tokens: tokens, macros: p.macros, depth: p.depth}
 		sub.skipNewlines()
 		x, err := sub.parseExprWithEnd()
 		if err != nil {

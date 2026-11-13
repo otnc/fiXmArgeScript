@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"cmp"
 	"math"
 	"slices"
 	"strings"
@@ -279,7 +280,7 @@ func (in *Interp) compare(op string, a, b Value, pos token.Pos) (bool, error) {
 	}
 	if x, ok := a.(Int); ok {
 		if y, ok := b.(Int); ok {
-			return ordered(op, cmpInt(int64(x), int64(y))), nil
+			return ordered(op, cmp.Compare(x, y)), nil
 		}
 	}
 	if x, ok := toFloat(a); ok {
@@ -287,7 +288,7 @@ func (in *Interp) compare(op string, a, b Value, pos token.Pos) (bool, error) {
 			if math.IsNaN(x) || math.IsNaN(y) {
 				return false, nil
 			}
-			return ordered(op, cmpFloat(x, y)), nil
+			return ordered(op, cmp.Compare(x, y)), nil
 		}
 	}
 	if x, ok := a.(Str); ok {
@@ -311,42 +312,75 @@ func ordered(op string, c int) bool {
 	return c >= 0
 }
 
-func cmpInt(x, y int64) int {
-	switch {
-	case x < y:
-		return -1
-	case x > y:
-		return 1
-	}
-	return 0
-}
-
-func cmpFloat(x, y float64) int {
-	switch {
-	case x < y:
-		return -1
-	case x > y:
-		return 1
-	}
-	return 0
-}
-
 // equal は senaji。Python の == と同じだが、真偽値と数は別の型として扱う (RFC の等しさ)。
-func equal(a, b Value) bool { return equalNested(a, b, nil) }
-
-// equalNested は equal の中身。open は今比べている途中の配列と辞書の組で、自分自身を中に持つものを
-// もう一度比べ始めたら、ほかの要素で決まるものとして等しいとみなす (比べ続けると終わらないため)。
-func equalNested(a, b Value, open [][2]Value) bool {
-	if x, ok := toFloat(a); ok {
-		if y, ok := toFloat(b); ok {
-			if xi, ok := a.(Int); ok {
-				if yi, ok := b.(Int); ok {
-					return xi == yi
+// 配列と辞書はいくらでも深く入れ子にできるので、再帰ではなく、これから比べる組を積んでおいて順に比べる。
+func equal(a, b Value) bool {
+	var todo [][2]Value
+	// seen はもう比べ始めた配列と辞書の組。自分自身を中に持つものをもう一度比べ始めたら、
+	// ほかの要素で決まるものとして飛ばす (比べ続けると終わらないため)
+	var seen map[[2]Value]bool
+	begin := func(pair [2]Value) bool {
+		if pair[0] == pair[1] || seen[pair] {
+			return false
+		}
+		if seen == nil {
+			seen = map[[2]Value]bool{}
+		}
+		seen[pair] = true
+		return true
+	}
+	for {
+		switch x := a.(type) {
+		case *Array:
+			y, ok := b.(*Array)
+			if !ok || len(x.Elems) != len(y.Elems) {
+				return false
+			}
+			if begin([2]Value{x, y}) {
+				for i := range x.Elems {
+					todo = append(todo, [2]Value{x.Elems[i], y.Elems[i]})
 				}
 			}
-			return x == y
+		case *Dict:
+			y, ok := b.(*Dict)
+			if !ok || x.Len() != y.Len() {
+				return false
+			}
+			if begin([2]Value{x, y}) {
+				for _, k := range x.keys {
+					yv, ok := y.values[k]
+					if !ok {
+						return false
+					}
+					todo = append(todo, [2]Value{x.values[k], yv})
+				}
+			}
+		default:
+			if !equalAtoms(a, b) {
+				return false
+			}
 		}
-		return false
+		if len(todo) == 0 {
+			return true
+		}
+		a, b = todo[len(todo)-1][0], todo[len(todo)-1][1]
+		todo = todo[:len(todo)-1]
+	}
+}
+
+// equalAtoms は配列と辞書以外の値を比べる。
+func equalAtoms(a, b Value) bool {
+	if x, ok := toFloat(a); ok {
+		y, ok := toFloat(b)
+		if !ok {
+			return false
+		}
+		if xi, ok := a.(Int); ok {
+			if yi, ok := b.(Int); ok {
+				return xi == yi
+			}
+		}
+		return x == y
 	}
 	switch a := a.(type) {
 	case Str:
@@ -361,37 +395,6 @@ func equalNested(a, b Value, open [][2]Value) bool {
 	case Bytes:
 		b, ok := b.(Bytes)
 		return ok && string(a) == string(b)
-	case *Array:
-		b, ok := b.(*Array)
-		if !ok || len(a.Elems) != len(b.Elems) {
-			return false
-		}
-		if a == b || slices.Contains(open, [2]Value{a, b}) {
-			return true
-		}
-		open = append(open, [2]Value{a, b})
-		for i := range a.Elems {
-			if !equalNested(a.Elems[i], b.Elems[i], open) {
-				return false
-			}
-		}
-		return true
-	case *Dict:
-		b, ok := b.(*Dict)
-		if !ok || a.Len() != b.Len() {
-			return false
-		}
-		if a == b || slices.Contains(open, [2]Value{a, b}) {
-			return true
-		}
-		open = append(open, [2]Value{a, b})
-		for _, k := range a.keys {
-			bv, ok := b.values[k]
-			if !ok || !equalNested(a.values[k], bv, open) {
-				return false
-			}
-		}
-		return true
 	case *Range:
 		b, ok := b.(*Range)
 		return ok && *a == *b
@@ -428,7 +431,7 @@ func (in *Interp) contains(container, x Value, pos token.Pos) (bool, error) {
 		if !ok {
 			return false, nil
 		}
-		return c.contains(i) && (i-c.Lo)%c.Step == 0, nil
+		return c.contains(i) && c.onStep(i), nil
 	}
 	return false, in.errorf(diag.ImJune, pos, lexicon.Spell("exi"))
 }
@@ -445,6 +448,20 @@ func (r *Range) contains(i int64) bool {
 		return r.Hi <= i && i <= r.Lo
 	}
 	return r.Hi < i && i <= r.Lo
+}
+
+// onStep は i が始まりから刻みの整数倍だけ離れているかを返す。差は int64 に収まらないことがあるので、uint64 で数える。
+func (r *Range) onStep(i int64) bool {
+	if r.Step < 0 {
+		return (uint64(r.Lo)-uint64(i))%-uint64(r.Step) == 0
+	}
+	return (uint64(i)-uint64(r.Lo))%uint64(r.Step) == 0
+}
+
+// next は i の次の要素を返す。int64 からあふれるなら、もう次はない。
+func (r *Range) next(i int64) (int64, bool) {
+	n := i + r.Step
+	return n, (n > i) == (r.Step > 0) && r.contains(n)
 }
 
 // index は A no B。

@@ -54,8 +54,10 @@ type lexer struct {
 	file      string
 	mode      Mode
 	depth     int // 括弧の深さ。括弧の中の改行は文の区切りにしない
-	tokens    []token.Token
-	warnings  []diag.Warning
+	// stringNesting は今読んでいる #{} の深さ
+	stringNesting int
+	tokens        []token.Token
+	warnings      []diag.Warning
 }
 
 // 長いものから並べる。先に一致したものを使う。
