@@ -58,7 +58,7 @@ func (p *parser) parseStmt() (ast.Stmt, error) {
 			return p.parseDecl()
 		case "teitance":
 			return p.parseTry()
-		case "sentky":
+		case "sentky", "persemon":
 			p.next()
 			name := p.peek()
 			if name.Kind != token.String || len(name.Parts) > 1 || (len(name.Parts) == 1 && name.Parts[0].IsCode) {
@@ -69,7 +69,7 @@ func (p *parser) parseStmt() (ast.Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &ast.Test{At: at, Name: stringText(name), Body: body}, nil
+			return &ast.Test{At: at, Name: stringText(name), Body: body, Bench: t.Name == "persemon"}, nil
 		case "keip":
 			p.next()
 			return &ast.Continue{At: at}, nil

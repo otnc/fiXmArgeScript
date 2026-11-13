@@ -25,6 +25,14 @@ type At struct{ Pos token.Pos }
 
 func (a At) Position() token.Pos { return a.Pos }
 
+// Keyword はブロックを始めた語 (sentky か persemon)。
+func (t *Test) Keyword() string {
+	if t.Bench {
+		return "persemon"
+	}
+	return "sentky"
+}
+
 // 式
 
 type (
@@ -209,10 +217,12 @@ type (
 		HasFinally bool
 		Finally    []Stmt
 	}
+	// Test は sentky のブロック。Bench なら persemon のブロックで、速さを測る。
 	Test struct {
 		At
-		Name string
-		Body []Stmt
+		Name  string
+		Body  []Stmt
+		Bench bool
 	}
 	Continue struct{ At }
 	Break    struct{ At }

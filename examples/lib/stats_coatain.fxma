@@ -4,3 +4,7 @@ sentky "average"
   average([1, 2, 3]) senaji 2 shoubek
   average([2, 4]) senaji 3 shoubek
 finend
+
+persemon "average"
+  average([1, 2, 3, 4, 5])
+finend

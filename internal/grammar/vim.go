@@ -103,7 +103,7 @@ func VimWords() []byte {
 			indent = "    "
 		}
 		pairs := [][2]string{
-			{"opener", vimWords([]string{"weho", "teitance", "sentky", "curoi", "azagara", "mof"}, mode)},
+			{"opener", vimWords([]string{"weho", "teitance", "sentky", "persemon", "curoi", "azagara", "mof"}, mode)},
 			{"continued", vimWords([]string{"siva"}, mode) + `\s\+` + vimWords([]string{"mof"}, mode)},
 			{"closer", vimWords([]string{"finend"}, mode)},
 			{"dedent", vimWords(dedentWords, mode)},

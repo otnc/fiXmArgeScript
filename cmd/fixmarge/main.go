@@ -88,6 +88,7 @@ func (s streams) app() *cli.Command {
 				Action:  s.sinruits,
 			},
 			{Name: "coatain", Aliases: []string{"test"}, Action: s.coatain},
+			{Name: "persemon", Aliases: []string{"bench"}, Action: s.persemon},
 			{Name: "lavi", Aliases: []string{"lint"}, Action: s.lavi},
 			{
 				Name:    "beaukshi",
@@ -262,6 +263,7 @@ func (s streams) usage(w io.Writer) {
   fixmarge keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
   fixmarge sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
   fixmarge coatain [ファイル...]  _coatain.fxma の sentky を実行して判決を出す (test)。省くと下のフォルダまで全部
+  fixmarge persemon [ファイル...]  _coatain.fxma の persemon で速さを測る (bench)。省くと下のフォルダまで全部
   fixmarge beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
   fixmarge beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
   fixmarge lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部

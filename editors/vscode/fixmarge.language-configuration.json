@@ -56,7 +56,7 @@
     ]
   ],
   "indentationRules": {
-    "increaseIndentPattern": "^(?![^#]*\\b(finend)\\b)(?:\\s*\\b(youlugive|ennote|finend|siva)\\b|[^#]*\\b(teitance|azagara|sentky|curoi|weho|mof)\\b)",
+    "increaseIndentPattern": "^(?![^#]*\\b(finend)\\b)(?:\\s*\\b(youlugive|ennote|finend|siva)\\b|[^#]*\\b(persemon|teitance|azagara|sentky|curoi|weho|mof)\\b)",
     "decreaseIndentPattern": "^\\s*\\b(youlugive|ennote|finend|siva)\\b"
   }
 }

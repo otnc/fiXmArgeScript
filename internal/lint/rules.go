@@ -63,7 +63,7 @@ func (l *linter) emptyBlocks(stmts []ast.Stmt) {
 				empty(n.Finally, n, "ennote")
 			}
 		case *ast.Test:
-			empty(n.Body, n, "sentky")
+			empty(n.Body, n, n.Keyword())
 		}
 		return true
 	})

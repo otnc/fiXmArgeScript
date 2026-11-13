@@ -54,3 +54,12 @@ func RunTests(src, file string, opts interp.Options) (failed bool, err error) {
 	}
 	return interp.RunTests(f, opts)
 }
+
+// RunBenches は _coatain.fxma の persemon を実行して速さを出す。本体の shoubek が落ちたものがあれば failed が true。
+func RunBenches(src, file string, opts interp.Options) (failed bool, err error) {
+	f, err := Prepare(src, file)
+	if err != nil {
+		return false, err
+	}
+	return interp.RunBenches(f, opts)
+}

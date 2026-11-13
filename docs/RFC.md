@@ -92,6 +92,7 @@ unlessやuntilに当たる専用の語は作らず、`nii` (否定) で書きま
 | `x izu 1 owk 2 mekamo` | `meKaMo` | 〜かも | 対応なし (候補を並べる) | 対応なし |
 | `条件 shoubek` | `ShouBeK` | 〜するべき | `assert` (ただし失敗すると巻き戻る) | `console.assert()` に近い |
 | `sentky "名前"` | `sent-ky` | 裁き | テスト関数 | `test()` (Jestなど) |
+| `persemon "名前"` | `Per·SemOn` | 見世物 | ベンチマーク関数 | `bench()` (Vitest) |
 | `"理由" accuhearts` | `AccUhEarts` | 告発 | `raise` | `throw` |
 | `teitance` | `Tei-Tance` | 抵抗 | `try` | `try` |
 | `youlugive e` | `yOuLugiVe` | 許し | `except ... as e` | `catch (e)` |
@@ -251,7 +252,7 @@ console.log(x); // 15
 | 位置 | 決め方 | キーワード |
 | --- | --- | --- |
 | 文の後ろ | 動詞、語尾 (〜かも、〜べき)、「〜ながら」 | `mekamo` `shoubek` `itswa` `azagara` `redogh` `canosiri` `zanfession` `accuhearts` `werer` `praylee` |
-| 文の頭 | 文の頭に来る語 (もし、しかし)、ブロックや宣言の見出し | `mof` `siva` `weho` `abiryoku` `itsver` `oqun` `curoi` `sentky` `teitance` `youlugive` `ennote` `showence` `nii` |
+| 文の頭 | 文の頭に来る語 (もし、しかし)、ブロックや宣言の見出し | `mof` `siva` `weho` `abiryoku` `itsver` `oqun` `curoi` `sentky` `persemon` `teitance` `youlugive` `ennote` `showence` `nii` |
 | 2つのものの間 | 2つをつなぐ語 | `izu` `no` `exi` `senaji` `sond` `owk` `aste` `batte` |
 | 1語で文になる | 位置は問題にならない | `keip` `ketzen` `finend` |
 
@@ -682,6 +683,34 @@ sentky "double"
 finend
 ```
 
+速さを測る処理も、同じファイルに `persemon` (`Per·SemOn`、見世物) のブロックで書きます。Goがベンチマークを `_test.go` に書くのと同じです。
+
+フィクスマージ語 (ソース):
+
+```
+persemon "double"
+  util no double(21)
+finend
+```
+
+JavaScript (Vitest):
+
+```javascript
+bench("double", () => {
+  double(21);
+});
+```
+
+`fixmarge persemon` は `persemon` だけを、`fixmarge coatain` は `sentky` だけを動かします。結果は、`Per·SemOn` に続けて名前、回数、1回あたりの時間 (ナノ秒) を出します。
+
+```
+Per·SemOn double: 2109718 584ns
+```
+
+- `go test -bench` と同じく、本体を何回も動かし、かかった時間が1秒に届くまで回数を増やして測り直します。回数は一度に100倍まで、上限は10億回です。
+- 本体に直接書いた `shoubek` は `sentky` と同じくテストとして扱います。落ちたら測るのをやめて `Guil-me` と落ちた場所を出し、`fixmarge persemon` は終了コード1で終わります。
+- 巻き戻しでやり直すときは、前と同じ回数だけ本体を動かします。出す時間も前のものです。
+
 例外は `accuhearts` (告発) で投げ、`teitance` (抵抗) と `youlugive` (許し) で捕まえます。Pythonの `raise`、`try`、`except` と同じです。誰にも許されなかった例外は、`KeI·tion` (処刑) としてプログラムを終了させます。
 
 `youlugive e` と書くと、捕まえた例外が変数 `e` に入ります。例外の理由 (メッセージ) は `e no "lyuzun"` で取り出せます。辞書の `LyuzUn` (理由) から取ったキーです。`ennote` (`En-NOte`、成れの果て) のブロックは、例外が起きても起きなくても最後に必ず実行されます (PythonやJavaScriptの `finally`)。`canosiri` (`CaNoSiri`、罵り) は、`redogh` と同じく文の後ろに置いて、標準エラー出力に書きます。
@@ -1038,7 +1067,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `fixmarge hak` | 話す | `repl` | 対話モード。1行ずつ打って実行する | 引数なしの `python` |
 | `fixmarge nai <エラー名>` | なぜ | `explain` | エラーや警告の意味と直し方を表示する | `rustc --explain` |
 | `fixmarge nai`、`fixmarge --nai` | なぜ | `help`、`--help` | 使い方を表示する | `go help` |
-| `fixmarge persemon main.fxma` | 見世物 | `bench` | 関数の速さを測る | `go test -bench` |
+| `fixmarge persemon` | 見世物 | `bench` | 名前が `_coatain.fxma` で終わるファイルの `persemon` を実行して速さを測る。ファイルやフォルダの渡し方は `coatain` と同じ | `go test -bench`、`vitest bench` |
 | `fixmarge werer <パッケージ>@<版>` | 迎える | `get` | パッケージを追加する | `go get` |
 | `fixmarge ado meif <名前>` | これ、命 | `mod init` | `fixmarge.mod` を作る | `go mod init` |
 | `fixmarge ado saymal` | これ、正常 | `mod tidy` | 使っていないものを消し、足りないものを足す | `go mod tidy` |

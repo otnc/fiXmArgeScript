@@ -1,5 +1,5 @@
 // Package check は実行する前に見つけられるエラーを探す。
-// abiryoku の付け忘れ (kiNbOO)、showence への再代入 (blasTOac)、_coatain.fxma 以外の sentky (Ca-nay)。
+// abiryoku の付け忘れ (kiNbOO)、showence への再代入 (blasTOac)、_coatain.fxma 以外の sentky と persemon (Ca-nay)。
 package check
 
 import (
@@ -11,7 +11,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/parser"
 )
 
-// IsTestFile は sentky を書けるファイルかを返す。
+// IsTestFile は sentky と persemon を書けるファイルかを返す。
 func IsTestFile(name string) bool {
 	return strings.HasSuffix(name, "_coatain.fxma") || strings.HasSuffix(name, "_coatain.fxmac")
 }
@@ -144,7 +144,7 @@ func (c *checker) stmt(s ast.Stmt, ctx context) {
 		}
 	case *ast.Test:
 		if !c.testFile {
-			c.fail(diag.CaNay, s, "sentky")
+			c.fail(diag.CaNay, s, s.Keyword())
 		}
 		c.block(s.Body, ctx)
 	}

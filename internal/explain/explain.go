@@ -25,7 +25,7 @@ var entries = []entry{
 	{diag.SuReady, "既に。同じ名前を二重に定義したか、関数の中から外の変数に izu したか、読み込みが循環しました。\n外の値を変えたいときは、戻り値か、配列や辞書を使います。"},
 	{diag.CraeyTA, "壊れた。ダウンロードしたパッケージが fixmarge.sum と合いません。"},
 	{diag.SaiVI, "災い。インタプリタ自体のバグです。起きたら報告してください。"},
-	{diag.CaNay, "できない。その場所では使えない書き方か、まだ作られていない機能です。\npraylee は itsver の関数とファイルの一番外側で、sentky は _coatain.fxma のファイルで使えます。"},
+	{diag.CaNay, "できない。その場所では使えない書き方か、まだ作られていない機能です。\npraylee は itsver の関数とファイルの一番外側で、sentky と persemon は _coatain.fxma のファイルで使えます。"},
 	{diag.AccUhEarts, "告発。accuhearts で投げた例外の種類です。e no \"chidd\" で読むとこの名前になります。"},
 	{diag.DowGuil, "疑惑 (警告)。方言の綴りを使いました。実行はできますが、清書では標準語に直ります。"},
 }

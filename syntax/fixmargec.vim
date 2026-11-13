@@ -11,7 +11,7 @@ syntax match fixmargeNumber /\<\d\%(_\=\d\)*\%(\.\d\%(_\=\d\)*\)\=\%([eE][+-]\=\
 syntax match fixmargeCall /\<\h\w*\ze\s*(/
 syntax match fixmargeNamespace /\C\%([[:alnum:]_'’~·-]\)\@<!\%(i·zana-vited\|ievil JIO\|VariZaMa\|dEstiMay\|Coword\|GE-mon\|Memoid\|KeyGa\|MeMe\|Toim\)\w\@!/
 syntax match fixmargeBuiltin /\C\%([[:alnum:]_'’~·-]\)\@<!\%(i·zana-vitedeXi'\|FinecloWtKuwPace\|madRazysAnAnd\|Iz'uKuwPace\|Iz'udeFuTai\|Lai NeiAlte\|MEifKuwPace\|BatteKolSu\|Sen-choose\|eATah·Guy\|fOreSeNaji\|Divil JIO\|FinecloWt\|PyusenS'e\|Vani·Ell\|Ligh-Luw\|SodaKast\|Sodagu-n\|conf-Soy\|rEcanRey\|Commity\|KuwPace\|Lai Nei\|RacDA-m\|Say mAl\|ShoJikA\|deFuTai\|madRazy\|mu·Yon\|sAiMoku\|tSuYoNg\|Matill\|SaLook\|YowEAk\|ieyWOO\|mOurce\|nOzuki\|sAgAin\|sAnAnd\|ChiDd\|GoKuu\|KolSu\|Litto\|Tarip\|Zelln\|nAddY\|oNkhe\|GoMi\|Kast\|SurC\|gDie\|gu-n\|nAng\|oRei\|Ado\|Eda\|Edo\|Hir\|LEA\)\w\@!/
-syntax match fixmargeKeyword /\C\%([[:alnum:]_'’~·-]\)\@<!\%(AccUhEarts\|zanfession\|Tei-Tance\|pray·lee\|yOuLugiVe\|CaNoSiri\|En-NOte\|ReDogh'\|ShouBeK\|aZaGara\|sent-ky\|FineNd\|KetZen\|meKaMo\|Kei-P\|itsWA\|weRer\|SiVa\|aSte\|Mof\)\w\@!/
+syntax match fixmargeKeyword /\C\%([[:alnum:]_'’~·-]\)\@<!\%(AccUhEarts\|Per·SemOn\|zanfession\|Tei-Tance\|pray·lee\|yOuLugiVe\|CaNoSiri\|En-NOte\|ReDogh'\|ShouBeK\|aZaGara\|sent-ky\|FineNd\|KetZen\|meKaMo\|Kei-P\|itsWA\|weRer\|SiVa\|aSte\|Mof\)\w\@!/
 syntax match fixmargeModifier /\C\%([[:alnum:]_'’~·-]\)\@<!\%(AbiRyoku\|showence\|itsver\|Oqun\)\w\@!/
 syntax match fixmargeOperatorWord /\C\%([[:alnum:]_'’~·-]\)\@<!\%(S\~ond'\|SeNaji\|Batte\|Iz'u\|eXi'\|N'o\|Nii\|Owk\)\w\@!/
 syntax match fixmargeConstant /\C\%([[:alnum:]_'’~·-]\)\@<!\%(Vani·tA\|TadACt\|ULieSo\)\w\@!/

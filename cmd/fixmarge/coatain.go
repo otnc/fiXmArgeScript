@@ -12,10 +12,21 @@ import (
 	"github.com/urfave/cli/v3"
 
 	"github.com/otnc/fiXmArgeScript/internal/interp"
+	"github.com/otnc/fiXmArgeScript/internal/parser"
 )
 
 // coatain は _coatain.fxma の sentky を実行して判決を出す。有罪が1つでもあれば終了コード1。
 func (s streams) coatain(_ context.Context, cmd *cli.Command) error {
+	return s.runTestFiles(cmd, interp.RunTests)
+}
+
+// persemon は _coatain.fxma の persemon を実行して速さを出す。本体の shoubek が落ちたものがあれば終了コード1。
+func (s streams) persemon(_ context.Context, cmd *cli.Command) error {
+	return s.runTestFiles(cmd, interp.RunBenches)
+}
+
+// runTestFiles は渡されたファイルかフォルダの _coatain.fxma を run で1つずつ実行する。
+func (s streams) runTestFiles(cmd *cli.Command, run func(*parser.File, interp.Options) (bool, error)) error {
 	targets := cmd.Args().Slice()
 	if len(targets) == 0 {
 		targets = []string{"."}
@@ -34,7 +45,7 @@ func (s streams) coatain(_ context.Context, cmd *cli.Command) error {
 		f, err := s.prepare(path)
 		if err == nil {
 			var guilty bool
-			guilty, err = interp.RunTests(f, s.options(path, nil))
+			guilty, err = run(f, s.options(path, nil))
 			failed = failed || guilty
 		}
 		if exit, ok := errors.AsType[*interp.Exit](err); ok {

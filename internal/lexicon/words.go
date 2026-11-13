@@ -168,7 +168,7 @@ var words = []Word{
 	{"beAukShi", "美しい", Command},
 	{"hA-k", "話す", Command},
 	{"NAi", "なぜ", Command},
-	{"Per·SemOn", "見世物", Command},
+	{"Per·SemOn", "見世物", Keyword | Command | Console},
 	{"Trench", "友達", Command},
 
 	// fixmarge.mod の項目

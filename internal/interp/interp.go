@@ -47,6 +47,8 @@ type Options struct {
 	// Serve は gemon no nozuki が使う。port で受け付けを始めてすぐに戻り、リクエストを handler に渡し、done が閉じたら止める。
 	// nil ならサーバーは Ca-nay。
 	Serve func(port int, handler http.Handler, done <-chan struct{}) error
+	// BenchTime は persemon の1つを測る時間の目安。0 なら1秒 (go test -bench と同じ)。
+	BenchTime time.Duration
 	// Now と Location は時刻とタイムゾーン (:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
@@ -102,9 +104,9 @@ type Interp struct {
 	events     chan event
 	closed     chan struct{} // 実行を終えたら閉じ、届け先のない知らせを送ろうとしている goroutine を終わらせる
 
-	// testing は fixmarge coatain で動かしているか。failed は有罪になった sentky の数で、やり直しのたびに数え直す
-	testing bool
-	failed  int
+	// mode は何として動かしているか。failed は有罪になった sentky と persemon の数で、やり直しのたびに数え直す
+	mode   mode
+	failed int
 
 	// 読み込んだモジュール。やり直しのたびに作り直す。構文木 (parsed) は使い回す
 	modules map[string]*Module
@@ -147,19 +149,34 @@ func (b *backtrack) Error() string { return "backtrack" }
 
 // Run はファイルを実行する。捕まらなかったエラーを返す。
 func Run(f *parser.File, opts Options) error {
-	_, err := run(f, opts, false)
+	_, err := run(f, opts, modeRun)
 	return err
 }
 
 // RunTests は _coatain.fxma を実行し、sentky ごとに判決を出す。有罪が1つでもあれば failed が true。
 func RunTests(f *parser.File, opts Options) (failed bool, err error) {
-	in, err := run(f, opts, true)
+	in, err := run(f, opts, modeTest)
 	return in.failed > 0, err
 }
 
-func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
+// RunBenches は _coatain.fxma を実行し、persemon ごとに速さを出す。本体の shoubek が落ちたものがあれば failed が true。
+func RunBenches(f *parser.File, opts Options) (failed bool, err error) {
+	in, err := run(f, opts, modeBench)
+	return in.failed > 0, err
+}
+
+// mode はファイルを何として動かすか。
+type mode int
+
+const (
+	modeRun   mode = iota // fixmarge keeon
+	modeTest              // fixmarge coatain。sentky だけ動かす
+	modeBench             // fixmarge persemon。persemon だけ動かす
+)
+
+func run(f *parser.File, opts Options, m mode) (*Interp, error) {
 	in := newInterp(f.Name, opts)
-	in.testing = testing
+	in.mode = m
 	in.replayable = in.mayChoose(f, map[string]bool{f.Name: true})
 	defer in.finish()
 	for {

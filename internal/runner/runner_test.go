@@ -203,6 +203,7 @@ func TestInput(t *testing.T) {
 
 func TestSentkyOnlyInTestFile(t *testing.T) {
 	runCase(t, testCase{name: "sentky", src: "sentky \"x\"\n  tadact shoubek\nfinend\n", err: diag.CaNay})
+	runCase(t, testCase{name: "persemon", src: "persemon \"x\"\n  1\nfinend\n", err: diag.CaNay})
 }
 
 func TestAsyncScheduling(t *testing.T) {

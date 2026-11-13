@@ -94,7 +94,7 @@
         },
         {
           "name": "keyword.control.fixmarge",
-          "match": "(?<![\\w'’~·-])(AccUhEarts|zanfession|Tei-Tance|pray·lee|yOuLugiVe|CaNoSiri|En-NOte|ReDogh'|ShouBeK|aZaGara|sent-ky|FineNd|KetZen|meKaMo|Kei-P|itsWA|weRer|SiVa|aSte|Mof)(?![\\w])"
+          "match": "(?<![\\w'’~·-])(AccUhEarts|Per·SemOn|zanfession|Tei-Tance|pray·lee|yOuLugiVe|CaNoSiri|En-NOte|ReDogh'|ShouBeK|aZaGara|sent-ky|FineNd|KetZen|meKaMo|Kei-P|itsWA|weRer|SiVa|aSte|Mof)(?![\\w])"
         }
       ]
     },

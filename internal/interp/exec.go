@@ -98,8 +98,13 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 	case *ast.Break:
 		return flowBreak, nil, nil
 	case *ast.Test:
-		if !in.testing {
-			return flowNormal, nil, in.errorf(diag.CaNay, s.Pos, "sentky")
+		switch {
+		case in.mode == modeRun:
+			return flowNormal, nil, in.errorf(diag.CaNay, s.Pos, s.Keyword())
+		case s.Bench != (in.mode == modeBench):
+			return flowNormal, nil, nil
+		case s.Bench:
+			return flowNormal, nil, in.runBench(s, env)
 		}
 		return flowNormal, nil, in.runTest(s, env)
 	case *ast.Import:

@@ -94,7 +94,7 @@
         },
         {
           "name": "keyword.control.fixmarge",
-          "match": "\\b(accuhearts|zanfession|youlugive|canosiri|teitance|azagara|praylee|shoubek|ennote|finend|ketzen|mekamo|redogh|sentky|itswa|werer|aste|keip|siva|mof)\\b"
+          "match": "\\b(accuhearts|zanfession|youlugive|canosiri|persemon|teitance|azagara|praylee|shoubek|ennote|finend|ketzen|mekamo|redogh|sentky|itswa|werer|aste|keip|siva|mof)\\b"
         }
       ]
     },

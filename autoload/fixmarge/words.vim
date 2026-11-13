@@ -5,14 +5,14 @@ scriptencoding utf-8
 function! fixmarge#words#Block(filetype) abort
   if a:filetype ==# 'fixmargec'
     return {
-    \ 'opener': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(Tei-Tance\|aZaGara\|sent-ky\|We-Ho\|cUrOi\|Mof\)\w\@!',
+    \ 'opener': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(Per·SemOn\|Tei-Tance\|aZaGara\|sent-ky\|We-Ho\|cUrOi\|Mof\)\w\@!',
     \ 'continued': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(SiVa\)\w\@!\s\+\C\%([[:alnum:]_''’~·-]\)\@<!\%(Mof\)\w\@!',
     \ 'closer': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(FineNd\)\w\@!',
     \ 'dedent': '\C\%([[:alnum:]_''’~·-]\)\@<!\%(yOuLugiVe\|En-NOte\|FineNd\|SiVa\)\w\@!',
     \ }
   endif
   return {
-  \ 'opener': '\C\<\%(teitance\|azagara\|sentky\|curoi\|weho\|mof\)\>',
+  \ 'opener': '\C\<\%(persemon\|teitance\|azagara\|sentky\|curoi\|weho\|mof\)\>',
   \ 'continued': '\C\<\%(siva\)\>\s\+\C\<\%(mof\)\>',
   \ 'closer': '\C\<\%(finend\)\>',
   \ 'dedent': '\C\<\%(youlugive\|ennote\|finend\|siva\)\>',

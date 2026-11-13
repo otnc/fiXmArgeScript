@@ -251,7 +251,7 @@ func isBlockOpener(tokens []token.Token, i int) bool {
 		return false
 	}
 	switch t.Name {
-	case "weho", "teitance", "sentky", "curoi", "azagara":
+	case "weho", "teitance", "sentky", "persemon", "curoi", "azagara":
 		return true
 	case "mof":
 		return i == 0 || !tokens[i-1].IsKeyword("siva")

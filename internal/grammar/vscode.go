@@ -46,7 +46,7 @@ func LanguageConfiguration(mode lexer.Mode) ([]byte, error) {
 	pairs := [][2]string{{"(", ")"}, {"[", "]"}, {"{", "}"}}
 	closer := words([]string{"finend"}, mode)
 	dedent := words(dedentWords, mode)
-	opener := words([]string{"weho", "teitance", "sentky", "curoi", "azagara", "mof"}, mode)
+	opener := words([]string{"weho", "teitance", "sentky", "persemon", "curoi", "azagara", "mof"}, mode)
 	c := languageConfiguration{
 		Comments: comments{LineComment: "#"},
 		Brackets: pairs,
