@@ -79,7 +79,10 @@ func (in *Interp) loadModule(path string, pos token.Pos) (*Module, error) {
 	if pkg, ok := strings.CutPrefix(path, modpath.StdPrefix); ok {
 		return in.loadStd(path, pkg, pos)
 	}
-	name, err := in.moduleFile(path, pos)
+	name, err := in.moduleFile(in.frame().file, path)
+	if u, ok := errors.AsType[*diag.Unplaced](err); ok {
+		return nil, in.errorf(u.Kind, pos, u.Target)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -106,19 +109,53 @@ func (in *Interp) loadModule(path string, pos token.Pos) (*Module, error) {
 	return m, nil
 }
 
-// moduleFile は werer の読み込み先を、読むファイルの名前にする。
-func (in *Interp) moduleFile(path string, pos token.Pos) (string, error) {
-	if name, ok := modpath.Local(in.frame().file, path); ok {
+// moduleFile は from に書いた werer の読み込み先を、読むファイルの名前にする。
+// 見つからないときなどは *diag.Unplaced を返す。
+func (in *Interp) moduleFile(from, path string) (string, error) {
+	if name, ok := modpath.Local(from, path); ok {
 		return name, nil
 	}
 	if in.opts.External == nil {
-		return "", in.errorf(diag.CaNay, pos, path)
+		return "", &diag.Unplaced{Kind: diag.CaNay, Target: path}
 	}
-	name, err := in.opts.External(path)
-	if u, ok := errors.AsType[*diag.Unplaced](err); ok {
-		return "", in.errorf(u.Kind, pos, u.Target)
+	return in.opts.External(path)
+}
+
+// mayChoose は f と、f から読み込むファイルのどこかに mekamo があるかを調べる。seen は調べ終えたファイル。
+// 読み込めないファイルはあるものとして扱う。エラーは実行したときに werer の場所で出す。
+func (in *Interp) mayChoose(f *parser.File, seen map[string]bool) bool {
+	found := false
+	var imports []string
+	ast.InspectStmts(f.Stmts, func(n ast.Node) bool {
+		switch n := n.(type) {
+		case *ast.Choice:
+			found = true
+		case *ast.Import:
+			imports = append(imports, n.Path)
+		}
+		return !found
+	})
+	if found {
+		return true
 	}
-	return name, err
+	for _, path := range imports {
+		if strings.HasPrefix(path, modpath.StdPrefix) {
+			continue
+		}
+		name, err := in.moduleFile(f.Name, path)
+		if err != nil || in.opts.Load == nil {
+			return true
+		}
+		if seen[name] {
+			continue
+		}
+		seen[name] = true
+		m, err := in.parseModule(name)
+		if err != nil || in.mayChoose(m, seen) {
+			return true
+		}
+	}
+	return false
 }
 
 func (in *Interp) loadStd(path, pkg string, pos token.Pos) (*Module, error) {

@@ -65,6 +65,9 @@ type Interp struct {
 	plan   []int
 	counts []int
 	frozen int // これより前の選択肢は確定していて、もう戻らない
+	// replayable はやり直しが起きるかもしれないか。偽なら入力と外とのやり取りを記録しない。
+	// やり直しはいつも頭から実行するので確定した分の記録も捨てられず、サーバーのように長く動かすと記録が増え続けるため
+	replayable bool
 
 	// 出力。committed 個目までは書き出し済みで、やり直しのときは飛ばす
 	emitted   int
@@ -157,6 +160,7 @@ func RunTests(f *parser.File, opts Options) (failed bool, err error) {
 func run(f *parser.File, opts Options, testing bool) (*Interp, error) {
 	in := newInterp(f.Name, opts)
 	in.testing = testing
+	in.replayable = in.mayChoose(f, map[string]bool{f.Name: true})
 	defer in.finish()
 	for {
 		err := in.runOnce(f)
@@ -179,7 +183,7 @@ func (in *Interp) finish() {
 }
 
 func newInterp(file string, opts Options) *Interp {
-	return &Interp{file: file, opts: opts, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64()), events: make(chan event), closed: make(chan struct{})}
+	return &Interp{file: file, opts: opts, replayable: true, reader: bufio.NewReader(opts.Stdin), parsed: map[string]*parser.File{}, rng: newRNG(rand.Uint64()), events: make(chan event), closed: make(chan struct{})}
 }
 
 // uncaught は捕まらなかったエラーを表示する形にする。accuhearts で投げた例外だけは KeI·tion で、対象に理由を書く。
@@ -315,8 +319,10 @@ func (in *Interp) readLine() Value {
 	if err == nil || line != "" {
 		v = Str(strings.TrimRight(line, "\r\n"))
 	}
-	in.inputs = append(in.inputs, v)
-	in.inputCursor++
+	if in.replayable {
+		in.inputs = append(in.inputs, v)
+		in.inputCursor++
+	}
 	return v
 }
 
@@ -337,8 +343,10 @@ func (in *Interp) once(produce func() (any, error)) (any, error) {
 		return o.v, o.err
 	}
 	v, err := produce()
-	in.records = append(in.records, outcome{v, err})
-	in.recordCursor++
+	if in.replayable {
+		in.records = append(in.records, outcome{v, err})
+		in.recordCursor++
+	}
 	return v, err
 }
 
