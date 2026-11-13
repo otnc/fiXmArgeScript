@@ -1,6 +1,7 @@
 package modload
 
 import (
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -18,6 +19,7 @@ import (
 )
 
 // Init は fixmarge ado meif。dir に fixmarge.mod を作る。neyo fxma は手元の fxma の版から (開発中の版なら *)。
+// 取ってきたパッケージを Git に入れないよう、.gitignore に .fixmarge も足す (cargo init と同じ)。
 func Init(dir, name, fxmaVersion string) error {
 	if _, err := os.Stat(filepath.Join(dir, modfile.Name)); err == nil {
 		return diag.NewUnplaced(diag.SuReady, modfile.Name)
@@ -29,7 +31,32 @@ func Init(dir, name, fxmaVersion string) error {
 	if Released(fxmaVersion) {
 		f.Fxma = ">=" + strings.TrimPrefix(fxmaVersion, "v")
 	}
-	return os.WriteFile(filepath.Join(dir, modfile.Name), f.Format(), 0o644)
+	if err := os.WriteFile(filepath.Join(dir, modfile.Name), f.Format(), 0o644); err != nil {
+		return err
+	}
+	return ignorePackages(filepath.Join(dir, ".gitignore"))
+}
+
+// ignorePackages は .gitignore に .fixmarge の行を足す。ファイルがなければ作り、もう書いてあれば何もしない。
+func ignorePackages(gitignore string) error {
+	data, err := os.ReadFile(gitignore)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	content := string(data)
+	for line := range strings.Lines(content) {
+		if strings.Trim(strings.TrimSpace(line), "/") == modfile.PackagesDir {
+			return nil
+		}
+	}
+	newline := "\n"
+	if strings.Contains(content, "\r\n") {
+		newline = "\r\n"
+	}
+	if content != "" && !strings.HasSuffix(content, "\n") {
+		content += newline
+	}
+	return os.WriteFile(gitignore, []byte(content+modfile.PackagesDir+"/"+newline), 0o644)
 }
 
 // Install は引数なしの fixmarge werer。fixmarge.mod に書いたパッケージと、それが使うパッケージをすべて手元に置く (npm install)。

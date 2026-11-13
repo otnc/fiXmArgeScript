@@ -39,7 +39,7 @@ go run ./cmd/fixmarge keeon examples/fizzbuzz.fxma
 go run ./cmd/fixmarge sinruits examples/fizzbuzz.fxma
 ```
 
-外部パッケージは Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs@1.2` で足し、`fixmarge unneyo github.com/alice/strs` で外します。取ってきたものは npm の `node_modules` と同じくプロジェクトの `.fixmarge` フォルダに置きます (`.gitignore` に入れてください)。版は npm と同じく `fixmarge.mod` と `fixmarge.sum` で決め、同じパッケージの違う版をいくつも入れて、`"github.com/alice/strs@1" aste strs werer` のように読み込むときに選べます。詳しくは [docs/RFC.md](docs/RFC.md) の「パッケージとモジュール」にあります。
+外部パッケージは Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs@1.2` で足し、`fixmarge unneyo github.com/alice/strs` で外します。取ってきたものは npm の `node_modules` と同じくプロジェクトの `.fixmarge` フォルダに置きます。`.fixmarge` はコミットしません (`fixmarge ado meif` が `.gitignore` に足します)。コミットするのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` でそろえます。版は npm と同じく `fixmarge.mod` と `fixmarge.sum` で決め、同じパッケージの違う版をいくつも入れて、`"github.com/alice/strs@1" aste strs werer` のように読み込むときに選べます。詳しくは [docs/RFC.md](docs/RFC.md) の「パッケージとモジュール」にあります。
 
 WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と [playground/](playground/) (ブラウザのプレイグラウンド) にあります。
 

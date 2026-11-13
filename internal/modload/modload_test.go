@@ -119,12 +119,33 @@ func TestInit(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(dir, modfile.Name))
 	require.NoError(t, err)
 	require.Equal(t, "ado github.com/alice/app\nneyo fxma >=0.3.1\n", string(data))
+	ignored, err := os.ReadFile(filepath.Join(dir, ".gitignore"))
+	require.NoError(t, err)
+	require.Equal(t, ".fixmarge/\n", string(ignored))
 	require.Equal(t, diag.SuReady, kindOf(Init(dir, "github.com/alice/app", "v0.3.1")))
 
 	dev := t.TempDir()
 	require.NoError(t, Init(dev, "github.com/alice/app", "(devel)"))
 	data, _ = os.ReadFile(filepath.Join(dev, modfile.Name))
 	require.Contains(t, string(data), "neyo fxma *")
+}
+
+func TestInitKeepsGitignore(t *testing.T) {
+	cases := []struct{ name, before, after string }{
+		{"appends", "node_modules/", "node_modules/\n.fixmarge/\n"},
+		{"keeps CRLF", "dist\r\n", "dist\r\n.fixmarge/\r\n"},
+		{"already ignored", "/.fixmarge\ndist\n", "/.fixmarge\ndist\n"},
+		{"similar name is not enough", ".fixmarge-old\n", ".fixmarge-old\n.fixmarge/\n"},
+	}
+	for _, c := range cases {
+		dir := t.TempDir()
+		gitignore := filepath.Join(dir, ".gitignore")
+		require.NoError(t, os.WriteFile(gitignore, []byte(c.before), 0o644))
+		require.NoError(t, Init(dir, "github.com/alice/app", "v0.3.1"))
+		got, err := os.ReadFile(gitignore)
+		require.NoError(t, err)
+		require.Equal(t, c.after, string(got), c.name)
+	}
 }
 
 func TestGetLatestAndRun(t *testing.T) {
