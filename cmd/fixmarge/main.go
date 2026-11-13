@@ -312,7 +312,8 @@ func (s streams) usage(w io.Writer) {
                                  fixmarge.mod に合う版がないときの補欠に使う。unneyo にも付けられる
   fixmarge unneyo <パッケージ>[@<版>]  入っている版のうち、合ういちばん新しい版を fixmarge.mod から外す (uninstall)。@* なら全部の版
   fixmarge ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りない版を足し、使っていない版を外す
-  fixmarge hak                   対話モード。1行ずつ打って実行する (repl)
+  fixmarge hak                   対話モード。1行ずつ打って実行する (repl)。矢印キーで行を直し、履歴を呼び戻せる。
+                                 Ctrl+C で打ちかけを捨て、Ctrl+D で終わる
   fixmarge trench                エディタのための言語サーバーを動かす (lsp)
   fixmarge nai <エラー名>        エラーや警告の意味を説明する (explain)
   fixmarge nai                   この使い方を出す (help)

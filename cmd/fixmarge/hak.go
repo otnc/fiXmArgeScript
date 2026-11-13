@@ -27,16 +27,21 @@ func (s streams) hak(context.Context, *cli.Command) error {
 	opts := s.options("", nil)
 	opts.Stdin = stdin
 	h := runner.NewHak(opts)
+	lines := s.newLineReader(stdin)
 	var entry strings.Builder
 	for {
 		prompt := "> "
 		if entry.Len() > 0 {
 			prompt = "... "
 		}
-		fmt.Fprint(s.stdout, prompt)
-		line, readErr := stdin.ReadString('\n')
+		line, readErr := lines.readLine(prompt)
+		if errors.Is(readErr, errInterrupted) {
+			// Ctrl+C は、node の REPL と同じく、打ちかけの入力を捨てるだけ
+			h.Drop(entry.String())
+			entry.Reset()
+			continue
+		}
 		if line == "" && readErr != nil {
-			fmt.Fprintln(s.stdout)
 			return nil
 		}
 		if !strings.HasSuffix(line, "\n") {
