@@ -28,7 +28,6 @@ var (
 	fieldModule  = field("ado")
 	fieldPurpose = field("mokpose")
 	fieldRequire = field("neyo")
-	fieldExclude = field("unneyo")
 	fieldLicense = field("foryulvu")
 	fieldReplace = field("lainei")
 	fieldAllow   = field("youlugive")
@@ -51,8 +50,7 @@ type File struct {
 	Purpose  string    // mokpose
 	Fxma     string    // neyo fxma の範囲 (npm の engines と同じ書き方)
 	License  string    // foryulvu (SPDX のライセンス式)
-	Require  []Version // neyo。間接的に使うものも含めて、使うパッケージをすべて並べる
-	Exclude  []Version // unneyo
+	Require  []Version // neyo。このパッケージのソースが直接読み込むパッケージと版。同じパッケージの版をいくつも並べられる
 	Replace  []Replace // lainei
 	Allowed  []string  // youlugive (fixmarge lavi で指摘しない規則)
 	FxmaLine int       // neyo fxma の行。範囲の外のときのエラーの位置に使う
@@ -118,17 +116,13 @@ func Parse(name string, data []byte) (*File, error) {
 				return nil, err
 			}
 			f.License = strings.Join(args, " ")
-		case key == fieldRequire && len(args) == 2, key == fieldExclude && len(args) == 2:
+		case key == fieldRequire && len(args) == 2:
 			v := Version{args[0], args[1]}
 			if !semver.IsValid(v.Version) || semver.Canonical(v.Version) != v.Version {
 				return nil, diag.New(diag.AyAmis, name, pos, v.Version)
 			}
-			if key == fieldExclude {
-				f.Exclude = append(f.Exclude, v)
-				continue
-			}
-			if f.Requires(v.Path) != "" {
-				return nil, diag.New(diag.SuReady, name, pos, v.Path)
+			if slices.Contains(f.Require, v) {
+				return nil, diag.New(diag.SuReady, name, pos, v.String())
 			}
 			f.Require = append(f.Require, v)
 		case key == fieldReplace && len(args) == 2:
@@ -142,19 +136,15 @@ func Parse(name string, data []byte) (*File, error) {
 	return f, nil
 }
 
-// Requires は neyo に書いた path の版を返す。なければ空。
-func (f *File) Requires(path string) string {
+// Versions は neyo に書いた path の版をすべて返す。
+func (f *File) Versions(path string) []string {
+	var out []string
 	for _, r := range f.Require {
 		if r.Path == path {
-			return r.Version
+			out = append(out, r.Version)
 		}
 	}
-	return ""
-}
-
-// Excluded は unneyo で使わせない版か。
-func (f *File) Excluded(v Version) bool {
-	return slices.Contains(f.Exclude, v)
+	return out
 }
 
 // ReplaceDir は lainei で置き換えたフォルダを返す。なければ空。
@@ -184,17 +174,12 @@ func (f *File) Format() []byte {
 	byPath := func(a, b Version) int {
 		return cmp.Or(cmp.Compare(a.Path, b.Path), semver.Compare(a.Version, b.Version))
 	}
-	section := func(key string, vs []Version) {
-		if len(vs) == 0 {
-			return
-		}
+	if len(f.Require) > 0 {
 		b.WriteString("\n")
-		for _, v := range slices.SortedFunc(slices.Values(vs), byPath) {
-			line("%s %s %s", key, v.Path, v.Version)
+		for _, v := range slices.SortedFunc(slices.Values(f.Require), byPath) {
+			line("%s %s %s", fieldRequire, v.Path, v.Version)
 		}
 	}
-	section(fieldRequire, f.Require)
-	section(fieldExclude, f.Exclude)
 	if len(f.Replace) > 0 {
 		b.WriteString("\n")
 		for _, r := range f.Replace {

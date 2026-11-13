@@ -35,6 +35,9 @@ func (s streams) karady(cmd *cli.Command) error {
 			return s.report(err)
 		}
 	}
+	if err := checkPackages(filepath.Dir(entry)); err != nil {
+		return s.report(err)
+	}
 	b, warnings, err := karady.Collect(entry, os.ReadFile, bundledExternal(filepath.Dir(entry)))
 	s.printWarnings(warnings)
 	if err != nil {
@@ -55,17 +58,17 @@ func (s streams) karady(cmd *cli.Command) error {
 
 // bundledExternal は外部パッケージを、fixmarge keeon と同じく dir から上にたどった fixmarge.mod で探す。
 func bundledExternal(dir string) karady.External {
-	load := sync.OnceValues(func() (*modload.Module, error) { return loadModule(dir) })
-	return func(path string) (string, string, error) {
+	load := sync.OnceValues(func() (*modload.Module, error) { return checkedModule(dir) })
+	return func(from, path string) (string, string, error) {
 		m, err := load()
 		if err != nil {
 			return "", "", err
 		}
-		file, err := m.Resolve(path)
+		file, err := m.Resolve(from, path)
 		if err != nil {
 			return "", "", err
 		}
-		name, err := m.Bundled(path)
+		name, err := m.Bundled(from, path)
 		return file, name, err
 	}
 }
@@ -142,8 +145,8 @@ func (s streams) runBundle(b *karady.Bundle, args []string) int {
 		return []byte(src), nil
 	}
 	opts.Load = runner.Loader(readFile)
-	opts.External = func(path string) (string, error) {
-		name, ok := b.External[path]
+	opts.External = func(from, path string) (string, error) {
+		name, ok := b.External[from][path]
 		if !ok {
 			return "", diag.NewUnplaced(diag.NiiExi, path)
 		}

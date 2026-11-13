@@ -31,9 +31,10 @@ type Options struct {
 	// Load は werer で読み込むファイルを読み、構文解析と検査をして返す。ファイルがなければ fs.ErrNotExist を包んだエラーを返す。
 	// nil ならファイルの読み込みは Ca-nay (標準パッケージは読める)。
 	Load func(name string) (*parser.File, error)
-	// External は外部パッケージの読み込み先 (github.com/...) を、Load に渡すファイルの名前にする。
+	// External は、ファイル from に書いた外部パッケージの読み込み先 (github.com/...) を、Load に渡すファイルの名前にする。
+	// 版は読み込む側のパッケージごとに決まるので、同じ読み込み先でも from によって違うファイルになる。
 	// 見つからないときなどは *diag.Unplaced を返す。nil なら外部パッケージは Ca-nay (ブラウザ版)。
-	External func(path string) (string, error)
+	External func(from, path string) (string, error)
 	// WorkDir は今いる場所 (izanavited no defutai、memoid の相対パス)。空ならブラウザ版と同じく /。
 	WorkDir string
 	// FS は :memoid が使うファイル。nil なら memoid の関数は Ca-nay (ブラウザ版)。

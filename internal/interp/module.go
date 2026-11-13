@@ -119,7 +119,7 @@ func (in *Interp) moduleFile(from, path string) (string, error) {
 	if in.opts.External == nil {
 		return "", &diag.Unplaced{Kind: diag.CaNay, Target: path}
 	}
-	return in.opts.External(path)
+	return in.opts.External(from, path)
 }
 
 // mayChoose は f と、f から読み込むファイルのどこかに mekamo があるかを調べる。seen は調べ終えたファイル。

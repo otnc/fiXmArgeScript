@@ -38,8 +38,8 @@ func TestCollect(t *testing.T) {
 		"/cache/strs@v1/strs.fxma": "\"./util\" aste util werer\n",
 		"/cache/strs@v1/util.fxma": "showence y izu 2\n",
 	}
-	external := func(path string) (string, string, error) {
-		if path != "github.com/x/strs" {
+	external := func(from, path string) (string, string, error) {
+		if from != "app/main.fxma" || path != "github.com/x/strs" {
 			return "", "", diag.NewUnplaced(diag.NiiExi, path)
 		}
 		return "/cache/strs@v1/strs.fxma", "github.com/x/strs@v1.0.0/strs.fxma", nil
@@ -55,7 +55,7 @@ func TestCollect(t *testing.T) {
 	if b.Main != "main.fxmac" || b.Files["b.fxmac"] != "showence x Iz'u 1\n" || b.Files["github.com/x/strs@v1.0.0/util.fxma"] != files["/cache/strs@v1/util.fxma"] {
 		t.Errorf("bundle = %+v", b)
 	}
-	if b.External["github.com/x/strs"] != "github.com/x/strs@v1.0.0/strs.fxma" {
+	if b.External["main.fxmac"]["github.com/x/strs"] != "github.com/x/strs@v1.0.0/strs.fxma" {
 		t.Errorf("external = %v", b.External)
 	}
 }

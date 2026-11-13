@@ -81,6 +81,8 @@ func TestModCommands(t *testing.T) {
 		stderr string
 	}{
 		{args: []string{"werer", "github.com/alice/strs"}, code: 1, stderr: "Nii eXi' fixmarge.mod"},
+		{args: []string{"unneyo", "github.com/alice/strs@*"}, code: 1, stderr: "Nii eXi' fixmarge.mod"},
+		{args: []string{"unneyo"}, code: 2},
 		{args: []string{"ado"}, code: 2, stderr: "fiXmArge Script (fxma) の使い方"},
 		{args: []string{"mod", "init", "github.com/me/app"}, code: 0},
 		{args: []string{"ado", "meif", "github.com/me/app"}, code: 1, stderr: "Su·Ready fixmarge.mod"},

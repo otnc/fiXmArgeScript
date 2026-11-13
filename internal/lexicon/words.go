@@ -174,7 +174,7 @@ var words = []Word{
 	// fixmarge.mod の項目
 	{"MokpOSe", "目的", ModField},
 	{"neYO", "必要", ModField},
-	{"UnneYO", "要らない", ModField},
+	{"UnneYO", "要らない", Command},
 	{"forYulvu", "許可する", ModField},
 
 	// インストーラの文言

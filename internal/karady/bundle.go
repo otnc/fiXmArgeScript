@@ -22,14 +22,16 @@ import (
 
 // Bundle は実行ファイルにまとめたソース。名前は実行ファイルの中での名前で、エラーの場所にも出る。
 type Bundle struct {
-	Main     string            `json:"main"`
-	Files    map[string]string `json:"files"`
-	External map[string]string `json:"external,omitempty"` // 外部パッケージの読み込み先 → Files の名前
+	Main  string            `json:"main"`
+	Files map[string]string `json:"files"`
+	// External は外部パッケージの読み込み先が指すファイル。読み込む側のファイルの名前 → 読み込み先 → Files の名前。
+	// 版は読み込む側のパッケージごとに決まるので、読み込む側のファイルごとに持つ
+	External map[string]map[string]string `json:"external,omitempty"`
 }
 
-// External は外部パッケージの読み込み先を、手元で読むファイルと実行ファイルの中での名前にする。
+// External は、手元のファイル from に書いた外部パッケージの読み込み先を、手元で読むファイルと実行ファイルの中での名前にする。
 // 見つからないときなどは *diag.Unplaced を返す。
-type External func(importPath string) (file, name string, err error)
+type External func(from, importPath string) (file, name string, err error)
 
 // source は集めるファイル1つ。file は手元で読む名前、name は実行ファイルの中での名前。
 type source struct {
@@ -42,7 +44,7 @@ type source struct {
 // 名前は entry のあるフォルダからの相対パスにする。手元の絶対パスを実行ファイルに残さないため。
 func Collect(entry string, readFile func(string) ([]byte, error), external External) (*Bundle, []diag.Warning, error) {
 	root := filepath.Dir(entry)
-	b := &Bundle{Main: filepath.Base(entry) + "c", Files: map[string]string{}, External: map[string]string{}}
+	b := &Bundle{Main: filepath.Base(entry) + "c", Files: map[string]string{}, External: map[string]map[string]string{}}
 	var warnings []diag.Warning
 	queue := []source{{file: entry, name: b.Main}}
 	seen := map[string]bool{b.Main: true}
@@ -77,8 +79,8 @@ func Collect(entry string, readFile func(string) ([]byte, error), external Exter
 	return b, warnings, nil
 }
 
-// imports は s の werer の読み込み先を返す。外部パッケージは読み込み先と名前の対応を known に足す。
-func imports(s source, src, root string, readFile func(string) ([]byte, error), external External, known map[string]string) ([]source, error) {
+// imports は s の werer の読み込み先を返す。外部パッケージは、s から見た読み込み先と名前の対応を known に足す。
+func imports(s source, src, root string, readFile func(string) ([]byte, error), external External, known map[string]map[string]string) ([]source, error) {
 	f, err := parser.Parse(src, s.file)
 	if err != nil {
 		return nil, err
@@ -105,7 +107,7 @@ func imports(s source, src, root string, readFile func(string) ([]byte, error), 
 
 // locate は s に書いた読み込み先 path を、読むファイルにする。./ と ../ は、手元の名前と実行ファイルの中での名前の両方で
 // s からの相対パスとして解決する。そうすれば、実行ファイルの中でも同じ werer で同じファイルを指す。
-func locate(s source, path, root string, external External, known map[string]string) (source, error) {
+func locate(s source, path, root string, external External, known map[string]map[string]string) (source, error) {
 	if file, ok := modpath.Local(s.file, path); ok {
 		if s.external {
 			name, _ := modpath.Local(s.name, path)
@@ -117,11 +119,14 @@ func locate(s source, path, root string, external External, known map[string]str
 		}
 		return source{file: file, name: filepath.ToSlash(rel) + "c"}, nil
 	}
-	file, name, err := external(path)
+	file, name, err := external(s.file, path)
 	if err != nil {
 		return source{}, err
 	}
-	known[path] = name
+	if known[s.name] == nil {
+		known[s.name] = map[string]string{}
+	}
+	known[s.name][path] = name
 	return source{file: file, name: name, external: true}, nil
 }
 

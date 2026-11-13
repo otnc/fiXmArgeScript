@@ -4,14 +4,13 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"golang.org/x/mod/module"
-	gosemver "golang.org/x/mod/semver"
 
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/diag"
-	"github.com/otnc/fiXmArgeScript/internal/modfetch"
 	"github.com/otnc/fiXmArgeScript/internal/modfile"
 	"github.com/otnc/fiXmArgeScript/internal/modpath"
 	"github.com/otnc/fiXmArgeScript/internal/parser"
@@ -33,57 +32,69 @@ func Init(dir, name, fxmaVersion string) error {
 	return os.WriteFile(filepath.Join(dir, modfile.Name), f.Format(), 0o644)
 }
 
-// Get は fixmarge werer <パッケージ>@<版>。版を省くといちばん新しい版。ほかのパッケージの要求で、選ばれる版が上がることもある。
-func (m *Module) Get(p, version string) (modfile.Version, error) {
-	if version == "" {
-		versions, err := m.Fetcher.Versions(p)
-		if err != nil {
-			return modfile.Version{}, err
-		}
-		if version = modfetch.Latest(versions); version == "" {
-			return modfile.Version{}, diag.NewUnplaced(diag.NiiExi, p)
-		}
-	} else if !gosemver.IsValid(version) || gosemver.Canonical(version) != version {
-		return modfile.Version{}, diag.NewUnplaced(diag.AyAmis, version)
-	}
-	target := modfile.Version{Path: p, Version: version}
-	roots := []modfile.Version{target}
-	for _, r := range m.File.Require {
-		if r.Path != p {
-			roots = append(roots, r)
-		}
-	}
-	if err := m.resolve(roots); err != nil {
+// Install は引数なしの fixmarge werer。fixmarge.mod に書いたパッケージと、それが使うパッケージをすべて手元に置く (npm install)。
+func (m *Module) Install() error { return m.sync(m.File.Require) }
+
+// Get は fixmarge werer <パッケージ>[@<版>]。版の指定に合ういちばん新しい版を取ってきて、fixmarge.mod に足す。
+// 同じパッケージの別の版がもう入っていても、そのまま残す。
+func (m *Module) Get(p, spec string) (modfile.Version, error) {
+	target, err := m.latest(p, spec)
+	if err != nil {
 		return target, err
 	}
-	return target, m.save()
+	require := slices.Clone(m.File.Require)
+	if !slices.Contains(require, target) {
+		require = append(require, target)
+	}
+	return target, m.sync(require)
 }
 
-// Tidy は fixmarge ado saymal。ソースの werer から使うパッケージを決め直す。使っていないものは消し、足りないものはいちばん新しい版を足す。
+// Remove は fixmarge unneyo <パッケージ>[@<版>]。入っている版のうち、版の指定に合ういちばん新しいものを fixmarge.mod から外す。
+// 版が * なら、そのパッケージの版をすべて外す。合うものが入っていなければ Nii eXi'。
+func (m *Module) Remove(p, spec string) error {
+	gone := func(r modfile.Version) bool { return r.Path == p }
+	if spec != modfile.AllVersions {
+		if !modfile.ValidSpec(spec) {
+			return diag.NewUnplaced(diag.AyAmis, spec)
+		}
+		target := modfile.Version{Path: p, Version: modfile.Pick(m.File.Versions(p), spec)}
+		gone = func(r modfile.Version) bool { return r == target }
+	}
+	if !slices.ContainsFunc(m.File.Require, gone) {
+		return diag.NewUnplaced(diag.NiiExi, named(p, spec))
+	}
+	return m.sync(slices.DeleteFunc(slices.Clone(m.File.Require), gone))
+}
+
+// Tidy は fixmarge ado saymal。ソースの werer から使うパッケージを決め直す。
+// どの werer も指していない版は外し、合う版が入っていない werer には、合ういちばん新しい版を取ってきて足す。
 func (m *Module) Tidy() error {
 	imports, err := m.imports()
 	if err != nil {
 		return err
 	}
-	var roots []modfile.Version
+	used := map[modfile.Version]bool{}
+	available := &modfile.File{Require: slices.Clone(m.File.Require)}
 	for _, imp := range imports {
-		if v, _, ok := m.match(imp.path); ok {
-			roots = append(roots, v)
-			continue
+		target, spec := modfile.SplitSpec(imp.path)
+		if !modfile.ValidSpec(spec) {
+			return diag.New(diag.AyAmis, imp.file, imp.pos, imp.path)
 		}
-		v, err := m.discover(imp.path)
-		if err != nil {
-			return diag.New(diag.NiiExi, imp.file, imp.pos, imp.path)
+		v, _, ok := pick(available, target, spec)
+		if !ok {
+			if v, err = m.discover(target, spec); err != nil {
+				return diag.New(diag.NiiExi, imp.file, imp.pos, imp.path)
+			}
+			// 同じ版を指すほかの werer が、次から pick で見つかるように
+			available.Require = append(available.Require, v)
 		}
-		// 同じパッケージの別のファイルを読み込んでいる行が、次から match で見つかるように。
-		m.File.Require = append(m.File.Require, v)
-		roots = append(roots, v)
+		used[v] = true
 	}
-	if err := m.resolve(roots); err != nil {
+	if err := m.sync(slices.DeleteFunc(available.Require, func(r modfile.Version) bool { return !used[r] })); err != nil {
 		return err
 	}
 	for _, imp := range imports {
-		name, _, err := m.Locate(imp.path)
+		name, _, err := m.Locate(imp.file, imp.path)
 		if err == nil {
 			_, err = os.Stat(filepath.FromSlash(name))
 		}
@@ -91,34 +102,42 @@ func (m *Module) Tidy() error {
 			return diag.New(diag.NiiExi, imp.file, imp.pos, imp.path)
 		}
 	}
-	return m.save()
-}
-
-// resolve は roots から使うパッケージを決めて、fixmarge.mod の neyo と fixmarge.sum をそれに入れ替える。
-func (m *Module) resolve(roots []modfile.Version) error {
-	m.previous, m.Sums = m.Sums, Sums{}
-	list, err := m.buildList(roots)
-	if err != nil {
-		return err
-	}
-	m.File.Require = list
 	return nil
 }
 
+// latest は、リポジトリにあるパッケージ p の版のうち、spec に合ういちばん新しいものを返す。
+func (m *Module) latest(p, spec string) (modfile.Version, error) {
+	v := modfile.Version{Path: p}
+	if !modfile.ValidSpec(spec) {
+		return v, diag.NewUnplaced(diag.AyAmis, spec)
+	}
+	versions, err := m.Fetcher.Versions(p)
+	if err != nil {
+		return v, err
+	}
+	if v.Version = modfile.Pick(versions, spec); v.Version == "" {
+		return v, diag.NewUnplaced(diag.NiiExi, named(p, spec))
+	}
+	return v, nil
+}
+
+// named は、エラーに出すパッケージと版の指定。
+func named(p, spec string) string {
+	if spec == "" {
+		return p
+	}
+	return p + "@" + spec
+}
+
 // discover は、まだ neyo にない読み込み先を含むパッケージを、長い名前から順にリポジトリがあるか試して探す。
-func (m *Module) discover(importPath string) (modfile.Version, error) {
-	elems := strings.Split(importPath, "/")
+func (m *Module) discover(target, spec string) (modfile.Version, error) {
+	elems := strings.Split(target, "/")
 	for n := len(elems); n >= 2; n-- {
-		p := strings.Join(elems[:n], "/")
-		versions, err := m.Fetcher.Versions(p)
-		if err != nil {
-			continue
-		}
-		if latest := modfetch.Latest(versions); latest != "" {
-			return modfile.Version{Path: p, Version: latest}, nil
+		if v, err := m.latest(strings.Join(elems[:n], "/"), spec); err == nil {
+			return v, nil
 		}
 	}
-	return modfile.Version{}, diag.NewUnplaced(diag.NiiExi, importPath)
+	return modfile.Version{}, diag.NewUnplaced(diag.NiiExi, target)
 }
 
 type importAt struct {

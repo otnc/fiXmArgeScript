@@ -89,19 +89,6 @@ func (f *Fetcher) Versions(p string) ([]string, error) {
 	return slices.Compact(out), nil
 }
 
-// Latest は正式版のうちいちばん新しいものを返す。正式版がなければプレリリースのうちいちばん新しいもの (Go の latest と同じ)。
-func Latest(versions []string) string {
-	for _, v := range slices.Backward(versions) {
-		if semver.Prerelease(v) == "" {
-			return v
-		}
-	}
-	if len(versions) == 0 {
-		return ""
-	}
-	return versions[len(versions)-1]
-}
-
 // Download はタグの中身をキャッシュに置き、そのフォルダを返す。置いてあれば取りに行かない。
 func (f *Fetcher) Download(v modfile.Version) (string, error) {
 	dir, err := f.Dir(v)

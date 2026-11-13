@@ -12,7 +12,7 @@
   ],
   "repository": {
     "field": {
-      "match": "^\\s*\\b((?i:youlugive|foryulvu|mokpose|lainei|unneyo|neyo|ado))\\b",
+      "match": "^\\s*\\b((?i:youlugive|foryulvu|mokpose|lainei|neyo|ado))\\b",
       "captures": {
         "1": {
           "name": "keyword.other.fixmarge-mod"

@@ -4,7 +4,7 @@ if exists('b:current_syntax')
   finish
 endif
 
-syntax match fixmargemodField /^\s*\zs\c\<\%(youlugive\|foryulvu\|mokpose\|lainei\|unneyo\|neyo\|ado\)\>/
+syntax match fixmargemodField /^\s*\zs\c\<\%(youlugive\|foryulvu\|mokpose\|lainei\|neyo\|ado\)\>/
 syntax region fixmargemodString start=/"/ skip=/\\./ end=/"/ oneline
 
 highlight default link fixmargemodField Keyword

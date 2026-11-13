@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/urfave/cli/v3"
@@ -16,6 +17,11 @@ import (
 // hak は対話モード。1行ずつ読んで実行する。ブロックの途中などで入力が終わっていたら、続きの行を待つ。
 // 続きを待っているときに空行を打つと、そこまでで実行してエラーを出す (Python と同じ)。
 func (s streams) hak(context.Context, *cli.Command) error {
+	if wd, err := os.Getwd(); err == nil {
+		if err := checkPackages(wd); err != nil {
+			return s.report(err)
+		}
+	}
 	// プログラムの zanfession と同じ読み手を使い、先読みした行を取り合わないようにする
 	stdin := bufio.NewReader(s.stdin)
 	opts := s.options("", nil)

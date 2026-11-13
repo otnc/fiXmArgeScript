@@ -156,7 +156,7 @@ func TestGetPinnedVersionAndFileInPackage(t *testing.T) {
 	m := w.project("ado github.com/me/app\n", nil)
 	_, err := m.Get("github.com/alice/strs", "v1.0.0")
 	require.NoError(t, err)
-	name, err := m.Resolve("github.com/alice/strs")
+	name, err := m.Resolve("main.fxma", "github.com/alice/strs")
 	require.NoError(t, err)
 	require.True(t, strings.HasSuffix(name, "/github.com/alice/strs@v1.0.0/strs.fxma"), name)
 	require.Equal(t, strsV1, mustRead(t, name))
@@ -165,30 +165,90 @@ func TestGetPinnedVersionAndFileInPackage(t *testing.T) {
 	require.Equal(t, diag.NiiExi, kindOf(err))
 }
 
-func TestMinimalVersionSelection(t *testing.T) {
+// run は m のフォルダの main.fxma を、fixmarge.mod を読み直して実行し、出力を返す。
+func (w *world) run(m *Module) (string, error) {
+	reloaded, err := Load(m.Dir, w.fetcher())
+	require.NoError(w.t, err)
+	if err := reloaded.Check(); err != nil {
+		return "", err
+	}
+	var out bytes.Buffer
+	main := filepath.ToSlash(filepath.Join(m.Dir, "main.fxma"))
+	_, err = runner.Run(mustRead(w.t, main), main,
+		func(name string) ([]byte, error) { return os.ReadFile(filepath.FromSlash(name)) },
+		interp.Options{Stdout: &out, External: reloaded.Resolve})
+	return out.String(), err
+}
+
+// 同じパッケージの版をいくつも入れられ、読み込み先の版は読み込む側のパッケージの fixmarge.mod で決まる。
+func TestVersionsCoexist(t *testing.T) {
 	w := newWorld(t)
 	strsRepo(w)
 	w.publish("github.com/bob/util", release{"v0.2.0", map[string]string{
-		"fixmarge.mod": modOf("github.com/bob/util", "", "neyo github.com/alice/strs v1.1.0"),
+		"fixmarge.mod": modOf("github.com/bob/util", "", "neyo github.com/alice/strs v1.0.0"),
 		"util.fxma":    "\"github.com/alice/strs\" aste strs werer\noqun weho loud(s)\n  strs no shout(s) itswa\nfinend\n",
 	}})
-	m := w.project("ado github.com/me/app\n\nneyo github.com/alice/strs v1.0.0\n", nil)
-	_, err := m.Get("github.com/bob/util", "")
+	m := w.project("ado github.com/me/app\n", map[string]string{
+		"main.fxma": "\"github.com/alice/strs\" aste strs werer\n\"github.com/alice/strs@1.0\" aste old werer\n\"github.com/bob/util\" aste util werer\n" +
+			"strs no shout(\"a\") redogh\nold no shout(\"a\") redogh\nutil no loud(\"a\") redogh\n",
+	})
+	for _, spec := range []string{"github.com/alice/strs", "github.com/alice/strs@1.0", "github.com/bob/util@v0"} {
+		_, err := m.Get(modfile.SplitSpec(spec))
+		require.NoError(t, err)
+	}
+	mod, _ := readMod(t, m)
+	require.Contains(t, mod, "neyo github.com/alice/strs v1.0.0\nneyo github.com/alice/strs v1.1.0\nneyo github.com/bob/util v0.2.0\n")
+	out, err := w.run(m)
 	require.NoError(t, err)
+	require.Equal(t, "a!!\na!\na!\n", out)
+
+	// 版を省いて外すと、入っているいちばん新しい版だけが外れる
+	require.NoError(t, m.Remove("github.com/alice/strs", ""))
+	out, err = w.run(m)
+	require.NoError(t, err)
+	require.Equal(t, "a!\na!\na!\n", out)
+
+	// 全部外しても、util が使う版は fixmarge.sum に残る。自分の werer からはもう読めない
+	require.NoError(t, m.Remove("github.com/alice/strs", "*"))
 	mod, sum := readMod(t, m)
-	require.Contains(t, mod, "neyo github.com/alice/strs v1.1.0\nneyo github.com/bob/util v0.2.0\n")
-	// たどった版 (v1.0.0 も) の中身を確かめるため、fixmarge.sum には選ばれなかった版も残る。
+	require.NotContains(t, mod, "alice/strs")
 	require.Contains(t, sum, "github.com/alice/strs v1.0.0 ")
-	require.Contains(t, sum, "github.com/alice/strs v1.1.0 ")
+	_, err = w.run(m)
+	require.Equal(t, diag.NiiExi, kindOf(err))
+	require.Equal(t, diag.NiiExi, kindOf(m.Remove("github.com/alice/strs", "")))
 }
 
-func TestExcludeSkipsToNextVersion(t *testing.T) {
+// fixmarge.mod と fixmarge.sum が合っていなければ、実行を始める前に止める。
+func TestCheck(t *testing.T) {
 	w := newWorld(t)
 	strsRepo(w)
-	m := w.project("ado github.com/me/app\n\nunneyo github.com/alice/strs v1.0.0\n", nil)
-	_, err := m.Get("github.com/alice/strs", "v1.0.0")
+	m := w.project("ado github.com/me/app\n", nil)
+	_, err := m.Get("github.com/alice/strs", "1.0.0")
 	require.NoError(t, err)
-	require.Equal(t, "v1.1.0", m.File.Requires("github.com/alice/strs"))
+	check := func() error {
+		fresh, err := Load(m.Dir, w.fetcher())
+		require.NoError(t, err)
+		return fresh.Check()
+	}
+	require.NoError(t, check())
+
+	mod, sum := readMod(t, m)
+	write := func(name, body string) {
+		require.NoError(t, os.WriteFile(filepath.Join(m.Dir, name), []byte(body), 0o644))
+	}
+	write(modfile.Sum, "")
+	require.EqualError(t, check(), "CraeyTA' github.com/alice/strs@v1.0.0")
+	write(modfile.Sum, sum+"github.com/bob/util v0.2.0 h1:AAAA=\n")
+	require.EqualError(t, check(), "CraeyTA' github.com/bob/util@v0.2.0")
+
+	// 手で足した版は、まだ取ってきていないので Nii eXi'。引数なしの werer で取ってくれば合う
+	write(modfile.Sum, sum)
+	write(modfile.Name, mod+"neyo github.com/alice/strs v1.1.0\n")
+	require.EqualError(t, check(), "Nii eXi' github.com/alice/strs@v1.1.0")
+	fresh, err := Load(m.Dir, w.fetcher())
+	require.NoError(t, err)
+	require.NoError(t, fresh.Install())
+	require.NoError(t, check())
 }
 
 func TestPackageNeedsLicenseAndFxmaRange(t *testing.T) {
@@ -223,13 +283,13 @@ func TestCorruptedCache(t *testing.T) {
 	m := w.project("ado github.com/me/app\n", nil)
 	_, err := m.Get("github.com/alice/strs", "v1.0.0")
 	require.NoError(t, err)
-	name, _, err := m.Locate("github.com/alice/strs")
+	name, _, err := m.Locate("main.fxma", "github.com/alice/strs")
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile(filepath.FromSlash(name), []byte("oqun showence x izu 1\n"), 0o644))
 
 	fresh, err := Load(m.Dir, w.fetcher())
 	require.NoError(t, err)
-	_, err = fresh.Resolve("github.com/alice/strs")
+	_, err = fresh.Resolve("main.fxma", "github.com/alice/strs")
 	require.Equal(t, diag.CraeyTA, kindOf(err))
 	_, err = fresh.Get("github.com/alice/strs", "v1.0.0")
 	require.Equal(t, diag.CraeyTA, kindOf(err))
@@ -238,9 +298,9 @@ func TestCorruptedCache(t *testing.T) {
 func TestResolveNotDownloaded(t *testing.T) {
 	w := newWorld(t)
 	m := w.project("ado github.com/me/app\n\nneyo github.com/alice/strs v1.0.0\n", nil)
-	_, err := m.Resolve("github.com/alice/strs")
+	_, err := m.Resolve("main.fxma", "github.com/alice/strs")
 	require.EqualError(t, err, "Nii eXi' github.com/alice/strs@v1.0.0")
-	_, err = m.Resolve("github.com/carol/other")
+	_, err = m.Resolve("main.fxma", "github.com/carol/other")
 	require.EqualError(t, err, "Nii eXi' github.com/carol/other")
 }
 
@@ -273,7 +333,7 @@ func TestReplaceWithLocalFolder(t *testing.T) {
 	require.NoError(t, os.WriteFile(filepath.Join(local, modfile.Name), []byte(modOf("github.com/alice/strs")), 0o644))
 	require.NoError(t, os.WriteFile(filepath.Join(local, "strs.fxma"), []byte(strsV1), 0o644))
 	require.NoError(t, m.Tidy())
-	name, err := m.Resolve("github.com/alice/strs")
+	name, err := m.Resolve("main.fxma", "github.com/alice/strs")
 	require.NoError(t, err)
 	require.Equal(t, filepath.ToSlash(filepath.Join(local, "strs.fxma")), name)
 }

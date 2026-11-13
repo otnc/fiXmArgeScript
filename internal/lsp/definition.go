@@ -123,6 +123,6 @@ func importFile(from, path string) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	name, _, err := m.Locate(path)
+	name, _, err := m.Locate(from, path)
 	return name, err == nil
 }

@@ -103,7 +103,8 @@ func (s streams) app() *cli.Command {
 				Flags:   []cli.Flag{&cli.BoolFlag{Name: "curoi", Aliases: []string{"expand", "c", "e"}}},
 				Action:  s.beaukshi,
 			},
-			{Name: "werer", Aliases: []string{"get"}, Action: s.werer},
+			{Name: "werer", Aliases: []string{"get", "install"}, Action: s.werer},
+			{Name: "unneyo", Aliases: []string{"uninstall", "remove"}, Action: s.unneyo},
 			{
 				Name:    "ado",
 				Aliases: []string{"mod"},
@@ -171,6 +172,9 @@ func (s streams) printWarnings(warnings []diag.Warning) {
 func (s streams) prepare(path string) (*parser.File, error) {
 	src, err := os.ReadFile(path)
 	if err != nil {
+		return nil, readError(err)
+	}
+	if err := checkPackages(filepath.Dir(path)); err != nil {
 		return nil, readError(err)
 	}
 	f, err := runner.Prepare(string(src), path, os.ReadFile)
@@ -280,8 +284,11 @@ func (s streams) usage(w io.Writer) {
   fixmarge beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
   fixmarge lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
   fixmarge ado meif <名前>       fixmarge.mod を作る (mod init)。名前はリポジトリの URL (github.com/alice/strs)
-  fixmarge werer <パッケージ>[@<版>]  外部パッケージを取ってきて fixmarge.mod に足す (get)。版を省くといちばん新しい版
-  fixmarge ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りないものを足し、使っていないものを消す
+  fixmarge werer <パッケージ>[@<版>]  外部パッケージを取ってきて fixmarge.mod に足す (install)。版は 1、1.2、1.2.0、1.2.0-rc.0 の形で、
+                                 合ういちばん新しい版を足す。省くといちばん新しい版
+  fixmarge werer                 fixmarge.mod に書いてあるパッケージをすべて取ってくる
+  fixmarge unneyo <パッケージ>[@<版>]  入っている版のうち、合ういちばん新しい版を fixmarge.mod から外す (uninstall)。@* なら全部の版
+  fixmarge ado saymal            werer から使うパッケージをそろえ直す (mod tidy)。足りない版を足し、使っていない版を外す
   fixmarge hak                   対話モード。1行ずつ打って実行する (repl)
   fixmarge trench                エディタのための言語サーバーを動かす (lsp)
   fixmarge nai <エラー名>        エラーや警告の意味を説明する (explain)
