@@ -243,3 +243,14 @@ func TestAsyncScheduling(t *testing.T) {
 		runCase(t, c)
 	}
 }
+
+// 長さを数で指定する標準の関数も、大きすぎる数で落ちずに Bavellabion になる。
+func TestHugeSizesInStd(t *testing.T) {
+	cases := []testCase{
+		{name: "pad", src: "\":coword\" aste coword werer\ncoword no sodaKast(\"a\", 3, \"xy\") redogh\ncoword no sodaGun(\"a\", 10 ** 15)\n", stdout: "xya\n", err: diag.Bavellabion},
+		{name: "random bytes", src: "\":keyga\" aste keyga werer\nkeyga no madrazySanand(10 ** 15)\n", err: diag.Bavellabion},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}

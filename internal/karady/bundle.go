@@ -84,32 +84,23 @@ func imports(s source, src, root string, readFile func(string) ([]byte, error), 
 		return nil, err
 	}
 	var out []source
-	var failure error
-	ast.InspectStmts(f.Stmts, func(n ast.Node) bool {
-		imp, ok := n.(*ast.Import)
-		if !ok || failure != nil {
-			return failure == nil
-		}
+	for _, imp := range ast.Imports(f.Stmts) {
 		if strings.HasPrefix(imp.Path, modpath.StdPrefix) {
-			return true
+			continue
 		}
 		next, err := locate(s, imp.Path, root, external, known)
 		if u, ok := errors.AsType[*diag.Unplaced](err); ok {
-			err = diag.New(u.Kind, s.file, imp.Pos, u.Target)
-		}
-		if err == nil {
-			if _, err = readFile(next.file); errors.Is(err, fs.ErrNotExist) {
-				err = diag.New(diag.NiiExi, s.file, imp.Pos, imp.Path)
-			}
+			return nil, diag.New(u.Kind, s.file, imp.Pos, u.Target)
 		}
 		if err != nil {
-			failure = err
-			return false
+			return nil, err
+		}
+		if _, err := readFile(next.file); errors.Is(err, fs.ErrNotExist) {
+			return nil, diag.New(diag.NiiExi, s.file, imp.Pos, imp.Path)
 		}
 		out = append(out, next)
-		return true
-	})
-	return out, failure
+	}
+	return out, nil
 }
 
 // locate は s に書いた読み込み先 path を、読むファイルにする。./ と ../ は、手元の名前と実行ファイルの中での名前の両方で

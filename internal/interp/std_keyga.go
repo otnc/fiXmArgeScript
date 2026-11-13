@@ -156,6 +156,9 @@ func keygaMadrazySanand(a *argv) (Value, error) {
 	if n < 0 {
 		return nil, a.fail(diag.ImJune)
 	}
+	if n > maxStringBytes {
+		return nil, a.fail(diag.Bavellabion)
+	}
 	// バイト列は fxma から書き換えられないので、そのまま記録できる
 	return a.in.recorded(func() Value {
 		b := make([]byte, n)

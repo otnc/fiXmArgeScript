@@ -126,20 +126,16 @@ func (in *Interp) moduleFile(from, path string) (string, error) {
 // 読み込めないファイルはあるものとして扱う。エラーは実行したときに werer の場所で出す。
 func (in *Interp) mayChoose(f *parser.File, seen map[string]bool) bool {
 	found := false
-	var imports []string
 	ast.InspectStmts(f.Stmts, func(n ast.Node) bool {
-		switch n := n.(type) {
-		case *ast.Choice:
-			found = true
-		case *ast.Import:
-			imports = append(imports, n.Path)
-		}
+		_, isChoice := n.(*ast.Choice)
+		found = found || isChoice
 		return !found
 	})
 	if found {
 		return true
 	}
-	for _, path := range imports {
+	for _, imp := range ast.Imports(f.Stmts) {
+		path := imp.Path
 		if strings.HasPrefix(path, modpath.StdPrefix) {
 			continue
 		}

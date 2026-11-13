@@ -81,7 +81,7 @@ func strAndInt(a, b Value) (Str, Int, bool) {
 	return s, n, isStr && isInt
 }
 
-// maxStringBytes は文字列の繰り返しで作れる長さの上限。超えると Bavellabion (メモリを取り切って落ちる前に止める)。
+// maxStringBytes は、長さを数で指定して作る文字列とバイト列の上限。超えると Bavellabion (メモリを取り切って落ちる前に止める)。
 const maxStringBytes = 1 << 30
 
 func repeat(s Str, n Int) (Str, bool) {

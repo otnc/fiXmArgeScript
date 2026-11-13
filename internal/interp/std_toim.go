@@ -2,6 +2,7 @@ package interp
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -37,8 +38,22 @@ func toimSaimoku(a *argv) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	// setTimeout と同じく、負の数は 0 として扱う
-	return a.in.startTimer(time.Duration(max(0, ms) * float64(time.Millisecond))), nil
+	return a.in.startTimer(waitDuration(ms)), nil
+}
+
+// maxWait は待てる長さの上限 (約146年)。これより長いと、今の時刻に足したときにあふれる。
+const maxWait = time.Duration(math.MaxInt64 / 2)
+
+// waitDuration はミリ秒を待つ長さにする。setTimeout と同じく、負の数と NaN は 0 として扱う。
+func waitDuration(ms float64) time.Duration {
+	ns := ms * float64(time.Millisecond)
+	switch {
+	case !(ns > 0):
+		return 0
+	case ns >= float64(maxWait):
+		return maxWait
+	}
+	return time.Duration(ns)
 }
 
 // timeArg は i 番目の引数の時刻を、タイムゾーンを当てた time.Time にする。

@@ -116,3 +116,15 @@ func eachOptional(visit func(Node) bool, xs ...Expr) {
 func InspectStmts(stmts []Stmt, visit func(Node) bool) {
 	eachStmt(stmts, visit)
 }
+
+// Imports は stmts の werer をすべて返す。mof や関数の中に書いたものも含む (実行するときはどこに書いても読み込むため)。
+func Imports(stmts []Stmt) []*Import {
+	var out []*Import
+	InspectStmts(stmts, func(n Node) bool {
+		if imp, ok := n.(*Import); ok {
+			out = append(out, imp)
+		}
+		return true
+	})
+	return out
+}

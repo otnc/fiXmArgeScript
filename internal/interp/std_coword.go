@@ -185,6 +185,9 @@ func padFunc(front bool) stdFunc {
 		if short <= 0 || fill == "" {
 			return Str(s), nil
 		}
+		if short > maxStringBytes {
+			return nil, a.fail(diag.Bavellabion)
+		}
 		fillRunes := []rune(fill)
 		pad := make([]rune, short)
 		for i := range pad {

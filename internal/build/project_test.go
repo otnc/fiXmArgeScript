@@ -54,3 +54,15 @@ func TestProjectMissingImport(t *testing.T) {
 		t.Fatalf("エラー %v, want Nii eXi'", err)
 	}
 }
+
+// mof や関数の中に書いた werer の読み込み先も清書する。清書を実行すると、そこでも清書を読むため。
+func TestProjectFollowsNestedImports(t *testing.T) {
+	files := map[string]string{
+		"main.fxma": "weho f()\n  \"./util\" aste util werer\nfinend\n",
+		"util.fxma": "oqun showence x izu 1\n",
+	}
+	outputs, _, err := Project("main.fxma", readFrom(files))
+	if err != nil || len(outputs) != 2 || outputs[1].Name != "util.fxmac" {
+		t.Errorf("outputs = %+v, err = %v", outputs, err)
+	}
+}

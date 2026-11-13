@@ -91,10 +91,11 @@ func (c *checker) shadowed(name string) bool {
 
 // collectAbiryoku は weho で定義した abiryoku 付きの関数の名前を集める。巻き上げがあるので先に全部集める。
 func collectAbiryoku(stmts []ast.Stmt, out map[string]bool) {
-	walkStmts(stmts, func(s ast.Stmt) {
-		if d, ok := s.(*ast.FuncDecl); ok && d.Fn.Abiryoku {
+	ast.InspectStmts(stmts, func(n ast.Node) bool {
+		if d, ok := n.(*ast.FuncDecl); ok && d.Fn.Abiryoku {
 			out[d.Fn.Name] = true
 		}
+		return true
 	})
 }
 
@@ -301,31 +302,5 @@ func (c *checker) expr(x ast.Expr, ctx context) {
 func (c *checker) exprs(xs []ast.Expr, ctx context) {
 	for _, x := range xs {
 		c.expr(x, ctx)
-	}
-}
-
-// walkStmts は関数の中も含めて、すべての文に f を呼ぶ。
-func walkStmts(stmts []ast.Stmt, f func(ast.Stmt)) {
-	for _, s := range stmts {
-		f(s)
-		switch s := s.(type) {
-		case *ast.If:
-			for _, b := range s.Blocks {
-				walkStmts(b, f)
-			}
-			walkStmts(s.Else, f)
-		case *ast.While:
-			walkStmts(s.Body, f)
-		case *ast.For:
-			walkStmts(s.Body, f)
-		case *ast.FuncDecl:
-			walkStmts(s.Fn.Body, f)
-		case *ast.Try:
-			walkStmts(s.Body, f)
-			walkStmts(s.Catch, f)
-			walkStmts(s.Finally, f)
-		case *ast.Test:
-			walkStmts(s.Body, f)
-		}
 	}
 }

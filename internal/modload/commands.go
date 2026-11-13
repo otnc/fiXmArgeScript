@@ -160,8 +160,8 @@ func (m *Module) imports() ([]importAt, error) {
 		if err != nil {
 			return err
 		}
-		for _, s := range f.Stmts {
-			if imp, ok := s.(*ast.Import); ok && modpath.External(imp.Path) {
+		for _, imp := range ast.Imports(f.Stmts) {
+			if modpath.External(imp.Path) {
 				out = append(out, importAt{imp.Path, name, imp.Pos})
 			}
 		}

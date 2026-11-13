@@ -51,7 +51,7 @@ func Project(entry string, readFile func(name string) ([]byte, error)) ([]Output
 	return outputs, warnings, nil
 }
 
-// localImports はファイルの一番外側の werer のうち、./ か ../ で始まる読み込み先を返す。
+// localImports はファイルの werer のうち、./ か ../ で始まる読み込み先を返す。
 // 読み込み先がなければ、実行するときと同じく Nii eXi'。
 func localImports(src, name string, readFile func(string) ([]byte, error)) ([]string, error) {
 	f, err := parser.Parse(src, name)
@@ -59,11 +59,7 @@ func localImports(src, name string, readFile func(string) ([]byte, error)) ([]st
 		return nil, err
 	}
 	var out []string
-	for _, s := range f.Stmts {
-		imp, ok := s.(*ast.Import)
-		if !ok {
-			continue
-		}
+	for _, imp := range ast.Imports(f.Stmts) {
 		next, ok := modpath.Local(name, imp.Path)
 		if !ok {
 			continue
