@@ -991,7 +991,8 @@ import * as strs from "strs";
 - ダウンロードするのは `fixmarge werer` と `fixmarge ado saymal` のときだけで、`fixmarge keeon` の途中ではダウンロードしません。
 - ダウンロードしたものは、`fixmarge.mod` と同じ場所の `.fixmarge` フォルダに置きます (npmの `node_modules`)。中は `github.com/alice/strs@v1.2.0` のように名前と版のフォルダが並び、間接的に使うものも同じ所に並びます。プロジェクトの間で使い回す置き場所はないので、ほかのプロジェクトの影響を受けず、プロジェクトのフォルダを消せば全部消えます。
 - どのコマンドも、もう使わない版のフォルダを `.fixmarge` から消します。
-- `.fixmarge` はGitに入れません (`.gitignore` に書きます)。入れるのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` で同じものをそろえます。
+- `.fixmarge` はGitに入れません。入れるのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` で同じものをそろえます。`fixmarge ado meif` は、`.gitignore` に `.fixmarge/` の行を足します (`cargo init` と同じ)。`.gitignore` がなければ作り、もう書いてあれば何もしません。
+- `.fixmarge` をコミットして配ること (Goの `vendor`) は勧めません。コミットしてあれば取ってこなくても動きますが、版を足したり外したりするたびにフォルダごと差分になり、手で直した中身は `fixmarge.sum` と合わず `CraeyTA'` になります。パッケージの中身を手元で直したいときは、`fixmarge.mod` の `lainei` で手元のフォルダに置き換えます。
 - `fixmarge.sum` のハッシュはGoの `go.sum` と同じ `h1:` の形です (ファイルごとのSHA-256をまとめたもの)。
 - `lainei` で手元のフォルダに置き換えたパッケージは、ダウンロードもハッシュの確認もせず、`fixmarge.sum` にも書きません。
 - `fixmarge ado saymal` は、パッケージの下書き (`.fxma`) の `werer` を集めて使う版を決め直します。清書 (`.fxmac`)、`.` で始まるフォルダ、別の `fixmarge.mod` があるフォルダは見ません。合う版が入っていない `werer` は、名前の長い方からリポジトリを探して、合ういちばん新しい版を足します。どの `werer` も指していない版は外します。読み込み先のファイルがなければ、その `werer` の位置で `Nii eXi'` です。
@@ -1082,7 +1083,7 @@ fixmarge unneyo --wid github.com/alice/strs
 | `Nii eXi'` | 存在しない | 定義されていない変数や関数を使った。配列の範囲の外を読んだ | `NameError` |
 | `imJune` | 不純 | 型が合わない。数と文字列の足し算、条件に真偽値以外を書いた | `TypeError` |
 | `kYoNAihim` | 虚無 | 0で割った | `ZeroDivisionError` |
-| `Bavellabion` | 呪いの言葉があふれる | 整数が64ビットの範囲を超えた。関数の呼び出しや、括弧・ブロックの入れ子が深すぎる。呪い (マクロ) の展開が深すぎるか、大きすぎる。長さを数で決めて作る文字列が大きすぎる | 整数はあふれない。深すぎる呼び出しは `RecursionError` |
+| `Bavellabion` | 呪いの言葉があふれる | 整数が64ビットの範囲を超えた。関数の呼び出しや、括弧・ブロックの入れ子が深すぎる。呪い (マクロ) の展開が深すぎるか、大きすぎる。長さを数で決めて作る文字列が大きすぎる。`--laikill` で付けた上限を超えた | 整数はあふれない。深すぎる呼び出しは `RecursionError` |
 | `blasTOac` | 冒涜的 | 証拠品 (`showence`) に再代入した | なし |
 | `kiNbOO` | 禁忌 | `abiryoku` なしの関数で入出力した (ほとんどは実行前に検出) | なし |
 | `Co-Jundic` | 矛盾 | どの選択肢でも `shoubek` を満たせなかった | なし |
@@ -1153,6 +1154,7 @@ Nii eXi' main.fxma:3:5 cnt
 | --- | --- | --- | --- | --- |
 | `fixmarge keeon main.fxma` | 続ける | `run` | 下書きをメモリ上でビルドし、その清書を実行する | `go run` |
 | `fixmarge keeon main.fxmac` | 続ける | `run` | 清書をそのまま実行する | ビルド済みのファイルを実行 |
+| `fixmarge keeon --laikill 1000000 main.fxma` | 生きる | `--steps` | 実行する文と繰り返しの数に上限を付ける。`coatain` にも付けられる。下の「深さと大きさの上限」 | PHPの `max_execution_time` (こちらは時間) |
 | `fixmarge sinruits main.fxma` | 現実 | `build` | 清書 `main.fxmac` を出力する。`werer` で読み込んでいる下書き (`./` か `../` で始まるもの) も、たどってまとめて清書する | `go build`、`tsc` |
 | `fixmarge sinruits --karady main.fxma` | 体 | `--compile` | インタプリタと清書と読み込んだパッケージをまとめた単体の実行ファイルを出力する。下の「単体の実行ファイル」 | `deno compile`、`bun build --compile` |
 | `fixmarge coatain` | 法廷 | `test` | 名前が `_coatain.fxma` で終わるファイルの `sentky` を実行して判決を出す。ファイルやフォルダを渡せて、省くと今いる場所より下のフォルダまで全部探す (隠しフォルダと `node_modules` は飛ばす) | `go test`、vitest |
@@ -1164,7 +1166,7 @@ Nii eXi' main.fxma:3:5 cnt
 | `fixmarge persemon` | 見世物 | `bench` | 名前が `_coatain.fxma` で終わるファイルの `persemon` を実行して速さを測る。ファイルやフォルダの渡し方は `coatain` と同じ | `go test -bench`、`vitest bench` |
 | `fixmarge werer <パッケージ>[@<版>]` | 迎える | `install`、`get` | パッケージを取ってきて `fixmarge.mod` に足す。パッケージを省くと、書いてあるものをすべて取ってくる | `npm install` |
 | `fixmarge unneyo <パッケージ>[@<版>]` | 要らない | `uninstall`、`remove` | パッケージを `fixmarge.mod` から外す。`@*` ならすべての版 | `npm uninstall` |
-| `fixmarge ado meif <名前>` | これ、命 | `mod init` | `fixmarge.mod` を作る | `go mod init` |
+| `fixmarge ado meif <名前>` | これ、命 | `mod init` | `fixmarge.mod` を作り、`.gitignore` に `.fixmarge/` を足す | `go mod init`、`cargo init` |
 | `fixmarge ado saymal` | これ、正常 | `mod tidy` | ソースの `werer` に合わせて、足りない版を足し、使っていない版を外す | `go mod tidy` |
 | `fixmarge neyar`、`fixmarge --neyar` | 年 | `version`、`--version` | 版と、非公式のファンメイド作品であることを表示する | `go version` |
 | `fixmarge trench` | 友達 | `lsp` | エディタのための言語サーバーを動かす | `gopls` |
@@ -1279,6 +1281,21 @@ fixmarge sinruits --karady --os linux-arm64 main.fxma
 
 配列と辞書の入れ子に上限はありません。出すときと比べるときは再帰を使わないので、いくら深くても動きます。JSONにするときだけは、深さ10000で `imJune` です。
 
+実行の長さには、普段は上限がありません。JavaScriptのNode.jsと同じく、`tadact azagara` のような止まらないプログラムは、止めるまで動き続けます。止めたいときは `--laikill` (`LAikIll`、生きる。英語の別名は `--steps`、短い形は `-l` と `-s`) で、実行する文と繰り返しの数の上限を付けます。
+
+```
+fixmarge keeon --laikill 1000000 main.fxma
+fixmarge coatain --laikill 1000000
+```
+
+- 数えるのは、実行した文と、繰り返し (`azagara`) の周回です。本体が空の繰り返しも周回で数えます。
+- 上限を超えると `Bavellabion` で、対象は `LAikIll` です。`youlugive` で捕まえても、次の文でまた `Bavellabion` になるので、その先には進めません。
+- 巻き戻しでやり直した分も足して数えます。選択肢を総当たりする探索が終わらないときも止まります。
+- `fixmarge coatain` ではファイルごとに数えます。
+- `0` は上限なしです。負の数は書けません。
+- 待っている時間 (`toim no saimoku` や通信) は数えません。
+- WebAssembly版では `run` の `maxSteps` で同じ上限を付けます。ブラウザでは実行中のプログラムを外から止められないので、プレイグラウンドはいつも500万の上限を付けています。
+
 ### 辞書データの扱い
 
 参考にした辞書リポジトリにはライセンスがありません。そのCSVは同梱せず、この言語で使う語だけを自前のキーワード表に書きます。歌詞の文もリポジトリには入れません。
@@ -1377,8 +1394,8 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 `GOOS=js GOARCH=wasm` で `fixmarge.wasm` を作り、Go付属の `wasm_exec.js` と組み合わせて配ります。
 
 - **Releases**: `fixmarge_<版>_wasm.zip` に `fixmarge.wasm`、`wasm_exec.js`、`README.md`、ライセンス類を入れる。
-- **npm**: パッケージ `fixmarge` として公開し、JavaScriptから `run(source, { stdin, files, args })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`files` は名前と中身の組で、`werer` でも `:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
-- **プレイグラウンド**: Cloudflare Workersの静的アセットとして https://fixmargescript.oto.im/ に置き、ブラウザだけで書いて実行できるようにする。ViteとCodeMirror 6で作り、リポジトリの `playground/` にある。ファイルを足して `werer` で読み込める。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
+- **npm**: パッケージ `fixmarge` として公開し、JavaScriptから `run(source, { stdin, files, args, maxSteps })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`maxSteps` は `--laikill` と同じ上限。`files` は名前と中身の組で、`werer` でも `:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
+- **プレイグラウンド**: Cloudflare Workersの静的アセットとして https://fixmargescript.oto.im/ に置き、ブラウザだけで書いて実行できるようにする。ViteとCodeMirror 6で作り、リポジトリの `playground/` にある。ファイルを足して `werer` で読み込める。止まらないプログラムでタブが固まらないよう、文と繰り返しの数に500万の上限を付ける。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
 
 ブラウザでは対話的な入力ができないため、`zanfession` で読む入力は実行前にまとめて渡します。これは巻き戻しの「入力を記録して使い回す」方式とも合います。実行ファイルが大きすぎる場合は、後でTinyGoでのビルドを検討します。
 
