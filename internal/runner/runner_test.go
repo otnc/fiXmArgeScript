@@ -29,6 +29,7 @@ type testCase struct {
 	proc   *interp.Process                                                       // :ieviljio に渡す。nil なら空
 	serve  func(port int, h http.Handler, done <-chan struct{}) error            // gemon no nozuki に渡す
 	watch  func(path string, send func(name string), done <-chan struct{}) error // memoid no nozuki に渡す
+	steps  int                                                                   // 文と繰り返しの数の上限。0 なら上限なし
 }
 
 // fixedNow は 2026-11-07T21:00:00.042+09:00。時刻を使うテストを毎回同じにする。
@@ -55,7 +56,7 @@ func runCase(t *testing.T, c testCase) {
 			t.Fatal(err)
 		}
 	}
-	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Serve: c.serve, Watch: c.watch, Now: fixedNow, Location: tokyo}
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Serve: c.serve, Watch: c.watch, Now: fixedNow, Location: tokyo, MaxSteps: c.steps}
 	_, err := Run(c.src, "main.fxma", readFile, opts)
 	de, isDiag := errors.AsType[*diag.Error](err)
 	exit, exited := errors.AsType[*interp.Exit](err)
@@ -198,6 +199,22 @@ func TestAsync(t *testing.T) {
 }
 
 // 自分自身を中に持つ配列や辞書でも、出したり比べたりして止まらなくならない。
+func TestMaxSteps(t *testing.T) {
+	cases := []testCase{
+		{name: "within the limit", steps: 3, src: "1 redogh\n2 redogh\n3 redogh\n", stdout: "1\n2\n3\n"},
+		{name: "statements", steps: 2, src: "1 redogh\n2 redogh\n3 redogh\n", stdout: "1\n2\n", err: diag.Bavellabion},
+		{name: "endless loop", steps: 1000, src: "tadact azagara\nfinend\n", err: diag.Bavellabion},
+		{name: "loop over a huge range", steps: 1000, src: "0..9000000000000000000 aste i azagara\nfinend\n", err: diag.Bavellabion},
+		{name: "endless recursion in a task", steps: 1000, src: "itsver weho f()\n  f() praylee\nfinend\nf() praylee\n", err: diag.Bavellabion},
+		// やり直しでも数え続けるので、選択肢を総当たりする探索も止まる
+		{name: "long search", steps: 1000, src: strings.Repeat("x izu 1 owk 2 mekamo\n", 12) + "x > 2 shoubek\n", err: diag.Bavellabion},
+		{name: "caught but the next statement fails again", steps: 5, src: "teitance\n  tadact azagara\n  finend\nyoulugive\n  1 redogh\nfinend\n2 redogh\n", err: diag.Bavellabion},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}
+
 func TestSelfReference(t *testing.T) {
 	cases := []testCase{
 		{name: "display array", src: "xs izu [1]\nxs no 0 izu xs\nxs redogh\n[xs, xs] redogh\n", stdout: "[[...]]\n[[[...]], [[...]]]\n"},

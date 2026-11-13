@@ -15,24 +15,30 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/scope"
 )
 
-// neverEnding は、実行が終わらないかもしれないソースに出てくる語。繰り返し、関数 (再帰)、待つこと、読み込み (標準パッケージ)。
-var neverEnding = []string{"azagara", "weho", "praylee", "zanfession", "werer", "curoi"}
+// fuzzSteps は FuzzRun で実行する文と繰り返しの数の上限。繰り返しも再帰もここで止まる。
+// s izu s + s のように1周ごとに倍になる値を作れるので、メモリを取り切らないよう小さくしてある
+const fuzzSteps = 50
 
-// FuzzRun は、必ず終わるソースならどれを実行しても落ちないことを確かめる。
+// FuzzRun は、どんなソースを実行しても落ちたり固まったりしないことを確かめる。標準パッケージも読み込める。
 // 探すときは go test -fuzz FuzzRun ./internal/runner/。
 func FuzzRun(f *testing.F) {
 	f.Add("x izu 1 owk 2 owk 3 mekamo\nx > 1 shoubek\n[x, \"#{x * 2}\", {\"k\": x}] redogh\n")
 	f.Add("xs izu [1, 2, 3]\nxs no 0..1 izu [9]\nxs no -1 redogh\n(2 exi 0..10 batte 2) redogh\n\"ab\" * 3 no 1.. redogh\n")
 	f.Add("teitance\n  1 // 0\nyoulugive e\n  e no \"chidd\" canosiri\nennote\n  -7 % 3 << 2 redogh\nfinend\n")
 	f.Add("showence d izu {\"a\": [1.5, vanita, tadact]}\nd senaji d redogh\nnang(sanand(\"ab\", \"hex\")) redogh\n")
+	f.Add("tadact azagara\nfinend\n")
+	f.Add("weho f(n)\n  f(n + 1) itswa\nfinend\n0..9 aste i azagara\n  f(i) redogh\nfinend\n")
+	f.Add("itsver weho f()\n  f() praylee itswa\nfinend\nf() praylee\nzanfession redogh\n")
+	f.Add("\":varizama\" aste v werer\n\":coword\" aste c werer\nv no tarip([3, 1, 2], weho(x) x * 2 itswa finend) redogh\nc no gdie(\"ab\") redogh\n")
+	f.Add("\":json\" aste j werer\n\":meme\" aste m werer\nj no salook({\"a\": [m no litto(2.5)]}) redogh\nj no fineclowt(\"[1, {}]\") redogh\n")
+	f.Add("curoi twice(x)\n  x * 2\nfinend\ntwice(1 + 2) redogh\n")
 
 	f.Fuzz(func(t *testing.T, src string) {
-		for _, word := range neverEnding {
-			if strings.Contains(strings.ToLower(src), word) {
-				t.Skip()
-			}
+		// 待つ時間は文の数では止められない
+		if strings.Contains(strings.ToLower(src), "saimoku") {
+			t.Skip()
 		}
-		Run(src, "main.fxma", nil, interp.Options{Stdin: strings.NewReader(""), Stdout: io.Discard, Stderr: io.Discard})
+		Run(src, "main.fxma", nil, interp.Options{Stdin: strings.NewReader(""), Stdout: io.Discard, Stderr: io.Discard, MaxSteps: fuzzSteps})
 	})
 }
 

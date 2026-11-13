@@ -27,6 +27,11 @@ test("exit code and args", async () => {
   assert.deepEqual([r.stdout, r.exitCode], ['["a"]\nnode\n', 3]);
 });
 
+test("maxSteps stops an endless loop", async () => {
+  const r = await run("tadact azagara\nfinend\n", { maxSteps: 1000 });
+  assert.deepEqual([r.stderr, r.exitCode], ["Bavellabion main.fxma:1:1 LAikIll\n", 1]);
+});
+
 test("build", async () => {
   assert.deepEqual(await build("x izu tadact\nx redogh\n"), { output: "x Iz'u TadACt\nx ReDogh'\n", stderr: "" });
   const bad = await build('x izu "abc\n');

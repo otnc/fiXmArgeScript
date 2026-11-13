@@ -80,11 +80,12 @@ func (s streams) app() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "neyar", Aliases: []string{"version", "v"}},
 			&cli.BoolFlag{Name: "nai", Aliases: []string{"help", "n", "h"}},
+			laikillFlag(),
 		},
 		Action:       s.root,
 		StopOnNthArg: &firstArg,
 		Commands: []*cli.Command{
-			{Name: "keeon", Aliases: []string{"run"}, Action: s.keeon, StopOnNthArg: &firstArg},
+			{Name: "keeon", Aliases: []string{"run"}, Flags: []cli.Flag{laikillFlag()}, Action: s.keeon, StopOnNthArg: &firstArg},
 			{
 				Name:    "sinruits",
 				Aliases: []string{"build"},
@@ -94,7 +95,7 @@ func (s streams) app() *cli.Command {
 				},
 				Action: s.sinruits,
 			},
-			{Name: "coatain", Aliases: []string{"test"}, Action: s.coatain},
+			{Name: "coatain", Aliases: []string{"test"}, Flags: []cli.Flag{laikillFlag()}, Action: s.coatain},
 			{Name: "persemon", Aliases: []string{"bench"}, Action: s.persemon},
 			{Name: "lavi", Aliases: []string{"lint"}, Action: s.lavi},
 			{
@@ -132,6 +133,11 @@ func (s streams) app() *cli.Command {
 // widFlag は --wid (世界)。プロジェクトではなく、グローバルに入れたパッケージを書き換える (npm の -g)。
 func widFlag() cli.Flag {
 	return &cli.BoolFlag{Name: "wid", Aliases: []string{"global", "g"}}
+}
+
+// laikillFlag は --laikill (生きる)。プログラムが実行できる文と繰り返しの数の上限で、0 なら上限なし。
+func laikillFlag() cli.Flag {
+	return &cli.IntFlag{Name: "laikill", Aliases: []string{"steps", "l", "s"}}
 }
 
 // usageError は知らないオプションなどのとき。urfave/cli のエラー文は英語なので出さず、使い方を出す。
@@ -209,9 +215,15 @@ func (s streams) keeon(_ context.Context, cmd *cli.Command) error {
 		s.usage(s.stderr)
 		return exitCode(2)
 	}
+	if cmd.Int("laikill") < 0 {
+		s.usage(s.stderr)
+		return exitCode(2)
+	}
 	f, err := s.prepare(cmd.Args().First())
 	if err == nil {
-		err = interp.Run(f, s.options(cmd.Args().First(), cmd.Args().Tail()))
+		opts := s.options(cmd.Args().First(), cmd.Args().Tail())
+		opts.MaxSteps = cmd.Int("laikill")
+		err = interp.Run(f, opts)
 	}
 	return s.finishRun(err)
 }
@@ -280,6 +292,8 @@ func (s streams) usage(w io.Writer) {
 	fmt.Fprint(w, `fiXmArge Script (fxma) の使い方
 
   fixmarge keeon <ファイル> [引数...]  実行する (run)。コマンドを省いてファイルだけ渡しても同じ
+  fixmarge keeon --laikill <数> <ファイル>  実行する文と繰り返しの数が <数> を超えたら Bavellabion で止める (--steps)。
+                                 止まらないプログラムを止めるためのもの。coatain にも付けられる (ファイルごとに数える)
   fixmarge sinruits <下書き>     清書 .fxmac を書き出す (build)。読み込み先の下書きもまとめて清書する
   fixmarge sinruits --karady [--os <OS-CPU>] <下書き>  単体の実行ファイルを作る (--compile、--target)。
                                  OS-CPU は linux-amd64 など。省くと今の OS 向け
@@ -288,7 +302,8 @@ func (s streams) usage(w io.Writer) {
   fixmarge beaukshi [ファイル...]  下書きを整えて書き換える (fmt)。省くと下のフォルダまで全部
   fixmarge beaukshi --curoi <下書き>  呪いを展開した結果を出す (--expand)
   fixmarge lavi [ファイル...]   法の悪魔が規則違反を指摘する (lint)。省くと下のフォルダまで全部
-  fixmarge ado meif <名前>       fixmarge.mod を作る (mod init)。名前はリポジトリの URL (github.com/alice/strs)
+  fixmarge ado meif <名前>       fixmarge.mod を作る (mod init)。名前はリポジトリの URL (github.com/alice/strs)。
+                                 .gitignore に .fixmarge/ も足す
   fixmarge werer <パッケージ>[@<版>]  外部パッケージを取ってきて fixmarge.mod に足す (install)。版は 1、1.2、1.2.0、1.2.0-rc.0 の形で、
                                  合ういちばん新しい版を足す。省くといちばん新しい版
   fixmarge werer                 fixmarge.mod に書いてあるパッケージをすべて取ってくる

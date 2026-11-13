@@ -7,6 +7,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/ast"
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
+	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
 // flow は文を実行した後にどこへ進むか。
@@ -41,6 +42,9 @@ func (in *Interp) execBlock(stmts []ast.Stmt, env *Env) (flow, Value, error) {
 }
 
 func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
+	if err := in.step(s.Position()); err != nil {
+		return flowNormal, nil, err
+	}
 	switch s := s.(type) {
 	case *ast.ExprStmt:
 		_, err := in.eval(s.X, env)
@@ -114,6 +118,15 @@ func (in *Interp) exec(s ast.Stmt, env *Env) (flow, Value, error) {
 	return flowNormal, nil, in.errorf(diag.SaiVI, s.Position(), "")
 }
 
+// step は文を1つ、または繰り返しを1周進めたと数える。本体が空の繰り返しも止められるよう、文だけでなく周回も数える。
+func (in *Interp) step(pos token.Pos) error {
+	in.steps++
+	if in.opts.MaxSteps > 0 && in.steps > in.opts.MaxSteps {
+		return in.errorf(diag.Bavellabion, pos, lexicon.Spell("laikill"))
+	}
+	return nil
+}
+
 // loopBody はループの本体の結果を、ループを続けるかどうかに読み替える。
 func loopBody(f flow, v Value, err error) (stop bool, result flow, value Value, e error) {
 	switch {
@@ -129,6 +142,9 @@ func loopBody(f flow, v Value, err error) (stop bool, result flow, value Value, 
 
 func (in *Interp) execWhile(s *ast.While, env *Env) (flow, Value, error) {
 	for {
+		if err := in.step(s.Cond.Position()); err != nil {
+			return flowNormal, nil, err
+		}
 		ok, err := in.evalBool(s.Cond, env, s.Cond.Position(), "azagara")
 		if err != nil || !ok {
 			return flowNormal, nil, err
@@ -147,6 +163,9 @@ func (in *Interp) execFor(s *ast.For, env *Env) (flow, Value, error) {
 	var result flow
 	var value Value
 	err = in.each(iter, s.Iter, func(item Value) (bool, error) {
+		if err := in.step(s.Iter.Position()); err != nil {
+			return true, err
+		}
 		// ループの変数は1周ごとに新しく作る (JavaScript の for (const x of xs))
 		body := newEnv(env, false)
 		body.define(s.Var, item, false)

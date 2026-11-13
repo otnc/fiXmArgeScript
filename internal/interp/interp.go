@@ -51,6 +51,9 @@ type Options struct {
 	Serve func(port int, handler http.Handler, done <-chan struct{}) error
 	// BenchTime は persemon の1つを測る時間の目安。0 なら1秒 (go test -bench と同じ)。
 	BenchTime time.Duration
+	// MaxSteps は実行できる文と繰り返しの数の上限 (fixmarge keeon --laikill)。超えると Bavellabion。0 なら上限なし。
+	// 止まらないプログラムを、ブラウザやファジングのように外から止められない所で止めるためのもの。
+	MaxSteps int
 	// Now と Location は時刻とタイムゾーン (:toim)。nil なら time.Now と time.Local。
 	Now      func() time.Time
 	Location *time.Location
@@ -75,6 +78,8 @@ type Interp struct {
 	plan   []int
 	counts []int
 	frozen int // これより前の選択肢は確定していて、もう戻らない
+	// steps は実行した文と繰り返しの数 (Options.MaxSteps)。やり直しでも戻さない。巻き戻しの探索が終わらないときも止めるため
+	steps int
 	// replayable はやり直しが起きるかもしれないか。偽なら入力と外とのやり取りを記録しない。
 	// やり直しはいつも頭から実行するので確定した分の記録も捨てられず、サーバーのように長く動かすと記録が増え続けるため
 	replayable bool

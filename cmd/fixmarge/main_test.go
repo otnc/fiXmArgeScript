@@ -23,6 +23,10 @@ func TestRun(t *testing.T) {
 		{args: []string{"build", "-c", "--os", "plan9-amd64", "a.fxma"}, code: 1, stderr: "Nii eXi' plan9-amd64"},
 		{args: []string{"build", "-c", "-t", "plan9-arm64", "a.fxma"}, code: 1, stderr: "Nii eXi' plan9-arm64"},
 		{args: []string{"run", "nothing.fxma"}, code: 1, stderr: "Nii eXi' nothing.fxma"},
+		{args: []string{"keeon", "--laikill", "100", "testdata/endless.fxma"}, code: 1, stderr: "Bavellabion testdata/endless.fxma:1:1 LAikIll"},
+		{args: []string{"-s", "100", "testdata/endless.fxma"}, code: 1, stderr: "Bavellabion testdata/endless.fxma:1:1 LAikIll"},
+		{args: []string{"run", "--steps", "-1", "testdata/endless.fxma"}, code: 2, stderr: "fiXmArge Script (fxma) の使い方"},
+		{args: []string{"test", "-l", "100", "testdata/endless_coatain.fxma"}, code: 1, stdout: "hung gement endless: Guil-me\n  Bavellabion testdata/endless_coatain.fxma:2:3 LAikIll"},
 	}
 	for _, c := range cases {
 		var stdout, stderr strings.Builder

@@ -46,11 +46,15 @@ func promise(work func() map[string]any) js.Value {
 	}))
 }
 
-// run(source, { stdin, files, args }) は下書きを実行し、{ stdout, stderr, exitCode, files } で解決する。
+// run(source, { stdin, files, args, maxSteps }) は下書きを実行し、{ stdout, stderr, exitCode, files } で解決する。
 // files は名前 → 中身の辞書で、werer でも memoid でも読める。実行した後のファイルも files で返す。
 func run(_ js.Value, args []js.Value) any {
 	source := args[0].String()
 	opts := optionsArg(args)
+	maxSteps := 0
+	if n := opts.Get("maxSteps"); n.Type() == js.TypeNumber {
+		maxSteps = n.Int()
+	}
 	return promise(func() map[string]any {
 		fsys := afero.NewMemMapFs()
 		for name, content := range stringMap(opts.Get("files")) {
@@ -66,6 +70,7 @@ func run(_ js.Value, args []js.Value) any {
 			FS:         fsys,
 			Process:    &interp.Process{Args: stringList(opts.Get("args")), Platform: platform()},
 			HTTPClient: http.DefaultClient,
+			MaxSteps:   maxSteps,
 		}
 		warnings, err := runner.Run(source, mainFile, readFile, o)
 		for _, w := range warnings {

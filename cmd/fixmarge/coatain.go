@@ -27,6 +27,12 @@ func (s streams) persemon(_ context.Context, cmd *cli.Command) error {
 
 // runTestFiles は渡されたファイルかフォルダの _coatain.fxma を run で1つずつ実行する。
 func (s streams) runTestFiles(cmd *cli.Command, run func(*parser.File, interp.Options) (bool, error)) error {
+	// persemon には --laikill がなく、0 (上限なし) になる
+	maxSteps := cmd.Int("laikill")
+	if maxSteps < 0 {
+		s.usage(s.stderr)
+		return exitCode(2)
+	}
 	targets := cmd.Args().Slice()
 	if len(targets) == 0 {
 		targets = []string{"."}
@@ -45,7 +51,9 @@ func (s streams) runTestFiles(cmd *cli.Command, run func(*parser.File, interp.Op
 		f, err := s.prepare(path)
 		if err == nil {
 			var guilty bool
-			guilty, err = run(f, s.options(path, nil))
+			opts := s.options(path, nil)
+			opts.MaxSteps = maxSteps
+			guilty, err = run(f, opts)
 			failed = failed || guilty
 		}
 		if exit, ok := errors.AsType[*interp.Exit](err); ok {

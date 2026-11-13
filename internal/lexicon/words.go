@@ -164,6 +164,7 @@ var words = []Word{
 	{"kee’on", "続ける", Command},
 	{"sinruits", "現実", Command},
 	{"KaRaDy", "体", Option},
+	{"LAikIll", "生きる", Option},
 	{"Coa Tain", "法廷", Command},
 	{"beAukShi", "美しい", Command},
 	{"hA-k", "話す", Command},

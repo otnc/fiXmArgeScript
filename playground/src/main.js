@@ -9,6 +9,10 @@ import { fxmaLanguage } from "./language.js";
 
 const mainFile = "main.fxma";
 
+// 止まらないプログラムを書くとタブごと固まるので、文と繰り返しの数に上限を付ける。
+// 空の繰り返しなら1秒足らず、関数を呼び続けるものでも10秒ほどで届く数
+const maxSteps = 5_000_000;
+
 // 開いているファイル。main.fxma は消せない。ほかのファイルは werer でも :memoid でも読める
 const files = new Map([[mainFile, sample]]);
 let current = mainFile;
@@ -126,7 +130,7 @@ runButton.addEventListener("click", () =>
   busy(async () => {
     files.set(current, view.state.doc.toString());
     const others = Object.fromEntries([...files].filter(([name]) => name !== mainFile));
-    const r = await run(files.get(mainFile), { stdin: stdin.value, files: others });
+    const r = await run(files.get(mainFile), { stdin: stdin.value, files: others, maxSteps });
     show(r.stdout, r.stderr, `shid ${r.exitCode}`);
     // :memoid で書いたファイルもタブに出す
     for (const [name, content] of Object.entries(r.files)) files.set(name, content);

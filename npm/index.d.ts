@@ -5,6 +5,8 @@ export interface RunOptions {
   files?: Record<string, string>;
   /** dv no "conwa" になるコマンドライン引数。 */
   args?: string[];
+  /** 実行できる文と繰り返しの数の上限 (fixmarge keeon --laikill)。超えると Bavellabion。省くか 0 なら上限なし。 */
+  maxSteps?: number;
 }
 
 export interface RunResult {

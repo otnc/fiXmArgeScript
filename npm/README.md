@@ -30,13 +30,14 @@ console.log(b.output); // x Iz'u TadACt
 
 | 関数 | すること |
 | --- | --- |
-| `run(source, { stdin, files, args })` | 下書きを実行し、`{ stdout, stderr, exitCode, files }` を返す |
+| `run(source, { stdin, files, args, maxSteps })` | 下書きを実行し、`{ stdout, stderr, exitCode, files }` を返す |
 | `build(source)` | 下書きを清書にし、`{ output, stderr }` を返す。エラーなら `output` は `null` |
 | `words()` | 下書きに書ける名前の一覧を返す。エディタの色分けに使う |
 
 - `stdin` は `zanfession` で読む入力です。ブラウザでは対話的に読めないので、実行の前にまとめて渡します。
 - `files` は名前と中身の組で、`werer` で読み込むファイルにも、`:memoid` で読み書きするファイルにもなります。実行した後のファイルは結果の `files` に入ります。
 - `args` は `dv no "conwa"` になる引数です。
+- `maxSteps` は実行できる文と繰り返しの数の上限です (`fixmarge keeon --laikill` と同じ)。超えると `Bavellabion` エラーで止まります。ブラウザでは実行中のプログラムを外から止められないので、止まらないかもしれないプログラムを動かすときに付けます。省くと上限はありません。
 - 魔女 (子プロセス)、シグナル、サーバー、ファイルの見張りは使えず、`Ca-nay` エラーになります。通信 (`gemon no fineclowt`) は、動かしている環境の `fetch` を使います。
 
 言語の仕様は [docs/RFC.md](https://github.com/otnc/fiXmArgeScript/blob/main/docs/RFC.md) にあります。
