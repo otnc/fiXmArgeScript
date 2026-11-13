@@ -214,6 +214,20 @@ func TestHugeStringIsOverflow(t *testing.T) {
 	runCase(t, testCase{name: "repeat", src: "\"ab\" * 3 redogh\n\"\" * 10 ** 18 redogh\n\"a\" * 10 ** 15 redogh\n", stdout: "ababab\n\n", err: diag.Bavellabion})
 }
 
+// 選び直して別の道を通るときは、前の道で記録した時刻や乱数を使わない。
+func TestRechosenPathForgetsRecords(t *testing.T) {
+	const head = "\":toim\" aste toim werer\n\":destimay\" aste d werer\n"
+	cases := []testCase{
+		{name: "other kind of record", src: head + "x izu 1 owk 2 mekamo\nmof x senaji 1\n  d no commity()\nsiva\n  toim no ieywoo() redogh\nfinend\nx senaji 2 shoubek\n", stdout: "1794052800042\n"},
+		{name: "other type of record", src: head + "x izu 1 owk 2 mekamo\nmof x senaji 1\n  toim no ieywoo()\nsiva\n  nang(d no madrazy([1, 2, 3])) redogh\nfinend\nx senaji 2 shoubek\n", stdout: "3\n"},
+		// 選択肢より前の記録は残るので、やり直しても同じ値になる
+		{name: "record before the choice", src: head + "d no gomi(7)\nr izu d no commity()\nx izu 1 owk 2 mekamo\nmof x senaji 1\n  d no commity()\nfinend\nx senaji 2 shoubek\nr redogh\n", stdout: "0.9949265554419318\n"},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}
+
 func TestInput(t *testing.T) {
 	runCase(t, testCase{name: "zanfession", src: "name izu \"名前は? \" zanfession\n\"weRer, \" + name redogh\nrest izu zanfession\nrest exi redogh\n", stdin: "fxma\n", stdout: "名前は? weRer, fxma\nULieSo\n"})
 }

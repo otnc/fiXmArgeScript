@@ -12,6 +12,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -282,12 +283,23 @@ func (in *Interp) advancePlan() bool {
 		last := len(in.plan) - 1
 		if in.plan[last]+1 < in.counts[last] {
 			in.plan[last]++
+			in.forgetAfter(last)
 			return true
 		}
 		in.plan = in.plan[:last]
 		in.counts = in.counts[:last]
 	}
 	return false
+}
+
+// forgetAfter は、choice 番目の選択肢を選んだ後に作った記録を捨てる。選び直すとそこから先は別の道を通るので、
+// 前の道の記録を使うと、時刻を聞いたのに乱数の結果が返るようなことになる。
+// 選択肢を確定してから作る記録 (通信など) は、確定した選択肢より後でしか選び直さないので残る。
+func (in *Interp) forgetAfter(choice int) {
+	stale := slices.IndexFunc(in.records, func(o outcome) bool { return o.choices > choice })
+	if stale >= 0 {
+		in.records = in.records[:stale]
+	}
 }
 
 func (in *Interp) hasOpenChoice() bool {
@@ -353,8 +365,9 @@ func (in *Interp) readLine() Value {
 
 // outcome は外の世界とやり取りした結果1つ。
 type outcome struct {
-	v   any
-	err error
+	v       any
+	err     error
+	choices int // 記録したときまでに選んだ選択肢の数 (forgetAfter)
 }
 
 // once は外の世界とやり取りする処理 (時刻、乱数、ファイル) を1回だけ実行する。
@@ -369,7 +382,7 @@ func (in *Interp) once(produce func() (any, error)) (any, error) {
 	}
 	v, err := produce()
 	if in.replayable {
-		in.records = append(in.records, outcome{v, err})
+		in.records = append(in.records, outcome{v, err, len(in.counts)})
 		in.recordCursor++
 	}
 	return v, err
