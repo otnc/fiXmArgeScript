@@ -46,7 +46,7 @@ func (s streams) lintFile(path string) bool {
 		fmt.Fprintln(s.stderr, readError(err))
 		return false
 	}
-	f, err := runner.Prepare(string(src), path)
+	f, err := runner.Prepare(string(src), path, os.ReadFile)
 	if err != nil {
 		fmt.Fprintln(s.stderr, err)
 		return false

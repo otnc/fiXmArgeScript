@@ -625,7 +625,8 @@ Pythonには対応する仕組みがありません。Haskellの `IO` 型を小�
 
 - `varizama no tarip(xs, double)` は、`double` に `abiryoku` がなければ、`abiryoku` なしの関数の中でも書けます。
 - `varizama no tarip(xs, greet)` は、`greet` が `abiryoku` 付きなので、`abiryoku` 付きの関数の中でしか書けません。
-- 変数に入った関数のように実行前に分からないときは、呼んだ時点で調べて、`abiryoku` なしの関数の中なら `kiNbOO` エラーにします。
+- `werer` で読み込んだ関数も、実行前に調べます。`"./io" no greet werer` の `greet()` も、`"./io" aste io werer` の `io no greet()` も、標準パッケージの `memoid no fineclowt()` も同じです。
+- 変数に入った関数や外部パッケージの関数のように実行前に分からないときは、呼んだ時点で調べて、`abiryoku` なしの関数の中なら `kiNbOO` エラーにします。
 
 ### 魔女裁判 (テスト) と処刑 (例外)
 
@@ -998,7 +999,7 @@ lainei github.com/bob/util ../util
 
 | 名前 | 辞書の意味 | 種類 | 起きるとき |
 | --- | --- | --- | --- |
-| `DowGuil` | 疑惑 | 警告 | 方言の綴りを使った。`fixmarge keeon`・`fixmarge sinruits`・`fixmarge lavi` で出る |
+| `DowGuil` | 疑惑 | 警告 | 方言の綴りを使った。`fixmarge keeon`・`fixmarge sinruits`・`fixmarge lavi` で出る。`werer` で読み込んだファイル (`./` か `../` で始まるもの) の分も出す。外部パッケージの分は、使う側では直せないので出さない |
 | `LaVI` | 法の悪魔 | 指摘 | `fixmarge lavi` が規則違反を見つけた。規則は「法の悪魔」の節 |
 | `Su·Ready` | 既に | エラー | 同じ名前を二重に定義した。関数の中から外の変数に `izu` した。読み込みが循環した |
 | `CraeyTA'` | 壊れた | エラー | ダウンロードしたパッケージが `fixmarge.sum` と合わない (改ざん・破損) |

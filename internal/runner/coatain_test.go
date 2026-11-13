@@ -24,7 +24,7 @@ func TestRunTests(t *testing.T) {
 	}
 	for _, c := range cases {
 		var stdout strings.Builder
-		failed, err := RunTests(c.src, "x_coatain.fxma", interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stdout})
+		failed, err := RunTests(c.src, "x_coatain.fxma", nil, interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stdout})
 		if err != nil || failed != c.failed || stdout.String() != c.stdout {
 			t.Errorf("%s: failed %v err %v\n got %q\nwant %q", c.name, failed, err, stdout.String(), c.stdout)
 		}
@@ -47,7 +47,7 @@ func TestRunBenches(t *testing.T) {
 	result := regexp.MustCompile(`: \d+ [\d.]+ns\n`)
 	for _, c := range cases {
 		var stdout strings.Builder
-		failed, err := RunBenches(c.src, "x_coatain.fxma", interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stdout, BenchTime: time.Millisecond})
+		failed, err := RunBenches(c.src, "x_coatain.fxma", nil, interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stdout, BenchTime: time.Millisecond})
 		got := result.ReplaceAllString(stdout.String(), ": N T\n")
 		if err != nil || failed != c.failed || got != c.stdout {
 			t.Errorf("%s: failed %v err %v\n got %q\nwant %q", c.name, failed, err, stdout.String(), c.stdout)
@@ -58,7 +58,7 @@ func TestRunBenches(t *testing.T) {
 // coatain は persemon を動かさない。
 func TestRunTestsSkipsBenches(t *testing.T) {
 	var stdout strings.Builder
-	_, err := RunTests("persemon \"a\"\n  \"bench\" redogh\nfinend\n", "x_coatain.fxma", interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stdout})
+	_, err := RunTests("persemon \"a\"\n  \"bench\" redogh\nfinend\n", "x_coatain.fxma", nil, interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stdout})
 	if err != nil || stdout.String() != "" {
 		t.Errorf("err %v stdout %q", err, stdout.String())
 	}

@@ -1,9 +1,12 @@
 package runner
 
 import (
+	"io/fs"
+	"strings"
 	"testing"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
+	"github.com/otnc/fiXmArgeScript/internal/interp"
 )
 
 const utilSrc = "oqun weho double(n)\n  n * 2 itswa\nfinend\nweho secret()\n  1 itswa\nfinend\noqun showence limit izu 15\n"
@@ -99,5 +102,42 @@ func TestStdIzanavited(t *testing.T) {
 	}
 	for _, c := range cases {
 		runCase(t, c)
+	}
+}
+
+// 読み込んだ関数や標準パッケージの関数の abiryoku の付け忘れは、呼ばなくても実行前に見つかる。
+func TestImportedAbiryokuIsCheckedBeforeRun(t *testing.T) {
+	io := map[string]string{"io.fxma": "oqun abiryoku weho hello()\n  \"hi\" redogh\nfinend\noqun weho pure()\n  1 itswa\nfinend\n"}
+	const started = "\"started\" redogh\n"
+	cases := []testCase{
+		{name: "member", src: "\"./io\" aste io werer\n" + started + "weho f()\n  io no hello()\nfinend\n", files: io, err: diag.KiNbOO},
+		{name: "name", src: "\"./io\" no hello werer\n" + started + "weho f()\n  hello()\nfinend\n", files: io, err: diag.KiNbOO},
+		{name: "renamed", src: "\"./io\" no hello aste hi werer\n" + started + "weho f()\n  hi()\nfinend\n", files: io, err: diag.KiNbOO},
+		{name: "passed as argument", src: "\"./io\" aste io werer\n" + started + "weho apply(g)\n  g()\nfinend\nweho f()\n  apply(io no hello)\nfinend\n", files: io, err: diag.KiNbOO},
+		{name: "std", src: "\":memoid\" aste memoid werer\n" + started + "weho f()\n  memoid no fineclowt(\"a.txt\")\nfinend\n", err: diag.KiNbOO},
+		{name: "plain member is fine", src: "\"./io\" aste io werer\nweho f()\n  io no pure() itswa\nfinend\nf() redogh\n", files: io, stdout: "1\n"},
+		{name: "in abiryoku function is fine", src: "\"./io\" aste io werer\nabiryoku weho f()\n  io no hello()\nfinend\nf()\n", files: io, stdout: "hi\n"},
+		{name: "parameter hides the module", src: "\"./io\" aste io werer\nweho f(io)\n  io no \"hello\" itswa\nfinend\nf({\"hello\": 2}) redogh\n", files: io, stdout: "2\n"},
+	}
+	for _, c := range cases {
+		runCase(t, c)
+	}
+}
+
+// 読み込んだファイルの方言の警告も、実行するファイルと同じく1回だけ出す。
+func TestImportedDialectWarning(t *testing.T) {
+	files := map[string]string{"util.fxma": "oqun showence lowhel izu 1\n"}
+	readFile := func(name string) ([]byte, error) {
+		src, ok := files[name]
+		if !ok {
+			return nil, fs.ErrNotExist
+		}
+		return []byte(src), nil
+	}
+	var stdout, stderr strings.Builder
+	src := "\"./util\" aste util werer\nx izu 1 owk 2 mekamo\nx senaji 2 shoubek\nx redogh\n"
+	_, err := Run(src, "main.fxma", readFile, interp.Options{Stdin: strings.NewReader(""), Stdout: &stdout, Stderr: &stderr})
+	if err != nil || stdout.String() != "2\n" || stderr.String() != "DowGuil lowhel → LowhEll\n" {
+		t.Errorf("err %v stdout %q stderr %q", err, stdout.String(), stderr.String())
 	}
 }

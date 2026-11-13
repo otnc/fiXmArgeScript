@@ -3,6 +3,7 @@
 package check
 
 import (
+	"cmp"
 	"slices"
 	"strings"
 
@@ -16,10 +17,28 @@ func IsTestFile(name string) bool {
 	return strings.HasSuffix(name, "_coatain.fxma") || strings.HasSuffix(name, "_coatain.fxmac")
 }
 
+// Modules は werer の読み込み先 path が公開している関数のうち、abiryoku 付きのものの名前を返す。分からなければ nil。
+type Modules func(path string) map[string]bool
+
+// AbiryokuExports は f が oqun で公開している abiryoku 付きの関数の名前を返す (Modules の返す形)。
+func AbiryokuExports(f *parser.File) map[string]bool {
+	out := map[string]bool{}
+	for _, s := range f.Stmts {
+		if d, ok := s.(*ast.FuncDecl); ok && d.Export && d.Fn.Abiryoku {
+			out[d.Fn.Name] = true
+		}
+	}
+	return out
+}
+
 // File はファイル1つを検査し、最初に見つけたエラーを返す。
-func File(f *parser.File) error {
-	c := &checker{file: f.Name, abiryokuFuncs: map[string]bool{}, testFile: IsTestFile(f.Name)}
+// modules があれば、読み込んだ abiryoku 付きの関数の付け忘れも実行前に見つける。nil なら実行したときに見つかる。
+func File(f *parser.File, modules Modules) error {
+	c := &checker{file: f.Name, abiryokuFuncs: map[string]bool{}, abiryokuMembers: map[string]map[string]bool{}, testFile: IsTestFile(f.Name)}
 	collectAbiryoku(f.Stmts, c.abiryokuFuncs)
+	if modules != nil {
+		c.collectImported(f.Stmts, modules)
+	}
 	c.pushScope()
 	c.stmts(f.Stmts, context{abiryoku: true})
 	return c.err
@@ -35,8 +54,39 @@ type checker struct {
 	file          string
 	testFile      bool
 	abiryokuFuncs map[string]bool
-	scopes        []map[string]bool // 名前 → showence か
-	err           error
+	// abiryokuMembers は aste で名前を付けて読み込んだモジュール → その中の abiryoku 付きの関数
+	abiryokuMembers map[string]map[string]bool
+	scopes          []map[string]bool // 名前 → showence か
+	err             error
+}
+
+// collectImported は一番外側の werer で読み込んだ abiryoku 付きの関数を集める。
+func (c *checker) collectImported(stmts []ast.Stmt, modules Modules) {
+	for _, s := range stmts {
+		imp, ok := s.(*ast.Import)
+		if !ok {
+			continue
+		}
+		funcs := modules(imp.Path)
+		if imp.Alias != "" && funcs != nil {
+			c.abiryokuMembers[imp.Alias] = funcs
+		}
+		for _, n := range imp.Names {
+			if funcs[n.Name] {
+				c.abiryokuFuncs[cmp.Or(n.Alias, n.Name)] = true
+			}
+		}
+	}
+}
+
+// shadowed は、一番外側より内側のブロックで同じ名前を作っているかを返す。
+func (c *checker) shadowed(name string) bool {
+	for _, scope := range c.scopes[1:] {
+		if _, ok := scope[name]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 // collectAbiryoku は weho で定義した abiryoku 付きの関数の名前を集める。巻き上げがあるので先に全部集める。
@@ -167,10 +217,21 @@ func (c *checker) funcLit(fn *ast.FuncLit) {
 	c.popScope()
 }
 
-// isAbiryokuName は、名前が abiryoku 付きの関数を指していると実行前に分かるかを返す。
-func (c *checker) isAbiryokuName(x ast.Expr, ctx context) bool {
-	id, ok := x.(*ast.Ident)
-	return ok && !ctx.params[id.Name] && c.abiryokuFuncs[id.Name]
+// abiryokuName は、x が abiryoku 付きの関数を指していると実行前に分かるなら、その名前を返す。
+// 名前そのもの (greet) と、読み込んだモジュールの中の名前 (io no greet) を見る。
+func (c *checker) abiryokuName(x ast.Expr, ctx context) (string, bool) {
+	switch x := x.(type) {
+	case *ast.Ident:
+		return x.Name, !ctx.params[x.Name] && c.abiryokuFuncs[x.Name]
+	case *ast.Index:
+		mod, ok := x.X.(*ast.Ident)
+		key, isName := x.Key.(*ast.Ident)
+		if !ok || !isName || ctx.params[mod.Name] || c.shadowed(mod.Name) {
+			return "", false
+		}
+		return key.Name, c.abiryokuMembers[mod.Name][key.Name]
+	}
+	return "", false
 }
 
 func (c *checker) expr(x ast.Expr, ctx context) {
@@ -180,12 +241,12 @@ func (c *checker) expr(x ast.Expr, ctx context) {
 	switch x := x.(type) {
 	case *ast.Call:
 		if !ctx.abiryoku {
-			if c.isAbiryokuName(x.Fn, ctx) {
-				c.fail(diag.KiNbOO, x, x.Fn.(*ast.Ident).Name)
+			if name, ok := c.abiryokuName(x.Fn, ctx); ok {
+				c.fail(diag.KiNbOO, x, name)
 			}
 			for _, a := range x.Args {
-				if c.isAbiryokuName(a, ctx) {
-					c.fail(diag.KiNbOO, a, a.(*ast.Ident).Name)
+				if name, ok := c.abiryokuName(a, ctx); ok {
+					c.fail(diag.KiNbOO, a, name)
 				}
 			}
 		}

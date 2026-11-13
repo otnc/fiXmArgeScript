@@ -134,13 +134,14 @@ func embeddedBundle() *karady.Bundle {
 // runBundle は実行ファイルにまとめたプログラムを実行する。引数はオプションも含めてすべてプログラムに渡す。
 func (s streams) runBundle(b *karady.Bundle, args []string) int {
 	opts := s.options("", args)
-	opts.Load = runner.Loader(func(name string) ([]byte, error) {
+	readFile := func(name string) ([]byte, error) {
 		src, ok := b.Files[name]
 		if !ok {
 			return nil, os.ErrNotExist
 		}
 		return []byte(src), nil
-	})
+	}
+	opts.Load = runner.Loader(readFile)
 	opts.External = func(path string) (string, error) {
 		name, ok := b.External[path]
 		if !ok {
@@ -148,7 +149,7 @@ func (s streams) runBundle(b *karady.Bundle, args []string) int {
 		}
 		return name, nil
 	}
-	f, err := runner.Prepare(b.Files[b.Main], b.Main)
+	f, err := runner.Prepare(b.Files[b.Main], b.Main, readFile)
 	if err == nil {
 		err = interp.Run(f, opts)
 	}

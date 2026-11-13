@@ -143,10 +143,9 @@ func TestGetLatestAndRun(t *testing.T) {
 	reloaded, err := Load(m.Dir, w.fetcher())
 	require.NoError(t, err)
 	var out bytes.Buffer
-	_, err = runner.Run(mustRead(t, filepath.Join(m.Dir, "main.fxma")), filepath.ToSlash(filepath.Join(m.Dir, "main.fxma")), interp.Options{
-		Stdout: &out, Load: runner.Loader(func(name string) ([]byte, error) { return os.ReadFile(filepath.FromSlash(name)) }),
-		External: reloaded.Resolve,
-	})
+	_, err = runner.Run(mustRead(t, filepath.Join(m.Dir, "main.fxma")), filepath.ToSlash(filepath.Join(m.Dir, "main.fxma")),
+		func(name string) ([]byte, error) { return os.ReadFile(filepath.FromSlash(name)) },
+		interp.Options{Stdout: &out, External: reloaded.Resolve})
 	require.NoError(t, err)
 	require.Equal(t, "hi!!\n", out.String())
 }

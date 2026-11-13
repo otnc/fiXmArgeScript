@@ -55,8 +55,8 @@ func runCase(t *testing.T, c testCase) {
 			t.Fatal(err)
 		}
 	}
-	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, Load: Loader(readFile), WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Serve: c.serve, Watch: c.watch, Now: fixedNow, Location: tokyo}
-	_, err := Run(c.src, "main.fxma", opts)
+	opts := interp.Options{Stdin: strings.NewReader(c.stdin), Stdout: &stdout, Stderr: &stderr, WorkDir: "/work", FS: fsys, Process: c.proc, HTTPClient: c.client, Serve: c.serve, Watch: c.watch, Now: fixedNow, Location: tokyo}
+	_, err := Run(c.src, "main.fxma", readFile, opts)
 	de, isDiag := errors.AsType[*diag.Error](err)
 	exit, exited := errors.AsType[*interp.Exit](err)
 	switch {

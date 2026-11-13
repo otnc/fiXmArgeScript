@@ -31,7 +31,7 @@ func NewHak(opts interp.Options) *Hak {
 // 入力が途中で終わっていたら *lexer.Unfinished を返して何もしないので、続きの行をつなげてもう一度渡すか、Drop で捨てる。
 // 返す警告は、この入力の中のものだけ。
 func (h *Hak) Feed(text string) ([]diag.Warning, error) {
-	f, err := Prepare(h.src+text, HakFile)
+	f, err := Prepare(h.src+text, HakFile, nil)
 	if IsUnfinished(err) {
 		return nil, err
 	}

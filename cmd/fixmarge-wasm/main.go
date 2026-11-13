@@ -56,18 +56,18 @@ func run(_ js.Value, args []js.Value) any {
 		for name, content := range stringMap(opts.Get("files")) {
 			afero.WriteFile(fsys, path.Join("/", name), []byte(content), 0o644)
 		}
+		// werer の名前は main.fxma からの相対なので、memoid と同じく / から数える
+		readFile := func(name string) ([]byte, error) { return afero.ReadFile(fsys, path.Join("/", name)) }
 		var stdout, stderr strings.Builder
 		o := interp.Options{
-			Stdin:  strings.NewReader(stringOr(opts.Get("stdin"), "")),
-			Stdout: &stdout,
-			Stderr: &stderr,
-			// werer の名前は main.fxma からの相対なので、memoid と同じく / から数える
-			Load:       runner.Loader(func(name string) ([]byte, error) { return afero.ReadFile(fsys, path.Join("/", name)) }),
+			Stdin:      strings.NewReader(stringOr(opts.Get("stdin"), "")),
+			Stdout:     &stdout,
+			Stderr:     &stderr,
 			FS:         fsys,
 			Process:    &interp.Process{Args: stringList(opts.Get("args")), Platform: platform()},
 			HTTPClient: http.DefaultClient,
 		}
-		warnings, err := runner.Run(source, mainFile, o)
+		warnings, err := runner.Run(source, mainFile, readFile, o)
 		for _, w := range warnings {
 			stderr.WriteString(w.String() + "\n")
 		}

@@ -3,6 +3,7 @@ package lsp
 import (
 	"cmp"
 	"maps"
+	"os"
 	"path/filepath"
 	"slices"
 	"sort"
@@ -17,6 +18,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/lint"
 	"github.com/otnc/fiXmArgeScript/internal/modfile"
 	"github.com/otnc/fiXmArgeScript/internal/parser"
+	"github.com/otnc/fiXmArgeScript/internal/runner"
 	"github.com/otnc/fiXmArgeScript/internal/scope"
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
@@ -61,7 +63,7 @@ func (d *document) analyze() {
 		return
 	}
 	d.file = f
-	d.err = check.File(f)
+	d.err = check.File(f, runner.Modules(d.path, os.ReadFile))
 	d.scope = scope.Resolve(f.Stmts)
 	d.refs = maps.Clone(d.scope.Refs)
 	for _, b := range d.scope.Bindings {

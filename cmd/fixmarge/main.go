@@ -173,7 +173,7 @@ func (s streams) prepare(path string) (*parser.File, error) {
 	if err != nil {
 		return nil, readError(err)
 	}
-	f, err := runner.Prepare(string(src), path)
+	f, err := runner.Prepare(string(src), path, os.ReadFile)
 	if f != nil {
 		s.printWarnings(f.Warnings)
 	}

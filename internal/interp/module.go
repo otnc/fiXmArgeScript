@@ -2,6 +2,7 @@ package interp
 
 import (
 	"errors"
+	"io"
 	"io/fs"
 	"strings"
 
@@ -92,7 +93,7 @@ func (in *Interp) loadModule(path string, pos token.Pos) (*Module, error) {
 	if in.loading[name] {
 		return nil, in.errorf(diag.SuReady, pos, path)
 	}
-	f, err := in.parseModule(name)
+	f, err := in.parseModule(name, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, in.errorf(diag.NiiExi, pos, path)
 	}
@@ -150,7 +151,7 @@ func (in *Interp) mayChoose(f *parser.File, seen map[string]bool) bool {
 			continue
 		}
 		seen[name] = true
-		m, err := in.parseModule(name)
+		m, err := in.parseModule(name, path)
 		if err != nil || in.mayChoose(m, seen) {
 			return true
 		}
@@ -172,8 +173,9 @@ func (in *Interp) loadStd(path, pkg string, pos token.Pos) (*Module, error) {
 	return m, nil
 }
 
-// parseModule はファイルを読む。やり直しのたびに読み直さないよう、構文木は覚えておく。
-func (in *Interp) parseModule(name string) (*parser.File, error) {
+// parseModule は読み込み先 path のファイル name を読む。やり直しのたびに読み直さないよう、構文木は覚えておく。
+// 方言の警告は、実行するファイルと同じく初めて読んだときに出す。外部パッケージの綴りは使う側では直せないので出さない。
+func (in *Interp) parseModule(name, path string) (*parser.File, error) {
 	if f, ok := in.parsed[name]; ok {
 		return f, nil
 	}
@@ -185,6 +187,11 @@ func (in *Interp) parseModule(name string) (*parser.File, error) {
 		return nil, err
 	}
 	in.parsed[name] = f
+	if !modpath.External(path) && in.opts.Stderr != nil {
+		for _, w := range f.Warnings {
+			io.WriteString(in.opts.Stderr, w.String()+"\n")
+		}
+	}
 	return f, nil
 }
 
