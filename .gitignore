@@ -7,6 +7,11 @@ CLAUDE.local.md
 .claude/
 /THIRD_PARTY_LICENSES
 /dist/
+node_modules/
+
+# トークンを書くので入れない。ひな形は .env.example
+.env
+.env.bak.*
 
 # Vim のヘルプの索引は、プラグインを入れたときに作られる
 /doc/tags
