@@ -97,6 +97,8 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
       - run: node npm/build.mjs
+      # fixmarge.wasm と wasm_exec.js には Go のコードが入るので、その著作権表示も一緒に出す
+      - run: sh scripts/build/third-party-licenses.sh && mv THIRD_PARTY_LICENSES npm/
       - run: sh scripts/release/npm.sh
 
   # Inno Setup は Windows でしか動かないので、Releases の Windows 向けの zip からセットアップを作って足す
