@@ -1,8 +1,21 @@
 name: deploy
 
-# プレイグラウンドを Cloudflare Workers (https://fixmargescript.oto.im/) に置く。公開するまでは手で動かすときだけにする
+# プレイグラウンドと install.sh を Cloudflare Workers (https://fixmargescript.oto.im/) に置く。
+# 出すものが変わる push のときだけ動かす (docs だけの変更では出し直さない)。手でも動かせる
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - playground/**
+      - npm/**
+      - installer/public/**
+      - examples/**
+      - cmd/fixmarge-wasm/**
+      - internal/**
+      - go.mod
+      - go.sum
+      - .github/workflows/deploy.yml
 
 permissions:
   contents: read
