@@ -54,9 +54,5 @@
       "\"",
       "\""
     ]
-  ],
-  "indentationRules": {
-    "increaseIndentPattern": "^(?![^#]*(?<![\\w'’~·-])(FineNd)(?![\\w]))(?:\\s*(?<![\\w'’~·-])(yOuLugiVe|En-NOte|FineNd|SiVa)(?![\\w])|[^#]*(?<![\\w'’~·-])(Per·SemOn|Tei-Tance|aZaGara|sent-ky|We-Ho|cUrOi|Mof)(?![\\w]))",
-    "decreaseIndentPattern": "^\\s*(?<![\\w'’~·-])(yOuLugiVe|En-NOte|FineNd|SiVa)(?![\\w])"
-  }
+  ]
 }

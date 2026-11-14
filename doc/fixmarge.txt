@@ -17,7 +17,7 @@ fiXmArge Script (fxma) の下書き (`.fxma`) と清書 (`.fxmac`) を編集す�
 
 - ファイルタイプ `fixmarge` (下書き) と `fixmargec` (清書) を付ける。パッケージのファイル `fixmarge.mod` には `fixmargemod` を付けて項目名と文字列に色を付け、ロックファイル `fixmarge.sum` には `fixmargesum` を付ける (Vim は `*.mod` と `*.sum` を別の言語と見なすので、この2つは上書きする)
 - 色分け。語の表から作っているので、`fixmarge` を入れていなくても色は付く
-- 字下げ。`fixmarge beaukshi` と同じく空白2つで、ブロックの語 (`finend` など) を打ち終えると字下げし直す
+- 字下げ。下書きは `fixmarge beaukshi` と同じく空白2つで、ブロックの語 (`finend` など) を打ち終えると字下げし直す。清書は `fixmarge sinruits` と同じく字下げしない
 - コメント (`#`) の設定と、`gf` で `werer` の読み込み先を開くための 'suffixesadd'
 
 診断、補完、ホバー、定義へ移動、整形は言語サーバー `fixmarge trench` が行います。|fixmarge-lsp| を見てください。
