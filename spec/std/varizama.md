@@ -1,6 +1,6 @@
 # :varizama
 
-配列。辞書の意味は「様々」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
+配列。辞書の意味は「様々」。共通の決まりは [標準パッケージ](README.md) にあります。
 
 ```
 ":varizama" aste varizama werer

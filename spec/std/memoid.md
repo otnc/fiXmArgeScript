@@ -1,6 +1,6 @@
 # :memoid
 
-ファイル。辞書の意味は「記憶、思い出」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
+ファイル。辞書の意味は「記憶、思い出」。共通の決まりは [標準パッケージ](README.md) にあります。
 
 ```
 ":memoid" aste memoid werer

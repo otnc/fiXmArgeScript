@@ -1,6 +1,6 @@
 # :coword
 
-文字列。辞書の意味は「言葉」。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
+文字列。辞書の意味は「言葉」。共通の決まりは [標準パッケージ](README.md) にあります。
 
 ```
 ":coword" aste coword werer
