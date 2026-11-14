@@ -1,4 +1,5 @@
 " 言語サーバー fixmarge trench に自動でつなぐ。止めるときは、このプラグインが読み込まれる前に g:fixmarge_lsp を 0 にする。
+scriptencoding utf-8
 if exists('g:loaded_fixmarge')
   finish
 endif

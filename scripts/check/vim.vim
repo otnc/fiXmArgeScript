@@ -1,6 +1,7 @@
 " Vim のプラグイン (リポジトリの直下) を確かめる。リポジトリの直下で動かす:
 "   FIXMARGE=dist/vimtest/fixmarge vim -u NONE -N -Es -S scripts/check/vim.vim
 " 通れば終了コード 0、落ちれば 1 で、落ちた所を標準出力に書く。
+scriptencoding utf-8
 let s:root = getcwd()
 execute 'set runtimepath^=' . fnameescape(s:root)
 filetype plugin indent on
