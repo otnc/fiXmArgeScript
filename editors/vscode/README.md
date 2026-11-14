@@ -41,9 +41,15 @@
 
 | 設定 | 既定 | 説明 |
 | --- | --- | --- |
-| `fixmarge.path` | `fixmarge` | 言語サーバーとして動かす `fixmarge` の場所。既定では `PATH` から探します |
+| `fixmarge.path` | `fixmarge` | 言語サーバーとして動かす `fixmarge` の場所。名前だけなら、`PATH` とインストール先から探します |
 
-`Nii eXi' fixmarge` と出たら、`fixmarge` が見つかっていません。`fixmarge` を入れるか、`fixmarge.path` に場所を書いてください。
+名前だけのときは、`PATH` で見つからなければ、次のインストール先も探します。インストールする前から開いていた VS Code でも、再起動せずに見つけられます。
+
+- Windows のセットアップ: `%LOCALAPPDATA%\Programs\fixmarge` (全員向けなら `%ProgramFiles%\fixmarge`)
+- install.sh: `~/.fixmarge/bin` (`FIXMARGE_INSTALL` があればその下の `bin`)
+- `go install`: `GOBIN` か `~/go/bin` (`GOPATH` があればその下の `bin`)
+
+`Nii eXi' fixmarge` と出たら、`fixmarge` が見つかっていません。[インストール](https://fixmargescript.oto.im/docs/start/install/)してから VS Code の画面を再読み込みするか、`fixmarge.path` に場所を書いてください。
 
 ## ライセンス
 
