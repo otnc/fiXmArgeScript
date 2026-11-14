@@ -28,8 +28,12 @@ const packages = links(readFileSync(join(root, "spec/std/README.md"), "utf8"))
   .map((p) => posix.join("std", p));
 
 // url は spec/ からのパス (std/meme.md) をサイトの URL にする。サイトに出さないものは GitHub のファイルにする
-const published = new Map();
-for (const p of chapters) published.set(p, p === "std/README.md" ? "/docs/std/" : `/docs/spec/${p.replace(/\.md$/, "")}/`);
+// 仕様書の目次 (README.md) はサイトではドキュメントの入り口が代わりになる
+const published = new Map([
+  ["README.md", "/docs/"],
+  ["std/README.md", "/docs/std/"],
+]);
+for (const p of chapters) published.set(p, `/docs/spec/${p.replace(/\.md$/, "")}/`);
 for (const p of packages) published.set(p, `/docs/${p.replace(/\.md$/, "")}/`);
 
 function url(specPath, hash) {
@@ -37,7 +41,7 @@ function url(specPath, hash) {
   return page ? page + hash : `${repo}/${posix.normalize(posix.join("spec", specPath))}${hash}`;
 }
 
-function convert(specPath, order) {
+function convert(specPath, sidebar) {
   const source = readFileSync(join(root, "spec", specPath), "utf8");
   const [, title, body] = /^# (.+)\n([\s\S]*)$/.exec(source) ?? [];
   if (!title) throw new Error(`spec/${specPath} の1行目に「# 題」がありません`);
@@ -56,7 +60,7 @@ function convert(specPath, order) {
     "---",
     `title: ${JSON.stringify(title)}`,
     `editUrl: ${JSON.stringify(`https://github.com/otnc/fiXmArgeScript/edit/main/spec/${specPath}`)}`,
-    `sidebar: { order: ${order} }`,
+    `sidebar: ${JSON.stringify(sidebar)}`,
     "---",
     "",
   ].join("\n");
@@ -68,5 +72,7 @@ function convert(specPath, order) {
 
 rmSync(join(out, "spec"), { recursive: true, force: true });
 rmSync(join(out, "std"), { recursive: true, force: true });
-chapters.forEach((p, i) => convert(p, i));
-packages.forEach((p, i) => convert(p, i + 1));
+chapters.forEach((p, i) => convert(p, { order: i + 1 }));
+// 標準パッケージの目次はグループの先頭に置く。題のままだとグループ名と同じになるので「概要」と出す
+convert("std/README.md", { order: 0, label: "概要" });
+packages.forEach((p, i) => convert(p, { order: i + 1 }));

@@ -1,6 +1,6 @@
 # fiXmArge Script 仕様書
 
-fiXmArge Script (fxma) の仕様です。章ごとにファイルを分けています。「言語」の章はサイトのドキュメント (https://fixmargescript.oto.im/docs/) にもこの並びで載ります。
+fiXmArge Script (fxma) の仕様です。章ごとにファイルを分けています。「言語」と「標準パッケージ」の章は、サイトのドキュメント (https://fixmargescript.oto.im/docs/) にもこの並びで載ります。
 
 ## 言語
 
@@ -12,12 +12,15 @@ fiXmArge Script (fxma) の仕様です。章ごとにファイルを分けてい
 - [非同期処理](async.md)
 - [マクロ](macros.md)
 - [パッケージとモジュール](packages.md)
-- [標準パッケージ](std/README.md)
 - [エラー](errors.md)
 - [コマンド](commands.md)
 - [深さと大きさの上限](limits.md)
 - [二次創作ガイドラインと法的な対応](guidelines.md)
 - [出典](sources.md)
+
+## 標準パッケージ
+
+- [標準パッケージ](std/README.md) (パッケージごとのページは、そこの一覧から読めます)
 
 ## 開発
 
