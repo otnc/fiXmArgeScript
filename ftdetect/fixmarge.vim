@@ -1,3 +1,5 @@
+" ftdetect のファイルは Vim が filetypedetect のグループの中で読むので、グループを付けない。
+" vint: -ProhibitAutocmdWithNoGroup
 " 下書きと清書は語の書き方が違うので、別のファイルタイプにする (VS Code 拡張と同じ)。
 autocmd BufRead,BufNewFile *.fxma setfiletype fixmarge
 autocmd BufRead,BufNewFile *.fxmac setfiletype fixmargec
