@@ -8,7 +8,7 @@ require (
 	github.com/github/go-spdx/v2 v2.8.0
 	github.com/go-git/go-billy/v5 v5.9.2
 	github.com/go-git/go-git/v5 v5.19.3
-	github.com/mattn/go-colorable v0.1.14
+	github.com/mattn/go-colorable v0.1.16
 	github.com/nyaosorg/go-readline-ny v1.16.2
 	github.com/nyaosorg/go-ttyadapter v0.7.0
 	github.com/spf13/afero v1.15.0
