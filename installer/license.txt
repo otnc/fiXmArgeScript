@@ -11,6 +11,6 @@ https://manosaba.com/guidelines
 
 ライセンス
 
-コードは MIT と Apache-2.0 のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。全文は、インストールした場所の LICENSE-MIT と LICENSE-APACHE にあります。実行ファイルに含まれる他者のコードのライセンスは THIRD_PARTY_LICENSES にあります。
+コードのライセンスは MIT と Apache-2.0 のデュアルライセンス (MIT OR Apache-2.0) で、使う人がどちらかを選べます。このライセンスで許諾するのはこのリポジトリのコードだけで、「魔法少女ノ魔女裁判」の権利は含みません。全文は、インストールした場所の LICENSE-MIT と LICENSE-APACHE にあります。実行ファイルに含まれる他者のコードのライセンスは THIRD_PARTY_LICENSES にあります。
 
 https://github.com/otnc/fiXmArgeScript

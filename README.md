@@ -63,7 +63,7 @@ Vim と Neovim では、このリポジトリをそのままプラグインと�
 
 ## ライセンス
 
-コードは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。
+コードのライセンスは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のデュアルライセンス (`MIT OR Apache-2.0`) で、使う人がどちらかを選べます。このライセンスで許諾するのはこのリポジトリのコードだけで、「魔法少女ノ魔女裁判」の権利は含みません。
 
 ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。
 
