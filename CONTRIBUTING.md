@@ -55,11 +55,13 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `installer/` | Windows のセットアップと `install.sh` |
 | `assets/` | ロゴとアイコンを描くスクリプト |
 | `examples/` | サンプル |
-| `scripts/` | CI とリリースの手順 (GitHub Actions の workflow から呼ぶ) |
+| `scripts/build/` | 配るものを作る手順 (Windows 向けの exe、THIRD_PARTY_LICENSES) |
+| `scripts/check/` | CI で確かめる手順 (セットアップを入れて消す、ファイル バージョン) |
+| `scripts/release/` | リリースの手順 (次の版を決める、npm・セットアップ・VS Code 拡張を出す) |
 
 VS Code 拡張だけは workspace に入れず、npm で扱います。VSIX を作る vsce が pnpm の `node_modules` を読めないのと、拡張の名前が npm のパッケージと同じ `fixmarge` でぶつかるためです。`pnpm build:vscode` から呼べます。
 
-workflow (`.github/workflows/`) には、1行で書ける手順だけを書きます。何行もある手順は `scripts/` にファイルとして置き (Linux では `.sh`、Windows では `.ps1`)、workflow からはそれを呼びます。
+workflow (`.github/workflows/`) には、1行で書ける手順だけを書きます。何行もある手順は `scripts/` の用途のフォルダ (`build/`・`check/`・`release/`) にファイルとして置き (Linux では `.sh`、Windows では `.ps1`)、workflow からはそれを呼びます。
 
 エディタの色分けのファイル (`editors/vscode/syntaxes/`、`syntax/` など) は語の表から作っています。手で書き換えず、`pnpm update:grammar` で作り直します。ずれていると `pnpm test` が落ちます。
 

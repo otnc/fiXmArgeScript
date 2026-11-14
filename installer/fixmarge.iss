@@ -10,7 +10,7 @@
 #endif
 ; Explorer の「ファイル バージョン」(VersionInfoVersion) は数字4つだけなので、プレリリースかどうかを4つ目で表す。
 ; 正式版は最大の 65535 にし、プレリリースは段階×1000+番号にする (alpha.N は 1000+N、beta.N は 2000+N、rc.N は 3000+N)。
-; こうすると 0.2.0-rc.1 (0.2.0.3001) が 0.2.0 (0.2.0.65535) より古く並ぶ。識別子は next-version.sh がこの3つに限っている。
+; こうすると 0.2.0-rc.1 (0.2.0.3001) が 0.2.0 (0.2.0.65535) より古く並ぶ。識別子は scripts/release/next-version.sh がこの3つに限っている。
 ; それ以外 (CI の 0.0.0-ci) は 0。製品バージョンの文字列は AppVersion のまま (-rc.1 付き) になる
 #define BaseVersion AppVersion
 #define Stage "65535"

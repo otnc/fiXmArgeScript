@@ -7,4 +7,4 @@ set -eu
 for arch in amd64 arm64; do
   GOOS=windows GOARCH=$arch go build -trimpath -ldflags="-s -w" -o "dist/windows/$arch/fixmarge.exe" ./cmd/fixmarge
 done
-sh scripts/third-party-licenses.sh
+sh scripts/build/third-party-licenses.sh

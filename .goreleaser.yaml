@@ -5,7 +5,7 @@ before:
   hooks:
     # npm/ に wasm_exec.js を写すため。fixmarge.wasm もできるが、ここでは使わない
     - node npm/build.mjs
-    - sh scripts/third-party-licenses.sh
+    - sh scripts/build/third-party-licenses.sh
 
 builds:
   - id: fixmarge

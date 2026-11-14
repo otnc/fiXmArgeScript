@@ -24,7 +24,7 @@ jobs:
       # サンプルを fixmarge 自身で検査し、テストする
       - run: go run ./cmd/fixmarge lavi examples
       - run: go run ./cmd/fixmarge coatain examples
-      - run: shellcheck installer/public/install.sh scripts/*.sh
+      - run: shellcheck installer/public/install.sh scripts/*/*.sh
       # リリースのときに初めて設定の誤りに気付かないように
       - uses: goreleaser/goreleaser-action@v7
         with:
@@ -61,13 +61,13 @@ jobs:
           go-version-file: go.mod
       - name: Build fixmarge.exe
         shell: bash
-        run: sh scripts/build-windows.sh
+        run: sh scripts/build/windows.sh
       - name: Build setup
         run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci installer\fixmarge.iss'
       - name: Install and uninstall
-        run: ./scripts/check-installer.ps1
+        run: ./scripts/check/installer.ps1
       - name: Check file versions
-        run: ./scripts/check-installer-versions.ps1
+        run: ./scripts/check/installer-versions.ps1
 
   # VS Code 拡張を VSIX にまとめられるか確かめる (文法が語の表と合っているかは go test が見る)
   vscode:

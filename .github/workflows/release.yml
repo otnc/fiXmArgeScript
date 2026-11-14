@@ -46,7 +46,7 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
           PREID: ${{ inputs.preid }}
-        run: sh scripts/next-version.sh >> "$GITHUB_OUTPUT"
+        run: sh scripts/release/next-version.sh >> "$GITHUB_OUTPUT"
 
       - name: Tag
         env:
@@ -83,7 +83,7 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
       - run: node npm/build.mjs
-      - run: sh scripts/release-npm.sh
+      - run: sh scripts/release/npm.sh
 
   # Inno Setup は Windows でしか動かないので、Releases の Windows 向けの zip からセットアップを作って足す
   installer:
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.release.outputs.tag }}
-      - run: ./scripts/release-installer.ps1
+      - run: ./scripts/release/installer.ps1
 
   # VS Code 拡張の VSIX を Releases に足す。checksums.txt を書き換えるので、installer の後に動かす
   vscode:
@@ -113,7 +113,7 @@ jobs:
         with:
           node-version: 24
       - run: npm ci --prefix editors/vscode
-      - run: sh scripts/release-vscode.sh
+      - run: sh scripts/release/vscode.sh
       # Marketplace は 0.2.0-rc.1 のようなプレリリースの版を受け付けないので、正式版だけ出す
       - name: Publish to Marketplace
         if: ${{ !contains(needs.release.outputs.tag, '-') }}
