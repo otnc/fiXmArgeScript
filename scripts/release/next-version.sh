@@ -33,7 +33,24 @@ case "$VERSION" in
       echo "::error::版を直接書くときは preid を空にしてください (0.2.0-rc.0 のように版に書く)" >&2
       exit 1
     fi
-    next=$(semver "$VERSION") || {
+    base=${VERSION#v}
+    case "$base" in
+      # 番号を省いたプレリリース (1.2.0-rc) は、そのタグのいちばん新しい番号の次。なければ 0 から
+      *-alpha | *-beta | *-rc)
+        last=-1
+        # タグは1つずつ別の引数で渡したいので、わざと分割させる (タグ名に空白は入らない)
+        # shellcheck disable=SC2046
+        for tag in $(git tag --list "v$base.*"); do
+          n=${tag#"v$base."}
+          case "$n" in
+            '' | *[!0-9]*) continue ;;
+          esac
+          if [ "$n" -gt "$last" ]; then last=$n; fi
+        done
+        base="$base.$((last + 1))"
+        ;;
+    esac
+    next=$(semver "$base") || {
       echo "::error::版として読めません: $VERSION" >&2
       exit 1
     }

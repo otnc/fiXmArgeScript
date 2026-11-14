@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "次の版：patch・minor・major・prerelease のどれか、または版そのもの (0.2.0、0.2.0-rc.0)。最新の版をそのまま書くと、失敗したリリースのやり直しになる"
+        description: "次の版：patch・minor・major・prerelease のどれか、または版そのもの (0.2.0、0.2.0-rc.0)。0.2.0-rc のように番号を省くと次の番号になる。最新の版をそのまま書くと、失敗したリリースのやり直しになる"
         required: true
         default: patch
       preid:
