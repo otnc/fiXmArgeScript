@@ -121,6 +121,9 @@ async function busy(work) {
   runButton.disabled = buildButton.disabled = true;
   try {
     await work();
+  } catch (error) {
+    // fixmarge.wasm を読み込めなかったときなど。何も出さないと、ボタンを押しても動かないように見える
+    show("", `SaiVI ${error instanceof Error ? error.message : error}\n`);
   } finally {
     runButton.disabled = buildButton.disabled = false;
   }

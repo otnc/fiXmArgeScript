@@ -17,6 +17,10 @@ function load() {
     await ready;
     return globalThis.__fxma;
   })();
+  // 読み込みに失敗した (通信が切れたなど) ときは覚えておかず、次に呼ばれたときに読み込み直す
+  loading.catch(() => {
+    loading = undefined;
+  });
   return loading;
 }
 
