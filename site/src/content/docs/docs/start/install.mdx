@@ -1,0 +1,53 @@
+---
+title: インストール
+description: fixmarge コマンドを Windows・macOS・Linux にインストールする。
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+fiXmArge Script は `fixmarge` コマンド1つで動きます。Go などのランタイムは要りません。
+
+<Tabs syncKey="os">
+  <TabItem label="macOS・Linux">
+
+```sh
+curl -fsSL https://fixmargescript.oto.im/install.sh | sh
+```
+
+`~/.fixmarge/bin` にインストールし、bash・zsh・fish の設定ファイルに `PATH` を追加します。インストール先は環境変数 `FIXMARGE_INSTALL` で変更できます。新しいターミナルを開くと `fixmarge` が使えます。
+
+  </TabItem>
+  <TabItem label="Windows">
+
+[Releases](https://github.com/otnc/fiXmArgeScript/releases) から `fixmarge_<バージョン>_windows_setup.exe` をダウンロードして実行します。
+
+コード署名がないため、初回は「Windows によって PC が保護されました」(SmartScreen) と表示されます。「詳細情報」を押してから「実行」を押してください。既定では現在のユーザーだけにインストールし、`PATH` も追加します。
+
+  </TabItem>
+  <TabItem label="手動">
+
+[Releases](https://github.com/otnc/fiXmArgeScript/releases) から OS に合ったアーカイブをダウンロードして展開し、`fixmarge` (Windows では `fixmarge.exe`) を `PATH` の通ったディレクトリに置きます。
+
+  </TabItem>
+</Tabs>
+
+次のコマンドでバージョンが表示されれば、インストールできています。
+
+```sh
+fixmarge neyar
+```
+
+## エディタ
+
+- **VS Code**: 拡張機能 `otoneko1102.fixmarge` をインストールすると、シンタックスハイライト・診断・補完・フォーマットが使えます。
+- **Neovim・Vim**: リポジトリがそのままプラグインになっています。設定方法は `:help fixmarge` を参照してください。
+
+## WebAssembly 版
+
+Node.js やブラウザから使う場合は、npm パッケージ `fixmarge` をインストールします。
+
+```sh
+npm install fixmarge
+```

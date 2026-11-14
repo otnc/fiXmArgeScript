@@ -1,0 +1,189 @@
+/* 色はサイトの Starlight の変数から取り、明るい画面でも暗い画面でもほかのページと合わせる */
+.playground {
+  --panel: var(--sl-color-bg);
+  --text: var(--sl-color-white);
+  --muted: var(--sl-color-gray-3);
+  --line: var(--sl-color-hairline);
+  --accent: var(--sl-color-accent);
+  --accent-text: var(--sl-color-white);
+  --error: var(--sl-color-red-high);
+  --active-line: var(--sl-color-gray-6);
+  --selection: var(--sl-color-accent-low);
+  --syntax-keyword: var(--sl-color-accent-high);
+  --syntax-error: var(--sl-color-red-high);
+  --syntax-builtin: var(--sl-color-blue-high);
+  --syntax-string: var(--sl-color-green-high);
+  --syntax-number: var(--sl-color-orange-high);
+  --mono: var(--__sl-font-mono);
+
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 12px;
+  /* splash の本文の幅を越えて、画面いっぱいに広げる */
+  width: min(100vw - 2rem, 96rem);
+  margin-inline: calc((min(100vw - 2rem, 96rem) - 100%) / -2);
+  height: calc(100vh - var(--sl-nav-height) - 8rem);
+  min-height: 480px;
+}
+
+.playground section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.playground .toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.playground .tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.playground .tab {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.playground .tab.active {
+  border-color: var(--accent);
+}
+
+.playground .tab button,
+.playground .new-file button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.playground .tab .close {
+  padding-left: 0;
+  color: var(--muted);
+}
+
+.playground .new-file {
+  display: flex;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.playground .new-file input {
+  width: 9em;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 4px 8px;
+}
+
+.playground .editor {
+  flex: 1;
+  min-height: 320px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.playground .editor .cm-editor {
+  height: 100%;
+}
+
+.playground .editor .cm-scroller {
+  font-family: var(--mono);
+}
+
+.playground .actions {
+  display: flex;
+  gap: 8px;
+}
+
+.playground .actions button {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  padding: 6px 16px;
+  border: 1px solid var(--accent);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.playground .actions button.primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.playground .actions button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.playground .pane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.playground .pane > span {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.playground .pane textarea,
+.playground .pane pre {
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.playground .pane textarea {
+  height: 5em;
+  resize: vertical;
+}
+
+.playground .output {
+  flex: 1;
+  min-height: 0;
+}
+
+.playground .output pre {
+  flex: 1;
+  min-height: 8em;
+  overflow: auto;
+}
+
+.playground .stderr {
+  color: var(--error);
+}
+
+.playground .note {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .playground {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+}

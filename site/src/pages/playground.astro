@@ -1,0 +1,48 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import "../playground/style.css";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "プレイグラウンド",
+    description: "fiXmArge Script をブラウザで書いて動かす。",
+    template: "splash",
+    tableOfContents: false,
+    editUrl: false,
+    pagefind: false,
+  }}
+  hasSidebar={false}
+>
+  <div class="playground not-content">
+    <section class="source">
+      <div class="toolbar">
+        <div class="tabs" id="tabs"></div>
+        <form class="new-file" id="new-file">
+          <input id="new-file-name" placeholder="util.fxma" aria-label="ファイル名" />
+          <button type="submit" aria-label="ファイルを足す">+</button>
+        </form>
+      </div>
+      <div class="editor" id="editor"></div>
+    </section>
+    <section class="side">
+      <div class="actions">
+        <button id="run" class="primary" disabled>keeon</button>
+        <button id="build" disabled>sinruits</button>
+      </div>
+      <label class="pane">
+        <span>zanfession</span>
+        <textarea id="stdin" spellcheck="false"></textarea>
+      </label>
+      <div class="pane output">
+        <span>redogh</span>
+        <pre id="output" aria-live="polite"></pre>
+      </div>
+    </section>
+  </div>
+</StarlightPage>
+
+<script>
+  import "../playground/main.js";
+</script>

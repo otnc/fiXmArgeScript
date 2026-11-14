@@ -31,7 +31,7 @@ jobs:
           version: "~> v2"
           args: check
 
-  # WebAssembly 版を作り、npm のパッケージをテストし、プレイグラウンドがビルドできるか確かめる
+  # WebAssembly 版を作り、npm のパッケージをテストし、サイト (紹介・ドキュメント・プレイグラウンド) がビルドできるか確かめる
   wasm:
     runs-on: ubuntu-latest
     steps:
@@ -48,8 +48,8 @@ jobs:
       - run: GOOS=js GOARCH=wasm go vet ./cmd/fixmarge-wasm/
       - run: pnpm test:wasm
       # Cloudflare に送る形まで作り、送らずに確かめる
-      - run: pnpm build:playground
-      - run: pnpm --filter fixmarge-playground exec cf deploy --prebuilt --mode production --dry-run
+      - run: pnpm build:site
+      - run: pnpm --filter fixmarge-site exec wrangler deploy --dry-run
 
   # Windows のセットアップを作り、黙って入れて消し、PATH が足されて戻るか確かめる
   installer:

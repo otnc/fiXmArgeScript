@@ -1,0 +1,10 @@
+// サイト全体 (紹介、/docs/、/playground、/install.sh、/pkg/*) を1つの Worker で https://fixmargescript.oto.im/ に出す
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "fixmargescript",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-11-04",
+  "assets": { "directory": "./dist", "binding": "ASSETS" },
+  "routes": [{ "pattern": "fixmargescript.oto.im", "custom_domain": true }],
+  "observability": { "enabled": true }
+}

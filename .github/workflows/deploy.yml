@@ -1,13 +1,15 @@
 name: deploy
 
-# プレイグラウンドと install.sh を Cloudflare Workers (https://fixmargescript.oto.im/) に置く。
+# サイト (紹介・ドキュメント・プレイグラウンド) と install.sh を Cloudflare Workers (https://fixmargescript.oto.im/) に置く。
 # 出すものが変わる push のときだけ動かす (仕様や README だけの変更では出し直さない)。手でも動かせる
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - playground/**
+      - site/**
+      - assets/**
+      - editors/vscode/syntaxes/**
       - npm/**
       - installer/public/**
       - examples/**
@@ -38,8 +40,8 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build:playground
-      - run: pnpm --filter fixmarge-playground exec cf deploy --prebuilt --mode production
+      - run: pnpm build:site
+      - run: pnpm --filter fixmarge-site exec wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

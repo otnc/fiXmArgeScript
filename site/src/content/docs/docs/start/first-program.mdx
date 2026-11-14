@@ -1,0 +1,46 @@
+---
+title: はじめてのプログラム
+description: 下書きを書いて実行し、清書に変換する。
+sidebar:
+  order: 2
+---
+
+## 下書きを書いて実行する
+
+`hello.fxma` というファイルを作り、次の1行を書きます。
+
+```fixmarge title="hello.fxma"
+"weRer, sekai" redogh
+```
+
+`redogh` は、左にある値を標準出力に書き出します。JavaScript の `console.log("weRer, sekai")` に当たります。日本語と同じ語順で読めるように、動詞に当たるキーワードは文の最後に置きます。
+
+```sh
+fixmarge keeon hello.fxma
+```
+
+```txt
+weRer, sekai
+```
+
+`keeon` は実行のコマンドです。`fixmarge hello.fxma` のようにコマンドを省略しても実行できます。
+
+## 清書に変換する
+
+`.fxma` のファイルは **下書き** です。キーワードを記号なし・小文字で書けるので、入力しやすくなっています。`sinruits` コマンドで、辞書どおりの綴りの **清書** (`.fxmac`) に変換できます。
+
+```sh
+fixmarge sinruits hello.fxma
+```
+
+```fixmargec title="hello.fxmac"
+"weRer, sekai" ReDogh'
+```
+
+清書も `fixmarge keeon hello.fxmac` でそのまま実行できます。文字列の中とコメントは変換しません。
+
+## ブラウザで試す
+
+[プレイグラウンド](/playground) なら、インストールしなくても同じことを試せます。`keeon` ボタンで実行し、`sinruits` ボタンで清書に変換します。
+
+コマンドの一覧は `fixmarge nai` で表示できます。

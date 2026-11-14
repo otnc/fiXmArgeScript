@@ -1,0 +1,19 @@
+---
+// 二次創作ガイドラインで求められる、非公式であることと AI 利用の表記をすべてのページの下に出す
+import Default from "@astrojs/starlight/components/Footer.astro";
+---
+
+<Default />
+<p class="notice">
+  「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。Acacia および合同会社Re,AER とは関係がなく、公認・監修を受けていません。完全無料で公開しています。AI利用: 生成AIを使って制作しています。
+  <a href="https://manosaba.com/guidelines">二次創作ガイドライン</a>
+</p>
+
+<style>
+  .notice {
+    margin-top: 1.5rem;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    line-height: 1.6;
+  }
+</style>
