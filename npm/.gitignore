@@ -2,4 +2,5 @@ fixmarge.wasm
 wasm_exec.js
 LICENSE-MIT
 LICENSE-APACHE
+THIRD_PARTY_LICENSES
 node_modules/

@@ -24,7 +24,8 @@
     "wasm_exec.js",
     "fixmarge.wasm",
     "LICENSE-MIT",
-    "LICENSE-APACHE"
+    "LICENSE-APACHE",
+    "THIRD_PARTY_LICENSES"
   ],
   "engines": {
     "node": ">=20.16"
