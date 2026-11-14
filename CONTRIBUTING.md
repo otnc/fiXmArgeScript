@@ -72,3 +72,9 @@ workflow (`.github/workflows/`) には、1行で書ける手順だけを書き�
 - **プレイグラウンド** (https://fixmargescript.oto.im/) と `install.sh`: `main` に push すると、関係するファイルが変わったときだけ GitHub Actions が出し直します ([.github/workflows/deploy.yml](.github/workflows/deploy.yml))。
 - **リリース**: GitHub Actions の release を手で動かします ([.github/workflows/release.yml](.github/workflows/release.yml))。次の版 (`patch`・`minor`・`major`・`prerelease` か、版そのもの) を選ぶと、タグを打ち、Releases、npm、VS Code Marketplace、Open VSX に出します。途中で失敗したときは、`version` に同じ版をそのまま書いて (`0.2.0`) もう一度動かすと、出せていないところだけ出し直せます。版の決まりとやり直しの細かい決まりは [spec/RFC.md](spec/RFC.md) の「版とリリース」にあります。
 - 使うトークンは [.env.example](.env.example) に並べてあります。同じ名前で GitHub の Secrets にも入れます。
+
+## ブランチとプルリクエスト
+
+`main` はルールセットで守っています。変更はブランチを切ってプルリクエストにし、CI (`test`・`wasm`・`installer`・`vscode`) が通ってから squash でマージします。squash のコミットの題はプルリクエストの題になるので、題はコミットメッセージと同じ決まりで書きます。マージしたブランチは自動で消えます。
+
+`v*` のタグは、作るのも動かすのも消すのもルールセットで止めています。作れるのは release の workflow だけで、otoneko-release App のトークンを使います。そのため GitHub の Variables に `RELEASE_APP_CLIENT_ID`、Secrets に `RELEASE_APP_PRIVATE_KEY` (App の秘密鍵) を入れ、App をこのリポジトリに入れておきます。

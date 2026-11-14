@@ -23,9 +23,17 @@ jobs:
     outputs:
       tag: ${{ steps.next.outputs.tag }}
     steps:
+      # v* のタグはルールセットで otoneko-release App しか作れないので、タグの push にはこの App のトークンを使う
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
