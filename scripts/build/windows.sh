@@ -1,6 +1,6 @@
 #!/bin/sh
 # Windows のセットアップに入れるものを作る。amd64 と arm64 の fixmarge.exe を dist/windows/<CPU>/ に、
-# THIRD_PARTY_LICENSES をリポジトリの直下に置く (installer/fixmarge.iss が読む)。
+# THIRD_PARTY_LICENSES をリポジトリの直下に置く (packaging/installer/fixmarge.iss が読む)。
 # リリースでは GoReleaser の zip から取るので、これは CI で使う。
 set -eu
 

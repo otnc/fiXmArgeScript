@@ -1,7 +1,7 @@
 <h1 align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg" />
-    <img src="assets/logo-light.svg" alt="fiXmArge Script" width="560" />
+    <source media="(prefers-color-scheme: dark)" srcset="packaging/assets/logo-dark.svg" />
+    <img src="packaging/assets/logo-light.svg" alt="fiXmArge Script" width="560" />
   </picture>
 </h1>
 
@@ -51,7 +51,7 @@ fixmarge sinruits examples/fizzbuzz.fxma
 
 外部パッケージは Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs@1.2` で足し、`fixmarge unneyo github.com/alice/strs` で外します。取ってきたものは npm の `node_modules` と同じくプロジェクトの `.fixmarge` フォルダに置きます。`.fixmarge` はコミットしません (`fixmarge ado meif` が `.gitignore` に足します)。コミットするのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` でそろえます。版は npm と同じく `fixmarge.mod` と `fixmarge.sum` で決め、同じパッケージの違う版をいくつも入れて、`"github.com/alice/strs@1" aste strs werer` のように読み込むときに選べます。詳しくは [spec/packages.md](spec/packages.md) にあります。
 
-WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と [プレイグラウンド](https://fixmargescript.oto.im/playground/) (ソースは [site/](site/)) にあります。
+WebAssembly 版は [packaging/npm/](packaging/npm/README.md) (npm のパッケージ `fixmarge`) と [プレイグラウンド](https://fixmargescript.oto.im/playground/) (ソースは [site/](site/)) にあります。
 
 VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
 
@@ -65,7 +65,7 @@ Vim と Neovim では、このリポジトリをそのままプラグインと�
 
 コードのライセンスは [MIT](LICENSE-MIT) と [Apache-2.0](LICENSE-APACHE) のデュアルライセンス (`MIT OR Apache-2.0`) で、使う人がどちらかを選べます。このライセンスで許諾するのはこのリポジトリのコードだけで、「魔法少女ノ魔女裁判」の権利は含みません。
 
-ロゴとアイコンは [assets/build.mjs](assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。
+ロゴとアイコンは [packaging/assets/build.mjs](packaging/assets/build.mjs) で図形から描いたもので、公式の素材は使っていません。ロゴの文字は [Almendra Display](https://fonts.google.com/specimen/Almendra+Display) (SIL Open Font License 1.1) の字形を線に変えたものです。
 
 ## 問い合わせ
 

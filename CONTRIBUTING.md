@@ -30,7 +30,7 @@ pnpm install
 | `pnpm fmt` | Go のコードを整形する |
 | `pnpm dev` | サイト (紹介・ドキュメント・プレイグラウンド) を手元で開く |
 | `pnpm build` | fixmarge を `dist/` に作る |
-| `pnpm build:wasm` | WebAssembly 版 (`npm/fixmarge.wasm`) を作る |
+| `pnpm build:wasm` | WebAssembly 版 (`packaging/npm/fixmarge.wasm`) を作る |
 | `pnpm build:site` | サイトを Cloudflare に送る形まで作る |
 | `pnpm build:vscode` | VS Code 拡張の VSIX を作る |
 | `pnpm build:assets` | ロゴとアイコンを作り直す (fixmarge.exe に埋め込むアイコンを作るのに Go も使う) |
@@ -49,11 +49,11 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `cmd/fixmarge/` | コマンド (CLI) |
 | `cmd/fixmarge-wasm/` | WebAssembly 版の入口 |
 | `internal/` | 字句解析・構文解析・インタプリタ・標準パッケージ・言語サーバーなど |
-| `npm/` | npm のパッケージ `fixmarge` (WebAssembly 版を包む) |
 | `site/` | サイト (Astro + Starlight)。紹介 `/`、ドキュメント `/docs/`、プレイグラウンド `/playground/` |
 | `editors/vscode/` | VS Code 拡張 |
-| `installer/` | Windows のセットアップと `install.sh` |
-| `assets/` | ロゴとアイコンを描くスクリプト |
+| `packaging/npm/` | npm のパッケージ `fixmarge` (WebAssembly 版を包む) |
+| `packaging/installer/` | Windows のセットアップと `install.sh` |
+| `packaging/assets/` | ロゴとアイコンを描くスクリプト |
 | `examples/` | サンプル |
 | `spec/` | 言語の仕様 (章ごとのファイル。目次は README.md) と標準パッケージ (std/)。サイトの /docs/ にも出す |
 | `doc/` | Vim と Neovim のヘルプ (`:help fixmarge`)。Vim はこの名前のフォルダしか読まないので変えられない |

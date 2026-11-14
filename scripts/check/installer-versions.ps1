@@ -1,4 +1,4 @@
-# セットアップのファイル バージョンの4つ目が、プレリリースの段階と番号の決まり (installer/fixmarge.iss) どおりかを確かめる。
+# セットアップのファイル バージョンの4つ目が、プレリリースの段階と番号の決まり (packaging/installer/fixmarge.iss) どおりかを確かめる。
 # 0.0.0-ci のセットアップは先に作ってあるものを使い、ほかの版はここで作る。
 $ErrorActionPreference = "Stop"
 
@@ -13,7 +13,7 @@ $want = [ordered]@{
 
 foreach ($v in $want.Keys) {
   if ($v -ne "0.0.0-ci") {
-    & $iscc /Q "/DAppVersion=$v" installer\fixmarge.iss
+    & $iscc /Q "/DAppVersion=$v" packaging\installer\fixmarge.iss
     if ($LASTEXITCODE -ne 0) { throw "ISCC failed for $v" }
   }
   $info = (Get-Item "dist\fixmarge_${v}_windows_setup.exe").VersionInfo

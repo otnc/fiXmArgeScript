@@ -6,7 +6,7 @@
 @import "@fontsource/shippori-mincho/700.css";
 @import "@fontsource/almendra-display/400.css";
 
-/* 色はロゴ (assets/build.mjs) と同じ黒・深紅・白。Starlight も Tailwind もこの1か所から色と文字を取る */
+/* 色はロゴ (packaging/assets/build.mjs) と同じ黒・深紅・白。Starlight も Tailwind もこの1か所から色と文字を取る */
 @theme {
   --font-sans: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
   --font-serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;

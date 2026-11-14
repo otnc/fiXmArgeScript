@@ -24,7 +24,7 @@ jobs:
       # サンプルを fixmarge 自身で検査し、テストする
       - run: go run ./cmd/fixmarge lavi examples
       - run: go run ./cmd/fixmarge coatain examples
-      - run: shellcheck installer/public/install.sh scripts/*/*.sh
+      - run: shellcheck packaging/installer/public/install.sh scripts/*/*.sh
       # リリースのときに初めて設定の誤りに気付かないように
       - uses: goreleaser/goreleaser-action@v7
         with:
@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: sh scripts/build/windows.sh
       - name: Build setup
-        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci installer\fixmarge.iss'
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci packaging\installer\fixmarge.iss'
       - name: Install and uninstall
         run: ./scripts/check/installer.ps1
       - name: Check file versions

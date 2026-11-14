@@ -1,12 +1,12 @@
 ﻿; Windows のセットアップ fixmarge_<版>_windows_setup.exe を作る。
-; iscc /DAppVersion=0.2.0 installer\fixmarge.iss で動かす。BinDir の amd64\ と arm64\ に fixmarge.exe を置いておく。
+; iscc /DAppVersion=0.2.0 packaging\installer\fixmarge.iss で動かす。BinDir の amd64\ と arm64\ に fixmarge.exe を置いておく。
 ; 1つの exe に両方の CPU 向けを入れ、入れるときに選ぶ。
 
 #ifndef AppVersion
   #error AppVersion を /DAppVersion=0.2.0 のように渡してください
 #endif
 #ifndef BinDir
-  #define BinDir "..\dist\windows"
+  #define BinDir "..\..\dist\windows"
 #endif
 ; Explorer の「ファイル バージョン」(VersionInfoVersion) は数字4つだけなので、プレリリースかどうかを4つ目で表す。
 ; 正式版は最大の 65535 にし、プレリリースは段階×1000+番号にする (alpha.N は 1000+N、beta.N は 2000+N、rc.N は 3000+N)。
@@ -59,7 +59,7 @@ ChangesEnvironment=yes
 LicenseFile=license.txt
 SetupIconFile=fixmarge.ico
 UninstallDisplayIcon={app}\fixmarge.ico
-OutputDir=..\dist
+OutputDir=..\..\dist
 OutputBaseFilename=fixmarge_{#AppVersion}_windows_setup
 SolidCompression=yes
 WizardStyle=modern
@@ -71,10 +71,10 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 Source: "{#BinDir}\amd64\fixmarge.exe"; DestDir: "{app}"; Check: not IsArm64; Flags: ignoreversion
 Source: "{#BinDir}\arm64\fixmarge.exe"; DestDir: "{app}"; Check: IsArm64; Flags: ignoreversion
 Source: "fixmarge.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\LICENSE-MIT"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\THIRD_PARTY_LICENSES"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\LICENSE-MIT"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\THIRD_PARTY_LICENSES"; DestDir: "{app}"; Flags: ignoreversion
 
 [UninstallDelete]
 ; fixmarge neyar (更新) は動いている fixmarge.exe を .old に退かしてから入れ替えるので、残っていれば消す

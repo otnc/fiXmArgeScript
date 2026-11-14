@@ -11,7 +11,7 @@ foreach ($arch in "amd64", "arm64") {
   Expand-Archive "dist\fixmarge_${version}_windows_${arch}.zip" "dist\windows\$arch"
 }
 Copy-Item dist\windows\amd64\THIRD_PARTY_LICENSES .
-& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" installer\fixmarge.iss
+& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" packaging\installer\fixmarge.iss
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
 
 gh release download $env:TAG -p checksums.txt -D dist --clobber

@@ -9,10 +9,10 @@ on:
     paths:
       - site/**
       - spec/**
-      - assets/**
+      - packaging/assets/**
       - editors/vscode/syntaxes/**
-      - npm/**
-      - installer/public/**
+      - packaging/npm/**
+      - packaging/installer/public/**
       - examples/**
       - cmd/fixmarge-wasm/**
       - internal/**

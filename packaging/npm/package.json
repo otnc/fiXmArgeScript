@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/otnc/fiXmArgeScript.git",
-    "directory": "npm"
+    "directory": "packaging/npm"
   },
   "license": "MIT OR Apache-2.0",
   "type": "module",
