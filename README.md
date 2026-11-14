@@ -51,7 +51,7 @@ fixmarge sinruits examples/fizzbuzz.fxma
 
 外部パッケージは Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs@1.2` で足し、`fixmarge unneyo github.com/alice/strs` で外します。取ってきたものは npm の `node_modules` と同じくプロジェクトの `.fixmarge` フォルダに置きます。`.fixmarge` はコミットしません (`fixmarge ado meif` が `.gitignore` に足します)。コミットするのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` でそろえます。版は npm と同じく `fixmarge.mod` と `fixmarge.sum` で決め、同じパッケージの違う版をいくつも入れて、`"github.com/alice/strs@1" aste strs werer` のように読み込むときに選べます。詳しくは [spec/packages.md](spec/packages.md) にあります。
 
-WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と [プレイグラウンド](https://fixmargescript.oto.im/playground) (ソースは [site/](site/)) にあります。
+WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と [プレイグラウンド](https://fixmargescript.oto.im/playground/) (ソースは [site/](site/)) にあります。
 
 VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
 
