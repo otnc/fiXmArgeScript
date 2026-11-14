@@ -109,14 +109,15 @@ jobs:
           - { neovim: true, version: v0.10.4 }
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: go.mod
+      # Vim を入れると PATH が変わり、ランナーにもとからある古い Go が先に見つかるので、Go は後に入れる
       - uses: rhysd/action-setup-vim@v1
         id: vim
         with:
           neovim: ${{ matrix.neovim }}
           version: ${{ matrix.version }}
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
       - run: go build -o dist/vimtest/ ./cmd/fixmarge
       - if: ${{ !matrix.neovim }}
         run: ${{ steps.vim.outputs.executable }} -u NONE -N -Es -S scripts/check/vim.vim
