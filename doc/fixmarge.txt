@@ -79,7 +79,7 @@ Vim・Neovim のパッケージ (|packages|): >sh
 
 Neovim ~
 							*fixmarge-neovim*
-Neovim 0.11 からは、`lsp/fixmarge.lua` の設定を |vim.lsp.enable()| でつなぎます。設定を足すときは |vim.lsp.config()| を使います。 >lua
+Neovim 0.11 からは、このプラグインが |vim.lsp.config()| で `fixmarge` の設定を書き、|vim.lsp.enable()| でつなぎます。設定を変えるときは、このプラグインが読み込まれる前に |vim.lsp.config()| で書きます。先に書いた所はそのまま使い、書いていない所だけをこのプラグインが埋めます。 >lua
 	vim.lsp.config('fixmarge', { settings = {} })
 <
 Neovim 0.10 は、ファイルを開いたときに |vim.lsp.start()| でつなぎます。

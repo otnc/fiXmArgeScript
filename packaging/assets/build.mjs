@@ -185,7 +185,7 @@ write("packaging/assets/icon.svg", iconSvg);
 write("packaging/assets/icon-small.svg", smallIconSvg);
 write("packaging/assets/logo-dark.svg", logo(color.bone));
 write("packaging/assets/logo-light.svg", logo(color.ink));
-write("editors/vscode/icon.png", png(iconSvg, 256));
+write("packaging/vscode/icon.png", png(iconSvg, 256));
 write("site/public/favicon.svg", smallIconSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256];
 write("packaging/installer/fixmarge.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
@@ -209,7 +209,7 @@ execFileSync(
 );
 console.log("cmd/fixmarge/rsrc_windows_{amd64,arm64}.syso");
 
-// 言語の ID とファイルの名前は editors/vscode/package.json の languages と合わせる。
+// 言語の ID とファイルの名前は packaging/vscode/package.json の languages と合わせる。
 const files = [
   { id: "fixmarge", language: "fixmarge", extensions: ["fxma"] },
   { id: "fixmarge", language: "fixmargec", extensions: ["fxmac"] },
@@ -217,6 +217,6 @@ const files = [
   { id: "fixmarge-sum", language: "fixmarge-sum", fileNames: ["fixmarge.sum"], badge: "key" },
 ];
 for (const f of new Map(files.map((f) => [f.id, f])).values()) {
-  write(`editors/vscode/icons/${f.id}.svg`, fileIcon(f.badge));
+  write(`packaging/vscode/icons/${f.id}.svg`, fileIcon(f.badge));
 }
-write("editors/vscode/icons/fixmarge-icon-theme.json", iconTheme(files));
+write("packaging/vscode/icons/fixmarge-icon-theme.json", iconTheme(files));

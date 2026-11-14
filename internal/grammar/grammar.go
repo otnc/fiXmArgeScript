@@ -1,5 +1,5 @@
 // Package grammar は、エディタの色分けに使うファイルを語の表 (lexicon) から作る。
-// VS Code 拡張 (editors/vscode) の TextMate 文法と、Vim・Neovim の syntax と字下げの語 (リポジトリの直下)。
+// VS Code 拡張 (packaging/vscode) の TextMate 文法と、Vim・Neovim の syntax と字下げの語 (リポジトリの直下)。
 // 字句解析に沿った正確な色は LSP のセマンティックトークンが上書きするので、ここでは fixmarge を入れていなくても読める程度の色を付ける。
 package grammar
 

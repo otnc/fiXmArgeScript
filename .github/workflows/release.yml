@@ -128,20 +128,20 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - run: npm ci --prefix editors/vscode
+      - run: npm ci --prefix packaging/vscode
       - run: sh scripts/release/vscode.sh
       # Marketplace は 0.2.0-rc.1 のようなプレリリースの版を受け付けないので、正式版だけ出す。
       # どちらも --skip-duplicate で、やり直しのときに出し済みの版があっても失敗にしない
       - name: Publish to Marketplace
         if: ${{ !contains(needs.release.outputs.tag, '-') }}
-        working-directory: editors/vscode
+        working-directory: packaging/vscode
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx vsce publish --skip-duplicate --packagePath "fixmarge_${TAG#v}_vscode.vsix"
       # VSCodium や Cursor などは Marketplace を使えないので、Open VSX にも同じ VSIX を出す
       - name: Publish to Open VSX
         if: ${{ !contains(needs.release.outputs.tag, '-') }}
-        working-directory: editors/vscode
+        working-directory: packaging/vscode
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: npx ovsx@1.4.0 --pat "$OVSX_PAT" publish --skip-duplicate "fixmarge_${TAG#v}_vscode.vsix"

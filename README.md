@@ -53,7 +53,7 @@ fixmarge sinruits examples/fizzbuzz.fxma
 
 WebAssembly 版は [packaging/npm/](packaging/npm/README.md) (npm のパッケージ `fixmarge`) と [プレイグラウンド](https://fixmargescript.oto.im/playground/) (ソースは [site/](site/)) にあります。
 
-VS Code 拡張は [editors/vscode/](editors/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
+VS Code 拡張は [packaging/vscode/](packaging/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
 
 Vim と Neovim では、このリポジトリがそのままプラグインです。どのプラグインマネージャーでも、リポジトリの名前を書くだけで入ります。
 

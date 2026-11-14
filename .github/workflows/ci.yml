@@ -78,11 +78,11 @@ jobs:
         with:
           node-version: 24
       # 拡張だけは pnpm の workspace に入れていない (pnpm-workspace.yaml)
-      - run: npm ci --prefix editors/vscode
+      - run: npm ci --prefix packaging/vscode
       - run: node --test
-        working-directory: editors/vscode
+        working-directory: packaging/vscode
       - run: npx vsce package --skip-license --out fixmarge.vsix
-        working-directory: editors/vscode
+        working-directory: packaging/vscode
 
   # Vim と Neovim のプラグイン (リポジトリの直下) を lint する
   vim-lint:
@@ -94,8 +94,8 @@ jobs:
       - run: |
           python3 -m venv /tmp/vint
           /tmp/vint/bin/pip install "setuptools<81" vim-vint==0.3.21
-      - run: /tmp/vint/bin/vint autoload plugin ftdetect ftplugin indent syntax scripts/check/vim.vim
-      - run: luacheck --globals vim --no-max-line-length lsp scripts/check/nvim.lua
+      - run: /tmp/vint/bin/vint autoload plugin syntax scripts/check/vim.vim
+      - run: luacheck --globals vim --no-max-line-length scripts/check/nvim.lua
 
   # プラグインを実際の Vim と Neovim で読み込む。Neovim は本物の fixmarge trench につないで診断が届くまで見る
   vim:

@@ -3,7 +3,7 @@
 import { readFileSync } from "node:fs";
 
 function load(name, aliases) {
-  const url = new URL(`../../editors/vscode/syntaxes/${name}.tmLanguage.json`, import.meta.url);
+  const url = new URL(`../../packaging/vscode/syntaxes/${name}.tmLanguage.json`, import.meta.url);
   return { ...JSON.parse(readFileSync(url, "utf8")), name, aliases };
 }
 

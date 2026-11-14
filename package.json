@@ -14,7 +14,7 @@
     "build": "go build -o dist/ ./cmd/fixmarge",
     "build:wasm": "pnpm --filter fixmarge build",
     "build:site": "pnpm build:wasm && pnpm --filter fixmarge-site build",
-    "build:vscode": "npm --prefix editors/vscode ci && npm --prefix editors/vscode run package",
+    "build:vscode": "npm --prefix packaging/vscode ci && npm --prefix packaging/vscode run package",
     "build:assets": "pnpm --filter fixmarge-assets build",
     "dev": "pnpm build:wasm && pnpm --filter fixmarge-site dev",
     "fmt": "gofmt -w cmd internal",
