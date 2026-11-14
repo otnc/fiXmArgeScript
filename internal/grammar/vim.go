@@ -90,54 +90,37 @@ func VimModSyntax() []byte {
 	return []byte(b.String())
 }
 
-// VimWords は字下げ (indent/fixmarge.vim) が使う、ブロックの語の正規表現を下書きと清書の両方について返す。
+// VimWords は下書きの字下げ (indent/fixmarge.vim) が使う、ブロックの語の正規表現を返す。清書は字下げしない。
 func VimWords() []byte {
 	var b strings.Builder
 	b.WriteString(vimHeader)
-	b.WriteString("\n\" ブロックを開く語・閉じる語・区切る語の正規表現。ファイルタイプ (fixmarge か fixmargec) ごとに返す。\n")
-	b.WriteString("function! fixmarge#words#Block(filetype) abort\n")
-	for _, mode := range []lexer.Mode{lexer.Fair, lexer.Draft} {
-		indent := "  "
-		if mode == lexer.Fair {
-			b.WriteString("  if a:filetype ==# 'fixmargec'\n")
-			indent = "    "
-		}
-		pairs := [][2]string{
-			{"opener", vimWords([]string{"weho", "teitance", "sentky", "persemon", "curoi", "azagara", "mof"}, mode)},
-			{"continued", vimWords([]string{"siva"}, mode) + `\s\+` + vimWords([]string{"mof"}, mode)},
-			{"closer", vimWords([]string{"finend"}, mode)},
-			{"dedent", vimWords(dedentWords, mode)},
-		}
-		b.WriteString(indent + "return {\n")
-		for _, p := range pairs {
-			fmt.Fprintf(&b, "%s\\ '%s': '%s',\n", indent, p[0], strings.ReplaceAll(p[1], "'", "''"))
-		}
-		b.WriteString(indent + "\\ }\n")
-		if mode == lexer.Fair {
-			b.WriteString("  endif\n")
-		}
+	b.WriteString("\n\" ブロックを開く語・閉じる語・区切る語の正規表現。\n")
+	b.WriteString("function! fixmarge#words#Block() abort\n")
+	pairs := [][2]string{
+		{"opener", vimWords([]string{"weho", "teitance", "sentky", "persemon", "curoi", "azagara", "mof"}, lexer.Draft)},
+		{"continued", vimWords([]string{"siva"}, lexer.Draft) + `\s\+` + vimWords([]string{"mof"}, lexer.Draft)},
+		{"closer", vimWords([]string{"finend"}, lexer.Draft)},
+		{"dedent", vimWords(dedentWords, lexer.Draft)},
 	}
-	b.WriteString("endfunction\n")
+	b.WriteString("  return {\n")
+	for _, p := range pairs {
+		fmt.Fprintf(&b, "  \\ '%s': '%s',\n", p[0], strings.ReplaceAll(p[1], "'", "''"))
+	}
+	b.WriteString("  \\ }\nendfunction\n")
 
 	b.WriteString("\n\" 行の頭に来たら1段浅く書く語。打ち終えたら字下げし直す (indentkeys)。\n")
-	b.WriteString("function! fixmarge#words#Dedent(filetype) abort\n")
-	fmt.Fprintf(&b, "  if a:filetype ==# 'fixmargec'\n    return %s\n  endif\n  return %s\nendfunction\n",
-		vimList(dedentWords, lexer.Fair), vimList(dedentWords, lexer.Draft))
+	fmt.Fprintf(&b, "function! fixmarge#words#Dedent() abort\n  return %s\nendfunction\n", vimList(dedentWords))
 	return []byte(b.String())
 }
 
 var dedentWords = []string{"finend", "siva", "youlugive", "ennote"}
 
-// vimList は語の並びを、下書きか清書の綴りの Vim のリストにする。
-func vimList(skels []string, mode lexer.Mode) string {
+// vimList は語の並びを、下書きの綴りの Vim のリストにする。
+func vimList(skels []string) string {
 	var items []string
 	for _, s := range skels {
 		e, _, _ := lexicon.Lookup(lexicon.Skeleton(s))
-		name := e.Name
-		if mode == lexer.Fair {
-			name = e.Spelling
-		}
-		items = append(items, "'"+strings.ReplaceAll(name, "'", "''")+"'")
+		items = append(items, "'"+strings.ReplaceAll(e.Name, "'", "''")+"'")
 	}
 	return "[" + strings.Join(items, ", ") + "]"
 }

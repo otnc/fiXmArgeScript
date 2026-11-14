@@ -11,7 +11,11 @@ import (
 func TestBuild(t *testing.T) {
 	cases := []struct{ draft, fair string }{
 		{"x izu 1\n", "x Iz'u 1\n"},
-		{"weho fizzbuzz(n)\n  mof n % 15 senaji 0\n    \"FizzBuzz\" itswa\n", "We-Ho fizzbuzz(n)\n  Mof n % 15 SeNaji 0\n    \"FizzBuzz\" itsWA\n"},
+		// 清書では行頭の字下げを消す
+		{"weho fizzbuzz(n)\n  mof n % 15 senaji 0\n    \"FizzBuzz\" itswa\n", "We-Ho fizzbuzz(n)\nMof n % 15 SeNaji 0\n\"FizzBuzz\" itsWA\n"},
+		{"  # 頭のコメント\nmof x\n  # 中のコメント\n  x redogh  # 行末\n\t\tfinend\n", "# 頭のコメント\nMof x\n# 中のコメント\nx ReDogh'  # 行末\nFineNd\n"},
+		// """ の中の字下げは文字列の一部なので残す
+		{"mof x\n  s izu \"\"\"\n    a\n      b\n    \"\"\"\nfinend\n", "Mof x\ns Iz'u \"\"\"\n    a\n      b\n    \"\"\"\nFineNd\n"},
 		{"x * izu 2  # 2倍\n", "x *Iz'u 2  # 2倍\n"},
 		{"\"x は #{x exi} です、mof\"\n", "\"x は #{x eXi'} です、mof\"\n"},
 		{"e no \"lyuzun\" canosiri\n", "e N'o \"lyuzun\" CaNoSiri\n"},
