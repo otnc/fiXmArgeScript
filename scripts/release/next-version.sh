@@ -25,6 +25,14 @@ case "$VERSION" in
     if [ -n "$PREID" ]; then
       next=$(semver -i prerelease --preid "$PREID" "$current")
     else
+      # 識別子を引き継ぐ元がないと semver は 1.0.1-0 を返し、下の識別子の検査で分かりにくいエラーになる
+      case "$current" in
+        *-*) ;;
+        *)
+          echo "::error::v$current は正式版なので、prerelease には preid (alpha・beta・rc) が要ります" >&2
+          exit 1
+          ;;
+      esac
       next=$(semver -i prerelease "$current")
     fi
     ;;
