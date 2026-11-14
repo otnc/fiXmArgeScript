@@ -161,7 +161,7 @@ func (f *File) ReplaceDir(path string) string {
 	return ""
 }
 
-// Format は fixmarge.mod の書き方にそろえて返す。並びは RFC の例と同じで、パッケージは名前の順。
+// Format は fixmarge.mod の書き方にそろえて返す。並びは spec/packages.md の例と同じで、パッケージは名前の順。
 func (f *File) Format() []byte {
 	var b strings.Builder
 	line := func(format string, args ...any) { fmt.Fprintf(&b, format+"\n", args...) }

@@ -11,7 +11,7 @@ type entry struct {
 	Text string
 }
 
-// entries は RFC のエラー一覧と同じ内容。
+// entries は spec/errors.md と同じ内容。
 var entries = []entry{
 	{diag.AyAmis, "過ち。構文が正しくありません。実行中に JSON・日付・数として読めない文字列を読んだときも出ます (こちらは youlugive で捕まえられます)。\n下書きのキーワードは小文字だけで書きます。等しさは == ではなく senaji、等しくないは nii a senaji b と書きます。"},
 	{diag.NiiExi, "存在しない。定義されていない変数や関数を使ったか、配列の範囲の外や辞書にないキーを読みました。\nブロックの中で作った変数は finend の後では使えません。"},

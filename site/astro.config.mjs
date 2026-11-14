@@ -42,7 +42,12 @@ export default defineConfig({
           },
         },
       },
-      sidebar: [{ label: "はじめに", items: [{ autogenerate: { directory: "docs/start" } }] }],
+      // 「言語」と「標準パッケージ」は spec/ から写したもの (scripts/spec.mjs)
+      sidebar: [
+        { label: "はじめに", items: [{ autogenerate: { directory: "docs/start" } }] },
+        { label: "言語", items: [{ autogenerate: { directory: "docs/spec" } }] },
+        { label: "標準パッケージ", collapsed: true, items: [{ autogenerate: { directory: "docs/std" } }] },
+      ],
     }),
   ],
   vite: {

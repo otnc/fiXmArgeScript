@@ -10,7 +10,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
-// universe は読み込まずに使える組み込みの関数 (RFC の組み込み)。
+// universe は読み込まずに使える組み込みの関数 (spec/std/README.md の組み込み)。
 var universe = map[string]*Builtin{
 	"nang":   {Name: "nang", Call: builtinNang},
 	"sanand": {Name: "sanand", Call: builtinSanand},

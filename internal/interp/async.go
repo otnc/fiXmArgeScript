@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/token"
 )
 
-// 非同期は JavaScript と同じく1本の流れで動かす (RFC の非同期処理)。
+// 非同期は JavaScript と同じく1本の流れで動かす (spec/async.md)。
 //
 // itsver の関数を1回呼ぶごとに task を1つ作り、goroutine で動かす。ただし動くのはいつも1つだけで、
 // praylee のところでだけ次の task に順番を渡す。順番は決まった規則 (runq の先頭から) で決めるので、やり直しでも同じになる。

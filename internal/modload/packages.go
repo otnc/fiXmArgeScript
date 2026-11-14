@@ -138,7 +138,7 @@ func (m *Module) prune() error {
 }
 
 // readPackage は dir に置いた版 v の fixmarge.mod を読む。
-// 取り込めるのは、foryulvu と neyo fxma があって、手元の fxma が範囲に入るパッケージだけ (RFC の fixmarge.mod の節)。
+// 取り込めるのは、foryulvu と neyo fxma があって、手元の fxma が範囲に入るパッケージだけ (spec/packages.md の fixmarge.mod の節)。
 func (m *Module) readPackage(v modfile.Version, dir string) (*modfile.File, error) {
 	data, err := os.ReadFile(filepath.Join(dir, modfile.Name))
 	if errors.Is(err, fs.ErrNotExist) {

@@ -1,5 +1,5 @@
 // Package scope は、ファイルの中の名前がどの定義を指すかを決める。
-// 決まりは実行時と同じ (RFC の変数のスコープ)。lint の未使用の指摘と、LSP の定義へ移動で共有する。
+// 決まりは実行時と同じ (spec/syntax.md の変数のスコープ)。lint の未使用の指摘と、LSP の定義へ移動で共有する。
 package scope
 
 import (

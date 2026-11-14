@@ -64,7 +64,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 // firstArg は、ファイルより後ろをオプションとして読まず、そのままプログラムに渡すための指定。
 var firstArg = 1
 
-// app はコマンドの一覧。名前は辞書の語で、英語の別名も使える (RFC の実装方針)。
+// app はコマンドの一覧。名前は辞書の語で、英語の別名も使える (spec/commands.md)。
 // 短いオプションは辞書の語と英語の両方の頭文字で、ぶつかったら辞書の語の側に付けない。
 func (s streams) app() *cli.Command {
 	app := &cli.Command{

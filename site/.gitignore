@@ -11,3 +11,7 @@ dist/
 
 # Astro が作る型の定義
 .astro/
+
+# spec/ から写すドキュメント (scripts/spec.mjs が作る)
+src/content/docs/docs/spec/
+src/content/docs/docs/std/

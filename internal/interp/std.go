@@ -168,7 +168,7 @@ func (a *argv) callbackLater(f Value) func(args []Value, after func(Value) error
 	return func(args []Value, after func(Value) error) { in.callback(f, args, file, pos, name, after) }
 }
 
-// callBool は条件として使う関数を呼ぶ。tadact と ulieso 以外を返したら imJune (RFC の真偽値)。
+// callBool は条件として使う関数を呼ぶ。tadact と ulieso 以外を返したら imJune (spec/keywords.md の真偽値)。
 func (a *argv) callBool(f Value, args ...Value) (bool, error) {
 	v, err := a.call(f, args...)
 	if err != nil {

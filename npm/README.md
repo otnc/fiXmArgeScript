@@ -40,7 +40,7 @@ console.log(b.output); // x Iz'u TadACt
 - `maxSteps` は実行できる文と繰り返しの数の上限です (`fixmarge keeon --laikill` と同じ)。超えると `Bavellabion` エラーで止まります。ブラウザでは実行中のプログラムを外から止められないので、止まらないかもしれないプログラムを動かすときに付けます。省くと上限はありません。
 - 魔女 (子プロセス)、シグナル、サーバー、ファイルの見張りは使えず、`Ca-nay` エラーになります。通信 (`gemon no fineclowt`) は、動かしている環境の `fetch` を使います。
 
-言語の仕様は [spec/RFC.md](https://github.com/otnc/fiXmArgeScript/blob/main/spec/RFC.md) にあります。
+言語の仕様は [spec/](https://github.com/otnc/fiXmArgeScript/blob/main/spec/README.md) にあります。
 
 ## ライセンス
 

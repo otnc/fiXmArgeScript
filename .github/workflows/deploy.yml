@@ -1,13 +1,14 @@
 name: deploy
 
 # サイト (紹介・ドキュメント・プレイグラウンド) と install.sh を Cloudflare Workers (https://fixmargescript.oto.im/) に置く。
-# 出すものが変わる push のときだけ動かす (仕様や README だけの変更では出し直さない)。手でも動かせる
+# 出すものが変わる push のときだけ動かす (spec/ はドキュメントに写すので含める。README だけの変更では出し直さない)。手でも動かせる
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - site/**
+      - spec/**
       - assets/**
       - editors/vscode/syntaxes/**
       - npm/**
