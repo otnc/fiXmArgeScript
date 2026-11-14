@@ -20,7 +20,7 @@ var words = []Word{
 	{"itsWA", "以上だ", Keyword},
 	{"AbiRyoku", "能力", Keyword},
 
-	// 世界観由来の構文
+	// バックトラック・テスト・例外の構文
 	{"meKaMo", "〜かも", Keyword},
 	{"ShouBeK", "〜するべき", Keyword},
 	{"sent-ky", "裁き", Keyword},

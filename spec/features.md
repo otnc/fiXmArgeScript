@@ -1,28 +1,26 @@
-# 世界観由来の仕様
+# 言語の特徴
 
-まのさばは、牢屋敷での日常 (ADVパート) →証拠品を集める捜査→発言の矛盾を暴く魔女裁判、という流れで進みます。この言語では、その要素を次の4つの機能に対応させます。
+fxma の目立つ機能は、元のゲームの仕組みから取っています。ゲームは、日常のパート、証拠品を集める捜査、発言の矛盾を暴く魔女裁判という流れで進みます。
 
-| ゲームの要素 | 言語の機能 | 普通の言語でいうと |
+| ゲームの仕組み | fxma の機能 | 普通の言語でいうと |
 | --- | --- | --- |
-| バッドエンドになっても直前の選択肢に戻れる | 選択肢と証明 | バックトラック (`amb` 演算子) |
-| 捜査で集める証拠品 | 証拠 | 定数 |
-| 少女たちの固有の魔法 | 能力 | 副作用の宣言 |
-| 魔女裁判と処刑 | 裁き、告発、処刑 | テストと例外 |
+| バッドエンドになっても直前の選択肢に戻れる | 選択肢 (`mekamo`) と条件 (`shoubek`) | バックトラック (`amb` 演算子) |
+| 捜査で集める証拠品 | 証拠 (`showence`) | 定数 |
+| 登場人物の固有の魔法 | 能力 (`abiryoku`) | 副作用の宣言 |
+| 魔女裁判と処刑 | 裁き (`sentky`)、告発 (`accuhearts`)、処刑 | テストと例外 |
 
-13人の少女にちなんで「1スコープに変数は13個まで」という案もありましたが、使いにくいため採用しません。
+## バックトラック
 
-## 選択肢とバッドエンド
+fxma でいちばん特徴のある機能です。
 
-この言語のいちばんの特徴です。
+1. `a owk b owk c mekamo` は、候補のうち最初の値を返し、その場所を「選択肢」として覚えます。`mekamo` で終わる文の中では、`owk` は「または」ではなく候補の区切りです。
+2. その後の `条件 shoubek` が偽になると、直前の選択肢まで巻き戻り、次の候補で続きを実行します。
+3. 巻き戻すと、変数の値もその選択肢の時点に戻ります。失敗した道筋で出力したものは捨てます。
+4. 候補を使い切ったら、もう1つ前の選択肢に戻ります。戻れる選択肢がないときは `Co-Jundic` (矛盾) で終了します。
 
-1. `a owk b owk c mekamo` は、候補のうち最初の値を返し、その場所を「選択肢」として覚えます。`mekamo` で終わる文の中では、`owk` は「または」ではなく候補の区切りになります。
-2. その後の `条件 shoubek` が偽になると、バッドエンドです。直前の選択肢まで巻き戻り、次の候補で続きを実行します。
-3. 巻き戻すと、変数の値もその選択肢の時点に戻ります。失敗した道筋での出力は捨てられます。
-4. 候補を使い切ったら、もうひとつ前の選択肢に戻ります。戻れる選択肢がないときは `Co-Jundic` (矛盾) で終了します。
+例として、証言から魔女を当てるプログラムを書きます。
 
-例: 証言から魔女を当てる。
-
-フィクスマージ語 (ソース):
+fxma:
 
 ```
 # 容疑者は1〜3番。魔女は1人
@@ -32,6 +30,16 @@ nii witch senaji 1 shoubek
 # 証言B：魔女は奇数番
 witch % 2 senaji 1 shoubek
 witch redogh
+```
+
+JavaScript:
+
+```javascript
+const witch = [1, 2, 3].find((w) => w !== 1 && w % 2 === 1);
+if (witch === undefined) {
+  throw new Error("Co-Jundic");
+}
+console.log(witch);
 ```
 
 Python:
@@ -48,32 +56,22 @@ else:
     raise Exception("Co-Jundic")
 ```
 
-JavaScript:
+どれも `3` を出力します。fxma 版は「魔女は1か2か3かも。1ではないべき。奇数であるべき。魔女を伝える」と読めます。JavaScript や Python では絞り込みやループを自分で書きますが、fxma では候補と条件を並べるだけです。
 
-```javascript
-const witch = [1, 2, 3].find((w) => w !== 1 && w % 2 === 1);
-if (witch === undefined) {
-  throw new Error("Co-Jundic");
-}
-console.log(witch);
-```
+## 定数
 
-どれも `3` を出力します。フィクスマージ語版は「魔女は1か2か3かも。1ではないべき。奇数であるべき。魔女を伝える」と読めます。PythonやJavaScriptではループや絞り込みを自分で書きますが、この言語では候補と条件を並べるだけで済みます。
-
-## 証拠品 (定数)
-
-`showence` で作った変数は再代入できません。証拠を書き換えようとすると `blasTOac` (冒涜的) エラーになります。証拠を書き換えるのは裁判への冒涜、という見立てです。
+`showence` で作った変数には再代入できません。再代入しようとすると、実行前に `blasTOac` (冒涜的) エラーになります。
 
 ```
 showence limit izu 15
 limit izu 20  # → blasTOac
 ```
 
-Pythonでいうと `limit: Final = 15` に近いですが、Pythonは実行時には止めません。JavaScriptの `const limit = 15;` と同じく、この言語は止めます。
+JavaScript の `const limit = 15;` と同じです。Python の `limit: Final = 15` にも近いですが、Python は実行時には止めません。
 
-## 魔法 (副作用の宣言)
+## 副作用の宣言
 
-入出力 (`redogh`、`zanfession`) をする関数は、`abiryoku` を付けて定義します。`abiryoku` 付きの関数を呼ぶ関数も同じです。付け忘れると、実行前に `kiNbOO` (禁忌) エラーになります。
+入出力 (`redogh`、`zanfession` など) をする関数は、`abiryoku` を付けて定義します。`abiryoku` 付きの関数を呼ぶ関数にも付けます。付け忘れると、実行前に `kiNbOO` (禁忌) エラーになります。
 
 ```
 abiryoku weho greet(name)
@@ -81,34 +79,26 @@ abiryoku weho greet(name)
 finend
 ```
 
-Pythonには対応する仕組みがありません。Haskellの `IO` 型を小さくしたものです。巻き戻しで出力を捨てるためにも、どこで入出力が起きるかがわかっていると実装が楽になります。
+JavaScript や Python には対応する仕組みがありません。Haskell の `IO` 型を小さくしたものです。どこで入出力が起きるかが分かっていると、バックトラックで出力を捨てる処理も作りやすくなります。
 
 関数を値として渡すときは、渡した関数で決まります。`abiryoku` 付きの関数を引数に渡した呼び出しは、それ自体が入出力をする呼び出しとして扱います。
 
 - `varizama no tarip(xs, double)` は、`double` に `abiryoku` がなければ、`abiryoku` なしの関数の中でも書けます。
 - `varizama no tarip(xs, greet)` は、`greet` が `abiryoku` 付きなので、`abiryoku` 付きの関数の中でしか書けません。
 - `werer` で読み込んだ関数も、実行前に調べます。`"./io" no greet werer` の `greet()` も、`"./io" aste io werer` の `io no greet()` も、標準パッケージの `memoid no fineclowt()` も同じです。
-- 変数に入った関数や外部パッケージの関数のように実行前に分からないときは、呼んだ時点で調べて、`abiryoku` なしの関数の中なら `kiNbOO` エラーにします。
+- 変数に入った関数や外部パッケージの関数のように、実行前に分からないものは呼んだときに調べます。`abiryoku` なしの関数の中で呼んでいれば `kiNbOO` エラーです。
 
-## 魔女裁判 (テスト) と処刑 (例外)
+## テスト
 
-`sentky` ブロックの中の `shoubek` は巻き戻しをせず、テストとして扱われます。全部通れば無罪、ひとつでも落ちれば有罪です。
+`sentky` ブロックの中の `shoubek` は巻き戻しをせず、テストの検査として扱います。全部通れば無罪、1つでも落ちれば有罪です。
 
-フィクスマージ語 (ソース):
+fxma:
 
 ```
 sentky "fizzbuzz"
   fizzbuzz(3) senaji "Fizz" shoubek
   fizzbuzz(15) senaji "FizzBuzz" shoubek
 finend
-```
-
-Python (pytest):
-
-```python
-def test_fizzbuzz():
-    assert fizzbuzz(3) == "Fizz"
-    assert fizzbuzz(15) == "FizzBuzz"
 ```
 
 JavaScript (Jest):
@@ -120,7 +110,15 @@ test("fizzbuzz", () => {
 });
 ```
 
-結果の表示は、判決 (`hung gement`) に続けて、無罪なら `Nii Guil-me`、有罪なら `Guil-me` を出します。有罪のときは、次の行に字下げして落ちた場所を出します。
+Python (pytest):
+
+```python
+def test_fizzbuzz():
+    assert fizzbuzz(3) == "Fizz"
+    assert fizzbuzz(15) == "FizzBuzz"
+```
+
+結果は、`hung gement` (判決) とテストの名前に続けて、無罪なら `Nii Guil-me`、有罪なら `Guil-me` と出します。有罪のときは、次の行にインデントして落ちた場所を出します。
 
 ```
 hung gement double: Nii Guil-me
@@ -130,12 +128,12 @@ hung gement parse: Guil-me
   imJune util.fxma:2:5 +
 ```
 
-- `shoubek` が1つ落ちたら、JestやPythonの `assert` と同じく、その `sentky` はそこで止めて有罪にし、次の `sentky` に進みます。
-- テストとして扱う `shoubek` は、`sentky` の本体に直接書いたものだけです。本体から呼んだ関数の中の `shoubek` は、いつもどおり巻き戻しに使います。
+- `shoubek` が1つ落ちたら、Jest や Python の `assert` と同じく、その `sentky` はそこで止めて有罪にし、次の `sentky` に進みます。
+- テストの検査として扱う `shoubek` は、`sentky` の本体に直接書いたものだけです。本体から呼んだ関数の中の `shoubek` は、いつもどおりバックトラックに使います。
 - 落ちた `shoubek` は `youlugive` では捕まえられません。例外や実行時エラーが捕まらずに `sentky` の外に出たときも有罪で、そのエラーを出します。
 - 有罪が1つでもあれば、`fixmarge coatain` は終了コード1で終わります。
 
-テストは、名前が `_coatain.fxma` で終わるファイルに書きます。Goの `_test.go` と同じです。`Coa Tain` (法廷) は裁き (`sentky`) を開く場所なので、この名前にしました。テストするファイルは `werer` で読み込みます。`sentky` を書けるのはこのファイルだけで、`fixmarge keeon` はこのファイルを読み込みません。
+テストは、名前が `_coatain.fxma` で終わるファイルに書きます。Go の `_test.go` と同じです。`Coa Tain` (法廷) は `sentky` (裁き) を開く場所なので、この名前にしました。テストする側のファイルは `werer` で読み込みます。`sentky` を書けるのはこのファイルだけで、`fixmarge keeon` はこのファイルを読み込みません。
 
 ```
 # util_coatain.fxma
@@ -146,9 +144,11 @@ sentky "double"
 finend
 ```
 
-速さを測る処理も、同じファイルに `persemon` (`Per·SemOn`、見世物) のブロックで書きます。Goがベンチマークを `_test.go` に書くのと同じです。
+## ベンチマーク
 
-フィクスマージ語 (ソース):
+処理の速さは、テストと同じファイルに `persemon` (`Per·SemOn`、見世物) のブロックで測ります。Go がベンチマークを `_test.go` に書くのと同じです。
+
+fxma:
 
 ```
 persemon "double"
@@ -171,14 +171,16 @@ Per·SemOn double: 2109718 584ns
 ```
 
 - `go test -bench` と同じく、本体を何回も動かし、かかった時間が1秒に届くまで回数を増やして測り直します。回数は一度に100倍まで、上限は10億回です。
-- 本体に直接書いた `shoubek` は `sentky` と同じくテストとして扱います。落ちたら測るのをやめて `Guil-me` と落ちた場所を出し、`fixmarge persemon` は終了コード1で終わります。
-- 巻き戻しでやり直すときは、前と同じ回数だけ本体を動かします。出す時間も前のものです。
+- 本体に直接書いた `shoubek` は、`sentky` と同じくテストの検査として扱います。落ちたら測るのをやめて `Guil-me` と落ちた場所を出し、`fixmarge persemon` は終了コード1で終わります。
+- バックトラックでやり直すときは、前と同じ回数だけ本体を動かします。出す時間も前に測ったものです。
 
-例外は `accuhearts` (告発) で投げ、`teitance` (抵抗) と `youlugive` (許し) で捕まえます。Pythonの `raise`、`try`、`except` と同じです。誰にも許されなかった例外は、`KeI·tion` (処刑) としてプログラムを終了させます。
+## 例外
 
-`youlugive e` と書くと、捕まえた例外が変数 `e` に入ります。例外の理由 (メッセージ) は `e no "lyuzun"` で取り出せます。辞書の `LyuzUn` (理由) から取ったキーです。`ennote` (`En-NOte`、成れの果て) のブロックは、例外が起きても起きなくても最後に必ず実行されます (PythonやJavaScriptの `finally`)。`canosiri` (`CaNoSiri`、罵り) は、`redogh` と同じく文の後ろに置いて、標準エラー出力に書きます。
+例外は `accuhearts` (告発) で投げ、`teitance` (抵抗) と `youlugive` (許し) で捕まえます。JavaScript の `throw`、`try`、`catch` と同じです。どこでも捕まらなかった例外は、`KeI·tion` (処刑) としてプログラムを終了させます。
 
-フィクスマージ語 (ソース):
+`youlugive e` と書くと、捕まえた例外が変数 `e` に入ります。例外のメッセージは `e no "lyuzun"` で取り出せます。キーは辞書の `LyuzUn` (理由) から取りました。`ennote` (`En-NOte`、成れの果て) のブロックは、例外が起きても起きなくても最後に必ず実行します (JavaScript や Python の `finally`)。`canosiri` (`CaNoSiri`、罵り) は、`redogh` と同じく文の後ろに置いて、標準エラー出力に書きます。
+
+fxma:
 
 ```
 teitance
@@ -188,6 +190,18 @@ youlugive e
 ennote
   "FineNd" redogh
 finend
+```
+
+JavaScript:
+
+```javascript
+try {
+  throw new Error("bad input");
+} catch (e) {
+  console.error(e.message);
+} finally {
+  console.log("FineNd");
+}
 ```
 
 Python:
@@ -203,19 +217,7 @@ finally:
     print("FineNd")
 ```
 
-JavaScript:
+実行中に起きたエラーも、`accuhearts` で投げた例外と同じく `youlugive` で捕まえられます。JavaScript や Python と同じです。
 
-```javascript
-try {
-  throw new Error("bad input");
-} catch (e) {
-  console.error(e.message);
-} finally {
-  console.log("FineNd");
-}
-```
-
-実行中に起きたエラーも、`accuhearts` で投げた例外と同じく `youlugive` で捕まえられます。PythonやJavaScriptと同じです。
-
-- エラーの種類は、理由と同じく文字列のキーで取り出します。値は `"kYoNAihim"` のようなエラー名の清書の綴りで、`accuhearts` で投げた例外は `"AccUhEarts"` です。キーは `"chidd"` (`ChiDd`、血) で、`e no "chidd"` のように書きます。
-- 捕まえられないのは、実行前に見つかるエラー (構文の `AyAmis`、`kiNbOO`、`showence` への再代入の `blasTOac`) と、`Co-Jundic`、`SaiVI` です。`Co-Jundic` は巻き戻しの行き止まりで、`SaiVI` はインタプリタのバグなので、プログラムからは直せないためです。
+- エラーの種類は、`e no "chidd"` (`ChiDd`、血) で取り出します。値は `"kYoNAihim"` のようなエラー名の清書の綴りで、`accuhearts` で投げた例外は `"AccUhEarts"` です。
+- 捕まえられないのは、実行前に見つかるエラー (構文の `AyAmis`、`kiNbOO`、`showence` への再代入の `blasTOac`) と、`Co-Jundic`、`SaiVI` です。`Co-Jundic` はバックトラックの行き止まり、`SaiVI` はインタプリタのバグで、どちらもプログラムからは直せないためです。
