@@ -92,7 +92,8 @@ jobs:
             $info = (Get-Item "dist\fixmarge_${v}_windows_setup.exe").VersionInfo
             $file = "$($info.FileMajorPart).$($info.FileMinorPart).$($info.FileBuildPart).$($info.FilePrivatePart)"
             if ($file -ne $want[$v]) { throw "${v}: file version $file, want $($want[$v])" }
-            if ($info.ProductVersion -ne $v) { throw "${v}: product version $($info.ProductVersion), want $v" }
+            # Inno Setup は文字列の後ろを空白で埋めて書くので、外して比べる
+            if ($info.ProductVersion.Trim() -ne $v) { throw "${v}: product version '$($info.ProductVersion)', want $v" }
           }
 
   # VS Code 拡張を VSIX にまとめられるか確かめる (文法が語の表と合っているかは go test が見る)
