@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 
@@ -17,6 +16,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/lexicon"
 	"github.com/otnc/fiXmArgeScript/internal/modfetch"
 	"github.com/otnc/fiXmArgeScript/internal/modload"
+	"github.com/otnc/fiXmArgeScript/internal/release"
 	"github.com/otnc/fiXmArgeScript/internal/runner"
 )
 
@@ -28,10 +28,10 @@ func (s streams) karady(cmd *cli.Command) error {
 		return exitCode(2)
 	}
 	entry := cmd.Args().First()
-	target := karady.Target{OS: runtime.GOOS, Arch: runtime.GOARCH}
+	target := release.Current()
 	if t := cmd.String("os"); t != "" {
 		var err error
-		if target, err = karady.ParseTarget(t); err != nil {
+		if target, err = release.ParseTarget(t); err != nil {
 			return s.report(err)
 		}
 	}
@@ -75,8 +75,8 @@ func bundledExternal(dir string) karady.External {
 
 // runtimeFor は target 向けの fixmarge の実行ファイル。今の OS なら自分自身を使う。
 // ほかの OS は同じ版をリリースから取ってくるので、タグから作った版でなければ Ca-nay。
-func runtimeFor(target karady.Target) (string, error) {
-	if target.OS == runtime.GOOS && target.Arch == runtime.GOARCH {
+func runtimeFor(target release.Target) (string, error) {
+	if target == release.Current() {
 		return os.Executable()
 	}
 	version := moduleVersion()
@@ -87,7 +87,7 @@ func runtimeFor(target karady.Target) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	r := &karady.Runtimes{Root: filepath.Join(cache, "karady")}
+	r := &release.Fetcher{Root: filepath.Join(cache, "karady")}
 	return r.Get(version, target)
 }
 

@@ -82,7 +82,7 @@ var words = []Word{
 	{"Ligh-Luw", "軽い", Function},
 	{"Eda", "そこ", Function},
 	{"Kast", "過去", Function | Part},
-	{"gu-n", "今", Function | Part},
+	{"gu-n", "今", Function | Part | Command},
 	{"KolSu", "音", Function | Part},
 	{"nAddY", "仲間", Function},
 	{"mu·Yon", "向こう側", Function},

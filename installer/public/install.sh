@@ -103,7 +103,7 @@ main() {
 
   case ":$PATH:" in
     *":$bin:"*)
-      echo "fixmarge neyar で動くか確かめられます"
+      echo "fixmarge gun で動くか確かめられます"
       exit 0
       ;;
   esac

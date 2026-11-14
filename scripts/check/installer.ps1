@@ -6,8 +6,8 @@ $app = "$env:LOCALAPPDATA\Programs\fixmarge"
 function UserPath { [Environment]::GetEnvironmentVariable("Path", "User") }
 
 Start-Process dist\fixmarge_0.0.0-ci_windows_setup.exe -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/CURRENTUSER" -Wait
-& "$app\fixmarge.exe" neyar
-if ($LASTEXITCODE -ne 0) { throw "fixmarge neyar failed" }
+& "$app\fixmarge.exe" gun
+if ($LASTEXITCODE -ne 0) { throw "fixmarge gun failed" }
 if ((UserPath) -split ";" -notcontains $app) { throw "PATH does not contain $app" }
 
 Start-Process "$app\unins000.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES" -Wait

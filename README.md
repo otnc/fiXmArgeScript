@@ -32,6 +32,8 @@ Windows では、[Releases](https://github.com/otnc/fiXmArgeScript/releases) の
 
 どの OS でも、Releases の圧縮ファイルを展開して `PATH` の通った場所に置くか、Go があれば `go install github.com/otnc/fiXmArgeScript/cmd/fixmarge@latest` でも入れられます。
 
+新しい版が出たら `fixmarge neyar` で更新できます。`fixmarge neyar 0.2.0` のように版を指定すると、その版に切り替えます。今の版は `fixmarge gun` で出ます。
+
 ## 使い方
 
 ```
