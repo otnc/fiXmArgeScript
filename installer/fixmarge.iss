@@ -14,6 +14,9 @@
 ; それ以外 (CI の 0.0.0-ci) は 0。製品バージョンの文字列は AppVersion のまま (-rc.1 付き) になる
 #define BaseVersion AppVersion
 #define Stage "65535"
+; 前処理は通らない #if の中の式も読むので、正式版でも PreId と PreNum を定義しておく
+#define PreId ""
+#define PreNum 0
 #if Pos("-", AppVersion) > 0
   #define BaseVersion Copy(AppVersion, 1, Pos("-", AppVersion) - 1)
   #define Pre Copy(AppVersion, Pos("-", AppVersion) + 1, Len(AppVersion))
