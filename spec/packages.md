@@ -12,17 +12,17 @@
 | 公開する | `oqun weho double(n)` | 開く | `export function double(n)` |
 | 使う | `util no double(21)` / `double(21)` | の | `util.double(21)` / `double(21)` |
 
-- `werer` (迎える) は動詞なので文の後ろ、`oqun` (開く) は見出しに付く語なので前に置きます。
+- `werer` (迎える) は動詞なので文の後ろに、`oqun` (開く) は見出しに付く語なので前に置きます ([基本構文](syntax.md))。
 - `"./util"` は `./util.fxma` を読みます。`"./util" werer` だけの書き方は `AyAmis` (構文エラー) です。
 - 公開できるのは `oqun` を付けた関数と定数 (`showence`) だけです。付いていないものを外から使うと `Ca-nay` (できない) エラーです。
 - 読み込まれるファイルには、定義 (`weho` と `showence`) と `werer` だけを書けます。処理を実行する文は、`fixmarge keeon` で直接動かすファイルにだけ書けます。それ以外の文があると `Ca-nay` エラーです。
-- 読み込まれるファイルの一番外側は `abiryoku` の外として扱います。`showence` の右で入出力をする関数を呼ぶと `kiNbOO` エラーです。
+- 読み込まれるファイルのトップレベルは `abiryoku` の外として扱います。`showence` の右で入出力をする関数を呼ぶと `kiNbOO` エラーです。
 - 読み込んだ名前は、JavaScriptの `import` と同じく書き換えられません。`double izu 1` や `util no limit izu 1` は `blasTOac` エラーです。
 - 同じ名前を2回読み込むと `Su·Ready` エラーです。`aste` で別名を付けます。
 - 清書 (`.fxmac`) を実行しているときは、読み込み先も清書を読みます。`fixmarge sinruits` は読み込み先の下書きもまとめて清書するので、そのまま動きます。
 - 読み込みが循環すると `Su·Ready` (既に)、読み込み先がないと `Nii eXi'` エラーです。
 
-フィクスマージ語 (ソース):
+fxma:
 
 ```
 # util.fxma
@@ -93,7 +93,7 @@ JavaScript:
 import * as strs from "strs";
 ```
 
-フィクスマージ語 (ソース):
+fxma:
 
 ```
 # fixmarge.mod: neyo github.com/alice/strs v1.2.0
@@ -177,13 +177,13 @@ import * as strs from "strs";
 
 ## グローバルに入れる (fixmarge werer --wid)
 
-JavaScript:
+npm:
 
 ```
 npm install -g strs
 ```
 
-フィクスマージ語:
+fixmarge:
 
 ```
 fixmarge werer --wid github.com/alice/strs
@@ -192,7 +192,7 @@ fixmarge unneyo --wid github.com/alice/strs
 
 - `--wid` (`WiD`、世界。英語の別名は `--global` と `-g`) を付けると、今いるプロジェクトではなく、グローバルの置き場所に入れます。置き場所はOSの設定の場所の `fixmarge/wid` (Windowsは `%AppData%\fixmarge\wid`、Linuxは `~/.config/fixmarge/wid`、macOSは `~/Library/Application Support/fixmarge/wid`) で、環境変数 `FIXMARGE_WID` で変えられます。
 - グローバルの置き場所は、`fixmarge.mod`・`fixmarge.sum`・`.fixmarge` を持つ、プロジェクトと同じ形のフォルダです。版の書き方も、同じパッケージの版をいくつも入れられることも同じです。
-- グローバルに入れたものを読めるのは、次の2つの場合です。
+- グローバルに入れたものを読めるかどうかは、読み込む側で決まります。
 
 | 読み込む側 | 読めるか |
 | --- | --- |
@@ -200,7 +200,7 @@ fixmarge unneyo --wid github.com/alice/strs
 | プロジェクトのファイル | 自分の `fixmarge.mod` に合う版がないときだけ、補欠として読める |
 | 取ってきたパッケージの中のファイル | 読めない (`Nii eXi'`) |
 
-- 公開するパッケージで、グローバルに入れたものを補欠として使うのは勧めません。自分のパソコンでは動きますが、そのパッケージを取ってきた人の所では読めないからです。`fixmarge lavi` が `WiD` の規則で指摘します (`LaVI WiD main.fxma:1:1 github.com/alice/strs`)。直すには `fixmarge werer` か `fixmarge ado saymal` で自分の `fixmarge.mod` に入れます。
+- 公開するパッケージで、グローバルに入れたものを補欠として使うのは勧めません。自分の環境では動きますが、そのパッケージを取ってきた人の所では読めないからです。`fixmarge lavi` が `WiD` の規則で指摘します (`LaVI WiD main.fxma:1:1 github.com/alice/strs`)。直すには `fixmarge werer` か `fixmarge ado saymal` で自分の `fixmarge.mod` に入れます。
 - 補欠として読むときも、中身のハッシュはグローバルの `fixmarge.sum` と比べます。グローバルの一覧が合っているか (起動時の確認) は、`fixmarge.mod` のないファイルを実行するときにだけ確かめます。グローバルが壊れていても、補欠を使わないプロジェクトは止まりません。
 
 取ってくるときのエラーは次のとおりです。
