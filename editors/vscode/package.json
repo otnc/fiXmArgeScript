@@ -77,14 +77,15 @@
         "fixmarge.path": {
           "type": "string",
           "default": "fixmarge",
-          "markdownDescription": "言語サーバー (`fixmarge trench`) として動かす `fixmarge` の場所。既定では `PATH` から探します。"
+          "markdownDescription": "言語サーバー (`fixmarge trench`) として動かす `fixmarge` の場所。名前だけなら、`PATH` とインストール先から探します。"
         }
       }
     }
   },
   "scripts": {
     "vscode:prepublish": "node build.mjs",
-    "package": "vsce package"
+    "package": "vsce package",
+    "test": "node --test"
   },
   "dependencies": {
     "vscode-languageclient": "^11.0.0"

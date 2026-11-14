@@ -79,5 +79,7 @@ jobs:
           node-version: 24
       # 拡張だけは pnpm の workspace に入れていない (pnpm-workspace.yaml)
       - run: npm ci --prefix editors/vscode
+      - run: node --test
+        working-directory: editors/vscode
       - run: npx vsce package --out fixmarge.vsix
         working-directory: editors/vscode
