@@ -17,7 +17,8 @@ if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
 gh release download $env:TAG -p checksums.txt -D dist --clobber
 if ($LASTEXITCODE -ne 0) { throw "download failed: checksums.txt" }
 $hash = (Get-FileHash "dist\$setup" -Algorithm SHA256).Hash.ToLower()
-# GoReleaser と同じ形 (ハッシュ、空白2つ、名前) で、改行は LF
-[IO.File]::AppendAllText("dist\checksums.txt", "$hash  $setup`n")
+# やり直しで前の行が残っていれば外してから足す。GoReleaser と同じ形 (ハッシュ、空白2つ、名前) で、改行は LF
+$lines = [IO.File]::ReadAllLines("dist\checksums.txt") | Where-Object { $_ -and -not $_.EndsWith("  $setup") }
+[IO.File]::WriteAllText("dist\checksums.txt", ((@($lines) + "$hash  $setup") -join "`n") + "`n")
 gh release upload $env:TAG "dist\$setup" dist\checksums.txt --clobber
 if ($LASTEXITCODE -ne 0) { throw "upload failed" }

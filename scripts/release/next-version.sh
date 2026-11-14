@@ -1,5 +1,5 @@
 #!/bin/sh
-# 最新のタグと入力 (VERSION・PREID) から次の版を決め、GitHub Actions の出力の形 (tag=v0.2.0) で書く。
+# 最新のタグと入力 (VERSION・PREID) から次の版を決め、GitHub Actions の出力の形 (tag=v0.2.0 と retry=false) で書く。
 # 版の計算は npm の semver に任せる。決まりは docs/RFC.md の「版とリリース」。
 set -eu
 
@@ -66,9 +66,15 @@ case "$next" in
     ;;
 esac
 
-if [ "$current" != 0.0.0 ] && ! semver -r ">$current" -p "$next" >/dev/null; then
-  echo "::error::$next は今の最新 v$current より新しくありません" >&2
+# 最新のタグと同じ版を直接書いたときは、途中で失敗したリリースのやり直し (retry=true)。
+# タグは打たずにその版の中身でもう一度作り、まだ出せていないところへ出す
+retry=false
+if [ "$current" != 0.0.0 ] && [ "$next" = "$current" ]; then
+  retry=true
+elif [ "$current" != 0.0.0 ] && ! semver -r ">$current" -p "$next" >/dev/null; then
+  echo "::error::$next は今の最新 v$current より新しくありません (やり直せるのは最新の v$current だけで、そのときは $current と書く)" >&2
   exit 1
 fi
 
 echo "tag=v$next"
+echo "retry=$retry"

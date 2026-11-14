@@ -66,3 +66,5 @@ changelog:
 
 release:
   prerelease: auto
+  # リリースのやり直し (release.yml に最新の版をそのまま書いて動かす) で、上げ済みのファイルを置き換える
+  replace_existing_artifacts: true

@@ -68,5 +68,5 @@ workflow (`.github/workflows/`) には、1行で書ける手順だけを書き�
 ## 公開
 
 - **プレイグラウンド** (https://fixmargescript.oto.im/) と `install.sh`: `main` に push すると、関係するファイルが変わったときだけ GitHub Actions が出し直します ([.github/workflows/deploy.yml](.github/workflows/deploy.yml))。
-- **リリース**: GitHub Actions の release を手で動かします ([.github/workflows/release.yml](.github/workflows/release.yml))。次の版 (`patch`・`minor`・`major`・`prerelease` か、版そのもの) を選ぶと、タグを打ち、Releases、npm、VS Code Marketplace、Open VSX に出します。版の決まりは [docs/RFC.md](docs/RFC.md) の「版とリリース」にあります。
+- **リリース**: GitHub Actions の release を手で動かします ([.github/workflows/release.yml](.github/workflows/release.yml))。次の版 (`patch`・`minor`・`major`・`prerelease` か、版そのもの) を選ぶと、タグを打ち、Releases、npm、VS Code Marketplace、Open VSX に出します。途中で失敗したときは、`version` に同じ版をそのまま書いて (`0.2.0`) もう一度動かすと、出せていないところだけ出し直せます。版の決まりとやり直しの細かい決まりは [docs/RFC.md](docs/RFC.md) の「版とリリース」にあります。
 - 使うトークンは [.env.example](.env.example) に並べてあります。同じ名前で GitHub の Secrets にも入れます。

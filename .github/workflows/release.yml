@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "次の版：patch・minor・major・prerelease のどれか、または版そのもの (0.2.0、0.2.0-rc.0)"
+        description: "次の版：patch・minor・major・prerelease のどれか、または版そのもの (0.2.0、0.2.0-rc.0)。最新の版をそのまま書くと、失敗したリリースのやり直しになる"
         required: true
         default: patch
       preid:
@@ -33,6 +33,17 @@ jobs:
         with:
           node-version: 24
 
+      - name: Decide version
+        id: next
+        env:
+          VERSION: ${{ inputs.version }}
+          PREID: ${{ inputs.preid }}
+        run: sh scripts/release/next-version.sh >> "$GITHUB_OUTPUT"
+      # やり直しは、main の今ではなく、そのタグの中身で作り直す
+      - name: Check out the tag to retry
+        if: ${{ steps.next.outputs.retry == 'true' }}
+        run: git checkout "${{ steps.next.outputs.tag }}"
+
       - run: test -z "$(gofmt -l .)"
       - run: go vet ./...
       - run: go test -race ./...
@@ -41,20 +52,15 @@ jobs:
       - run: node npm/build.mjs
       - run: node --test npm/test/fixmarge.test.js
 
-      - name: Decide version
-        id: next
-        env:
-          VERSION: ${{ inputs.version }}
-          PREID: ${{ inputs.preid }}
-        run: sh scripts/release/next-version.sh >> "$GITHUB_OUTPUT"
-
       - name: Tag
+        if: ${{ steps.next.outputs.retry != 'true' }}
         env:
           TAG: ${{ steps.next.outputs.tag }}
         run: |
           git tag "$TAG"
           git push origin "$TAG"
 
+      # やり直しで Releases に同じ名前のファイルがあれば置き換える (.goreleaser.yaml の replace_existing_artifacts)
       - uses: goreleaser/goreleaser-action@v7
         with:
           version: "~> v2"
@@ -114,17 +120,18 @@ jobs:
           node-version: 24
       - run: npm ci --prefix editors/vscode
       - run: sh scripts/release/vscode.sh
-      # Marketplace は 0.2.0-rc.1 のようなプレリリースの版を受け付けないので、正式版だけ出す
+      # Marketplace は 0.2.0-rc.1 のようなプレリリースの版を受け付けないので、正式版だけ出す。
+      # どちらも --skip-duplicate で、やり直しのときに出し済みの版があっても失敗にしない
       - name: Publish to Marketplace
         if: ${{ !contains(needs.release.outputs.tag, '-') }}
         working-directory: editors/vscode
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx vsce publish --packagePath "fixmarge_${TAG#v}_vscode.vsix"
+        run: npx vsce publish --skip-duplicate --packagePath "fixmarge_${TAG#v}_vscode.vsix"
       # VSCodium や Cursor などは Marketplace を使えないので、Open VSX にも同じ VSIX を出す
       - name: Publish to Open VSX
         if: ${{ !contains(needs.release.outputs.tag, '-') }}
         working-directory: editors/vscode
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
-        run: npx ovsx@1.4.0 --pat "$OVSX_PAT" publish "fixmarge_${TAG#v}_vscode.vsix"
+        run: npx ovsx@1.4.0 --pat "$OVSX_PAT" publish --skip-duplicate "fixmarge_${TAG#v}_vscode.vsix"

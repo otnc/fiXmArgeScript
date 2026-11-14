@@ -12,6 +12,12 @@ case "$version" in
   *) dist_tag=latest ;;
 esac
 
+# やり直しのとき、出し済みの版はもう一度出せない (npm は同じ版を受け付けない) ので飛ばす
+if npm view "fixmarge@$version" version >/dev/null 2>&1; then
+  echo "fixmarge@$version は npm に出し済みなので飛ばします"
+  exit 0
+fi
+
 cd npm
 # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
 npm pkg set version="$version"

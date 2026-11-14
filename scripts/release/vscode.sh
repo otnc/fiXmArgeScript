@@ -12,5 +12,8 @@ cd editors/vscode
 npm pkg set version="$version"
 npx vsce package --out "$vsix"
 gh release download "$TAG" -p checksums.txt --clobber
+# やり直しで前の行が残っていれば外してから足す
+grep -vF "  $vsix" checksums.txt >checksums.new || true
+mv checksums.new checksums.txt
 sha256sum "$vsix" >>checksums.txt
 gh release upload "$TAG" "$vsix" checksums.txt --clobber
