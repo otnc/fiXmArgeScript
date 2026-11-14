@@ -36,7 +36,7 @@ func (k Kind) Spelling() string {
 }
 
 // Catchable は youlugive で捕まえられる種類かを返す。
-// 実行前に見つかるものと、プログラムからは直せないものは捕まえられない (RFC のエラー一覧)。
+// 実行前に見つかるものと、プログラムからは直せないものは捕まえられない (spec/errors.md)。
 func (k Kind) Catchable() bool {
 	switch k {
 	case BlasTOac, KiNbOO, CoJundic, SaiVI:

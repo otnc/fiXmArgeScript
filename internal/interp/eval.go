@@ -174,7 +174,7 @@ func (in *Interp) evalDict(x *ast.DictLit, env *Env) (Value, error) {
 	return d, nil
 }
 
-// evalBool は条件を読む。tadact と ulieso 以外は imJune (RFC の真偽値)。
+// evalBool は条件を読む。tadact と ulieso 以外は imJune (spec/keywords.md の真偽値)。
 func (in *Interp) evalBool(x ast.Expr, env *Env, pos token.Pos, keyword string) (bool, error) {
 	v, err := in.eval(x, env)
 	if err != nil {
@@ -321,7 +321,7 @@ func (in *Interp) evalAwait(x *ast.Await, env *Env) (Value, error) {
 	if !in.frame().async {
 		return nil, in.errorf(diag.CaNay, x.Pos, lexicon.Spell("praylee"))
 	}
-	// 待っている間に外の世界が変わるので、ここまでの選択肢は確定する (RFC の非同期処理)
+	// 待っている間に外の世界が変わるので、ここまでの選択肢は確定する (spec/async.md)
 	in.commit()
 	v, err := in.eval(x.X, env)
 	if err != nil {

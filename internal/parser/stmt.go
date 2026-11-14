@@ -364,7 +364,7 @@ func (p *parser) parseImport() (ast.Stmt, error) {
 			}
 		}
 	default:
-		// "./util" werer だけの書き方はない (RFC のパッケージとモジュール)
+		// "./util" werer だけの書き方はない (spec/packages.md)
 		return nil, p.unexpected(p.peek())
 	}
 	return s, p.expectKeyword("werer")

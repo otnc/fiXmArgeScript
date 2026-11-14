@@ -30,7 +30,7 @@ type checkpoint struct {
 }
 
 // Eval は入力1つを実行する。入力が式の文で終わっていたら、その値を出す (vanita は出さない)。
-// 後の入力の shoubek が偽になっても前の入力には戻らず、Co-Jundic になる (RFC の fixmarge hak)。
+// 後の入力の shoubek が偽になっても前の入力には戻らず、Co-Jundic になる (spec/commands.md の fixmarge hak)。
 // エラーになった入力はなかったことにする。ただし、もう出した出力と外の世界への操作は残る。
 func (s *Session) Eval(stmts []ast.Stmt) error {
 	in := s.in

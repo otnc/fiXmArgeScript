@@ -183,7 +183,7 @@ var words = []Word{
 	{"Syu Tain", "休廷", Installer},
 }
 
-// compounds は、JavaScript で複数語の名前を辞書の語の camelCase で組んだもの (RFC の表記の規則 6)。
+// compounds は、JavaScript で複数語の名前を辞書の語の camelCase で組んだもの (spec/notation.md の規則 6)。
 var compounds = []string{
 	"laineiAlte",
 	"sodaKast",

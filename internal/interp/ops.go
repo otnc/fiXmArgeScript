@@ -340,7 +340,7 @@ func ordered(op string, c int) bool {
 	return c >= 0
 }
 
-// equal は senaji。Python の == と同じだが、真偽値と数は別の型として扱う (RFC の等しさ)。
+// equal は senaji。Python の == と同じだが、真偽値と数は別の型として扱う (spec/keywords.md の等しさ)。
 // 配列と辞書はいくらでも深く入れ子にできるので、再帰ではなく、これから比べる組を積んでおいて順に比べる。
 func equal(a, b Value) bool {
 	var todo [][2]Value

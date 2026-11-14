@@ -8,7 +8,7 @@ type Env struct {
 	vars   []variable
 	index  map[string]int // 名前 → vars の位置。vars が indexedFrom 個以上のときだけ作る
 	parent *Env
-	// funcTop は関数の一番外側のブロックか。ここより外の変数には izu できない (RFC の変数のスコープ)。
+	// funcTop は関数の一番外側のブロックか。ここより外の変数には izu できない (spec/syntax.md の変数のスコープ)。
 	funcTop bool
 	// inherited は fixmarge hak の前の入力で作った名前。weho、showence、werer で作り直せる (Chrome のコンソールと同じ)。
 	inherited map[string]bool

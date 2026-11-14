@@ -144,7 +144,7 @@ func atom(v Value) string {
 	return "?"
 }
 
-// formatFloat は JavaScript の Number の文字列化と同じ形にする (RFC：数は coword no salook と同じ形)。
+// formatFloat は JavaScript の Number の文字列化と同じ形にする (spec/keywords.md の数値。数は coword no salook と同じ形)。
 func formatFloat(f float64) string {
 	switch {
 	case math.IsNaN(f):
