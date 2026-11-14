@@ -1,6 +1,6 @@
 # :json
 
-JSON。名前は固有名詞なのでそのまま使います。標準パッケージの共通の決まりは [README.md](README.md) を見てください。
+JSON。名前は固有名詞なのでそのまま使います。共通の決まりは [標準パッケージ](README.md) にあります。
 
 ```
 ":json" aste json werer
