@@ -4,7 +4,7 @@
   "description": "fiXmArge Script の WebAssembly 版。「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。",
   "keywords": ["fixmarge", "programming-language", "webassembly"],
   "author": "otoneko.",
-  "homepage": "https://github.com/otnc/fiXmArgeScript",
+  "homepage": "https://fixmargescript.oto.im/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/otnc/fiXmArgeScript.git",
