@@ -1,5 +1,11 @@
 # fixmarge
 
+<p align="center">
+  <a href="https://fixmargescript.oto.im/">📕 ホームページ</a> ·
+  <a href="https://fixmargescript.oto.im/docs/">📖 ドキュメント</a> ·
+  <a href="https://fixmargescript.oto.im/playground/">🎮 プレイグラウンド</a>
+</p>
+
 [fiXmArge Script](https://github.com/otnc/fiXmArgeScript) の WebAssembly 版です。fiXmArge Script は、『魔法少女ノ魔女裁判』の架空言語「フィクスマージ語」の単語をキーワードにした、**非公式のファンメイド**のプログラミング言語です。
 
 > [!IMPORTANT]
