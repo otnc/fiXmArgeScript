@@ -1,16 +1,33 @@
 {
   "name": "fixmargescript",
-  "scripts": {
-    "env": "migenv align --create",
-    "env:check": "migenv check"
-  },
+  "private": true,
+  "description": "fiXmArge Script の開発用",
+  "license": "MIT OR Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/otnc/fiXmArgeScript.git"
   },
-  "license": "MIT OR Apache-2.0",
-  "description": "fiXmArge Script の開発用",
-  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "fixmarge": "go run ./cmd/fixmarge",
+    "install:cli": "go install ./cmd/fixmarge",
+    "build": "go build -o dist/ ./cmd/fixmarge",
+    "build:wasm": "pnpm --filter fixmarge build",
+    "build:playground": "pnpm build:wasm && pnpm --filter fixmarge-playground exec cf build",
+    "build:vscode": "npm --prefix editors/vscode ci && npm --prefix editors/vscode run package",
+    "build:assets": "pnpm --filter fixmarge-assets build",
+    "dev": "pnpm build:wasm && pnpm --filter fixmarge-playground dev",
+    "fmt": "gofmt -w cmd internal",
+    "check": "pnpm check:go && pnpm check:examples",
+    "check:go": "gofmt -l cmd internal && go vet ./... && go test ./...",
+    "check:examples": "go run ./cmd/fixmarge lavi examples && go run ./cmd/fixmarge coatain examples",
+    "test": "go test ./...",
+    "test:dict": "FXMA_DICT_CHECK=1 go test ./internal/lexicon/",
+    "test:wasm": "pnpm build:wasm && pnpm --filter fixmarge test",
+    "update:grammar": "FXMA_UPDATE=1 go test ./internal/grammar/",
+    "setup:env": "migenv align --create",
+    "check:env": "migenv check"
+  },
   "devDependencies": {
     "migenv": "^0.2.2"
   }

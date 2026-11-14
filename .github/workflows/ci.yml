@@ -39,18 +39,17 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - run: GOOS=js GOARCH=wasm go vet ./cmd/fixmarge-wasm/
-      - run: node npm/build.mjs
-      - run: node --test npm/test/fixmarge.test.js
-      - run: npm ci --prefix playground
+      - run: pnpm test:wasm
       # Cloudflare に送る形まで作り、送らずに確かめる
-      - run: npx cf build
-        working-directory: playground
-      - run: npx cf deploy --prebuilt --mode production --dry-run
-        working-directory: playground
+      - run: pnpm build:playground
+      - run: pnpm --filter fixmarge-playground exec cf deploy --prebuilt --mode production --dry-run
 
   # Windows のセットアップを作り、黙って入れて消し、PATH が足されて戻るか確かめる
   installer:
@@ -90,6 +89,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+      # 拡張だけは pnpm の workspace に入れていない (pnpm-workspace.yaml)
       - run: npm ci --prefix editors/vscode
       - run: npx vsce package --out fixmarge.vsix
         working-directory: editors/vscode

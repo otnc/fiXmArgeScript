@@ -13,4 +13,5 @@
 - コンソール出力はフィクスマージ語のみ。日本語は fixmarge neyar、インストーラの画面 (Windows のセットアップと install.sh)、fixmarge nai の説明だけ。
 - 「魔法少女ノ魔女裁判」配信・二次創作ガイドライン（https://manosaba.com/guidelines、2026年10月21日更新版）に従う。完全無料、寄付・広告なし、「AI利用」を明記。
 - コードは構造で読みやすくする。1部品1役割、キーワード・エラー名・標準関数名は1つの表から生成、凝った書き方をしない、コメントは「なぜ」だけ。
+- 開発のコマンドはルートの package.json の scripts にまとめる (pnpm の workspace。一覧は README.md の「開発」)。手順を足すときはそこに足し、README.md の表にも書く。確かめるのは `pnpm check`。
 - コミットや PR に Co-Authored-By や "Generated with [AI AGENT]" などの行を付けない。

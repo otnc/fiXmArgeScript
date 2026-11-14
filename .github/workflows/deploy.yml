@@ -15,6 +15,7 @@ on:
       - internal/**
       - go.mod
       - go.sum
+      - pnpm-lock.yaml
       - .github/workflows/deploy.yml
 
 permissions:
@@ -31,15 +32,14 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - run: node npm/build.mjs
-      - run: npm ci --prefix playground
-      - run: npx cf build
-        working-directory: playground
-      - run: npx cf deploy --prebuilt --mode production
-        working-directory: playground
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:playground
+      - run: pnpm --filter fixmarge-playground exec cf deploy --prebuilt --mode production
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
