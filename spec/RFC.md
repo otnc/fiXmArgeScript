@@ -1122,7 +1122,7 @@ Nii eXi' main.fxma:3:5 cnt
 | テストの結果 | `hung gement fizzbuzz: Nii Guil-me` | 判決、罪なし |
 | テストの失敗 | `hung gement fizzbuzz: Guil-me` | 判決、罪 |
 
-例外として、`fixmarge neyar` が出す非公式表記だけは日本語にします。ガイドラインが「分かりやすい位置に明記」を求めているためです。インストーラの画面も日本語です (「インストーラ」の章)。
+例外として、`fixmarge gun` が出す非公式表記だけは日本語にします。ガイドラインが「分かりやすい位置に明記」を求めているためです。インストーラの画面も日本語です (「インストーラ」の章)。
 
 ## 実装方針
 
@@ -1168,12 +1168,13 @@ Nii eXi' main.fxma:3:5 cnt
 | `fixmarge unneyo <パッケージ>[@<版>]` | 要らない | `uninstall`、`remove` | パッケージを `fixmarge.mod` から外す。`@*` ならすべての版 | `npm uninstall` |
 | `fixmarge ado meif <名前>` | これ、命 | `mod init` | `fixmarge.mod` を作り、`.gitignore` に `.fixmarge/` を足す | `go mod init`、`cargo init` |
 | `fixmarge ado saymal` | これ、正常 | `mod tidy` | ソースの `werer` に合わせて、足りない版を足し、使っていない版を外す | `go mod tidy` |
-| `fixmarge neyar`、`fixmarge --neyar` | 年 | `version`、`--version` | 版と、非公式のファンメイド作品であることを表示する | `go version` |
+| `fixmarge gun`、`fixmarge --gun` | 今 | `version`、`--version` | 今の版と、非公式のファンメイド作品であることを表示する | `go version` |
+| `fixmarge neyar [<版>]` | 年 | `upgrade` | fixmarge 自身をリリースの版に更新する。版は `werer` の `@` の後ろと同じ形で、省くと最新の正式版。下の「更新 (fixmarge neyar)」 | `deno upgrade`、`bun upgrade` |
 | `fixmarge trench` | 友達 | `lsp` | エディタのための言語サーバーを動かす | `gopls` |
 | `fixmarge lavi` | 法の悪魔 | `lint` | 規則違反を指摘する。下の「法の悪魔」 | ESLint、`go vet` |
 
 - 短いオプションは、辞書の語の頭文字と英語の別名の頭文字の両方を使えます。`--karady` は `-k` でも `-c` でも書けます。
-- 同じコマンドの中で頭文字がぶつかったら、ぶつかった側には短い形を付けません。たとえば `--nai` は `-n` ですが、`--neyar` には `-n` を付けず、英語の `-v` だけを使えます。`--help` は `-h` です。
+- 同じコマンドの中で頭文字がぶつかったら、ぶつかった側には短い形を付けません。たとえば `--nai` は `-n` と英語の `-h`、`--gun` は `-g` と英語の `-v` です。
 - `fixmarge keeon main.fxma a b` のように、ファイルより後ろに書いた引数は、オプションも含めてそのままプログラムに渡します (`dv no "conwa"`)。
 - コマンドを省いてファイルだけを渡すと、`keeon` と同じく実行します。そのため清書の1行目には `#!/usr/bin/env fixmarge` を書けます。macOSとLinuxでは、実行権限を付ければ `./main.fxmac` で動きます。
 
@@ -1194,6 +1195,16 @@ Nii eXi' main.fxma:3:5 cnt
 - Ctrl+Cは、nodeのREPLと同じく、打ちかけの入力を捨てるだけです。プログラムが動いている間のCtrl+Cは、fixmargeごと終わらせます。
 - 入力の終わり (端末ではCtrl+D。パイプやファイルから読ませたときは、その終わり) か、`:ieviljio` の `shid` で終わります。
 
+### 更新 (fixmarge neyar)
+
+`fixmarge neyar` は、動いている `fixmarge` をリリースの別の版に入れ替えます。JavaScript でいう `deno upgrade` や `bun upgrade` と同じです。
+
+- 版の一覧はリポジトリのタグから読み、`werer` の `@` の後ろと同じ形 (`1`、`1.2`、`1.2.0`、`1.2.0-rc.0`) で選びます。省くと最新の正式版です。古い版やプレリリースも、書けば選べます。
+- 実行ファイルは Releases から取り、`checksums.txt` と合うかを確かめてから入れ替えます (`sinruits --karady --os` と同じ取り方)。合わなければ `CraeyTA'`、その版がなければ `Nii eXi'` です。
+- すでにその版なら `Su·Ready <版>` と出して何もしません。入れ替えたら `FineNd <版>` と出します。
+- どの OS でも、インストールした場所の実行ファイルをそのまま入れ替えます。Windows は動いている `fixmarge.exe` を上書きできないので、`fixmarge.exe.old` に名前を変えてから置きます。`.old` は次の更新とアンインストールで消します。書き込めない場所に入っていれば `Ca-nay <場所>` です。
+- タグから作った版でないとき (`go run` や手元のビルド) は `Ca-nay` です。
+- 新しい版が出たことは知らせません。コマンドを動かすたびに通信しないためです。
 ### 単体の実行ファイル (fixmarge sinruits --karady)
 
 `fixmarge sinruits --karady main.fxma` は、fiXmArge Scriptを入れていない人でも動かせる実行ファイルを作ります。`deno compile` や `bun build --compile` と同じく、fixmargeの実行ファイルの後ろにプログラムを付け足します。できる実行ファイルは `main` (Windowsでは `main.exe`) です。
@@ -1372,13 +1383,13 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 | Go | `go install github.com/otnc/fiXmArgeScript/cmd/fixmarge@latest` | 最初から |
 | Homebrew・Scoop | 自前のtap・bucketを用意する | 後で |
 
-版番号はセマンティックバージョニングです。`fixmarge neyar` は版番号と一緒に、非公式のファンメイド作品であることを表示します。
+版番号はセマンティックバージョニングです。`fixmarge gun` は版番号と一緒に、非公式のファンメイド作品であることを表示します。
 
 ### 版とリリース
 
 版の元はGitのタグ (`v0.2.0`) だけにして、版をファイルに手で書きません。
 
-- **CLI**: Go 1.24からは、ビルドのときにGitのタグとコミットから版が実行ファイルに埋め込まれます。`fixmarge neyar` はそれを読んで、版とコミットとその日時を出します。タグの上なら `v0.2.0`、タグより後なら `v0.2.1-0.<日時>-<コミット>`、手元の変更が残っていれば `+dirty` が付きます。`go install ...@v0.2.0` で入れた場合も同じく `v0.2.0` になります。
+- **CLI**: Go 1.24からは、ビルドのときにGitのタグとコミットから版が実行ファイルに埋め込まれます。`fixmarge gun` はそれを読んで、版とコミットとその日時を出します。タグの上なら `v0.2.0`、タグより後なら `v0.2.1-0.<日時>-<コミット>`、手元の変更が残っていれば `+dirty` が付きます。`go install ...@v0.2.0` で入れた場合も同じく `v0.2.0` になります。
 - **全部同じ版**: CLI、WebAssembly版 (npm)、VS Code拡張、LSP、Neovim・Vimのプラグインは、1つのタグで同じ版にそろえます。言語の仕様とLSPと拡張は一緒に変わるからです。
 - **リリースの手順**: GitHub Actionsの `release` を `workflow_dispatch` で動かし、次の版 (`patch`・`minor`・`major`・`prerelease`、または版を直接書く) と、プレリリースの識別子 (`rc`・`beta` など、空でもよい) を選びます。最新のタグから次の版を決め、テストを通してからタグを打ち、GoReleaserでReleasesを作ります。版の計算はnpmの `semver` と同じです。
   - 識別子なしの `patch`・`minor`・`major` は正式版になる (`v0.1.0` の次の `minor` は `v0.2.0`、`v0.2.0-rc.1` の次の `minor` は `v0.2.0`)。
@@ -1441,7 +1452,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 | 広告、寄付、投げ銭などで収益を得ない | 9 | GitHub Sponsorsなどの寄付リンクと、サイトの広告を置かない |
 | 公式のイラスト、ロゴ、楽曲、シナリオなどを直接組み込まない | 7・9 | ロゴや画像は使わない。歌詞の文は入れず、キーワードには単語だけを使う |
 | 素材は自作か、権利処理済みのものだけ | 9 | アイコンなどは自作する。ライセンスのない辞書CSVは同梱しない |
-| 「非公式のファンメイド作品」と配信ページと作品内に明記する | 9 | 配信ページ: リポジトリREADME、Releases、npm、プレイグラウンド。作品内: `fixmarge neyar`、インストーラの同意画面、同梱README |
+| 「非公式のファンメイド作品」と配信ページと作品内に明記する | 9 | 配信ページ: リポジトリREADME、Releases、npm、プレイグラウンド。作品内: `fixmarge gun`、インストーラの同意画面、同梱README |
 | 公式の続編や公認作品と誤認させない | 9・10 | 名前や説明に「公式」「公認」を使わない |
 | 生成AIを使った作品は「AI利用」と明記する | 6 | 制作にClaudeを使うため、READMEに「AI利用」と書く |
 | ゲームのデータを抽出して再配布しない | 7 | ゲームのファイルは解析しない |

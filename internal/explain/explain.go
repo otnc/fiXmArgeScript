@@ -1,4 +1,4 @@
-// Package explain は fixmarge nai が出す日本語の説明を持つ。コンソールで日本語を出すのは fixmarge nai と fixmarge neyar だけ。
+// Package explain は fixmarge nai が出す日本語の説明を持つ。コンソールで日本語を出すのは fixmarge nai と fixmarge gun だけ。
 package explain
 
 import (

@@ -76,6 +76,10 @@ Source: "..\LICENSE-MIT"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD_PARTY_LICENSES"; DestDir: "{app}"; Flags: ignoreversion
 
+[UninstallDelete]
+; fixmarge neyar (更新) は動いている fixmarge.exe を .old に退かしてから入れ替えるので、残っていれば消す
+Type: files; Name: "{app}\fixmarge.exe.old"
+
 [Code]
 const
   UserEnvironment = 'Environment';

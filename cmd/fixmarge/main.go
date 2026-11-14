@@ -78,7 +78,7 @@ func (s streams) app() *cli.Command {
 		// 既定では終了コードのエラーで os.Exit するので止める
 		ExitErrHandler: func(context.Context, *cli.Command, error) {},
 		Flags: []cli.Flag{
-			&cli.BoolFlag{Name: "neyar", Aliases: []string{"version", "v"}},
+			&cli.BoolFlag{Name: "gun", Aliases: []string{"version", "g", "v"}},
 			&cli.BoolFlag{Name: "nai", Aliases: []string{"help", "n", "h"}},
 			laikillFlag(),
 		},
@@ -117,7 +117,8 @@ func (s streams) app() *cli.Command {
 			},
 			{Name: "hak", Aliases: []string{"repl"}, Action: s.hak},
 			{Name: "trench", Aliases: []string{"lsp"}, Action: s.trench},
-			{Name: "neyar", Aliases: []string{"version"}, Action: s.neyar},
+			{Name: "gun", Aliases: []string{"version"}, Action: s.gun},
+			{Name: "neyar", Aliases: []string{"upgrade"}, Action: s.neyar},
 			{Name: "nai", Aliases: []string{"help", "explain"}, Action: s.nai},
 		},
 	}
@@ -149,8 +150,8 @@ func (s streams) usageError(context.Context, *cli.Command, error, bool) error {
 // root はコマンドを省いたとき。ファイルだけ渡すと keeon と同じ (清書の1行目の #!/usr/bin/env fixmarge のため)。
 func (s streams) root(ctx context.Context, cmd *cli.Command) error {
 	switch {
-	case cmd.Bool("neyar"):
-		return s.neyar(ctx, cmd)
+	case cmd.Bool("gun"):
+		return s.gun(ctx, cmd)
 	case cmd.Bool("nai") || cmd.Args().Len() == 0:
 		s.usage(s.stdout)
 		return nil
@@ -264,11 +265,12 @@ func (s streams) sinruits(_ context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-func (s streams) neyar(context.Context, *cli.Command) error {
+// gun は今の版を出す (version)。
+func (s streams) gun(context.Context, *cli.Command) error {
 	fmt.Fprintln(s.stdout, "fixmarge", versionString())
 	// ガイドラインが「分かりやすい位置に明記」を求めているので、ここだけ日本語で出す
 	fmt.Fprintln(s.stdout, "「魔法少女ノ魔女裁判」の非公式のファンメイド作品です。Acacia および合同会社Re,AER とは関係がなく、公認・監修を受けていません。")
-	fmt.Fprintln(s.stdout, "AI利用：生成AIを使って制作しています。")
+	fmt.Fprintln(s.stdout, "AI利用: 生成AIを使って制作しています。")
 	return nil
 }
 
@@ -317,6 +319,7 @@ func (s streams) usage(w io.Writer) {
   fixmarge trench                エディタのための言語サーバーを動かす (lsp)
   fixmarge nai <エラー名>        エラーや警告の意味を説明する (explain)
   fixmarge nai                   この使い方を出す (help)
-  fixmarge neyar                 版を出す (version)
+  fixmarge gun                   今の版を出す (version)
+  fixmarge neyar [<版>]          fixmarge 自身をリリースの版に更新する (upgrade)。版は werer と同じ形で、省くと最新の正式版
 `)
 }

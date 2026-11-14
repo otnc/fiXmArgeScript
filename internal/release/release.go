@@ -1,4 +1,6 @@
-package karady
+// Package release は GitHub の Releases から fixmarge の実行ファイルを取ってくる。
+// sinruits --karady がほかの OS 向けを作るときと、fixmarge neyar が自分を更新するときに使う。
+package release
 
 import (
 	"archive/tar"
@@ -14,16 +16,23 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
+// Repository は fixmarge のリポジトリ。版の一覧はこのタグから読む。
+const Repository = "github.com/otnc/fiXmArgeScript"
+
 // Target は実行ファイルを作る先の OS と CPU。書き方は Go と同じ linux-amd64 の形。
 type Target struct {
 	OS, Arch string
 }
+
+// Current は今動いている fixmarge の OS と CPU。
+func Current() Target { return Target{runtime.GOOS, runtime.GOARCH} }
 
 func (t Target) String() string { return t.OS + "-" + t.Arch }
 
@@ -53,18 +62,18 @@ func ParseTarget(s string) (Target, error) {
 }
 
 // DefaultBaseURL はリリースのファイルの場所。この後ろに /<版>/<ファイル名> が付く。
-const DefaultBaseURL = "https://github.com/otnc/fiXmArgeScript/releases/download"
+const DefaultBaseURL = "https://" + Repository + "/releases/download"
 
-// Runtimes は他の OS 向けの fixmarge をリリースから取ってきて、手元のキャッシュに置く。
-type Runtimes struct {
-	Root    string // キャッシュのフォルダ (…/fixmarge/karady)
+// Fetcher はリリースから fixmarge の実行ファイルを取ってきて、Root に置く。
+type Fetcher struct {
+	Root    string // 置くフォルダ (karady はキャッシュ、neyar は一時フォルダ)
 	BaseURL string // 空なら DefaultBaseURL
 	Client  *http.Client
 }
 
 // Get は版 version の t 向けの fixmarge を置いた場所を返す。なければ取ってきて、checksums.txt と合うかを確かめてから置く。
 // リリースにその版やファイルがなければ Nii eXi'、中身が checksums.txt と合わなければ CraeyTA'。
-func (r *Runtimes) Get(version string, t Target) (string, error) {
+func (r *Fetcher) Get(version string, t Target) (string, error) {
 	dest := filepath.Join(r.Root, version, t.String(), "fixmarge"+t.Exe())
 	if _, err := os.Stat(dest); err == nil {
 		return dest, nil
@@ -95,7 +104,7 @@ func (r *Runtimes) Get(version string, t Target) (string, error) {
 	return dest, writeAtomic(dest, exe)
 }
 
-func (r *Runtimes) download(version, name string) ([]byte, error) {
+func (r *Fetcher) download(version, name string) ([]byte, error) {
 	base := r.BaseURL
 	if base == "" {
 		base = DefaultBaseURL
