@@ -187,6 +187,9 @@ write("packaging/assets/logo-dark.svg", logo(color.bone));
 write("packaging/assets/logo-light.svg", logo(color.ink));
 write("packaging/vscode/icon.png", png(iconSvg, 256));
 write("site/public/favicon.svg", smallIconSvg);
+// npm と VS Code Marketplace の README は相対パスの画像を出せず、Marketplace は SVG も受け付けないので、PNG をサイトに置いて URL で指す
+write("site/public/logo-dark.png", png(logo(color.bone), 1120));
+write("site/public/logo-light.png", png(logo(color.ink), 1120));
 const sizes = [16, 24, 32, 48, 64, 128, 256];
 write("packaging/installer/fixmarge.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
 

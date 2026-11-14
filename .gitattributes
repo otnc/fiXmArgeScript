@@ -9,4 +9,5 @@ packaging/vscode/*.language-configuration.json linguist-generated
 # packaging/assets/build.mjs が作るファイル
 packaging/assets/*.svg linguist-generated
 site/public/favicon.svg linguist-generated
+site/public/logo-*.png linguist-generated
 packaging/vscode/icons/* linguist-generated

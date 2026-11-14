@@ -1,4 +1,9 @@
-# fiXmArge Script
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://fixmargescript.oto.im/logo-dark.png" />
+    <img src="https://fixmargescript.oto.im/logo-light.png" alt="fiXmArge Script" width="560" />
+  </picture>
+</h1>
 
 <p align="center">
   <a href="https://fixmargescript.oto.im/">📕 ホームページ</a> ·
