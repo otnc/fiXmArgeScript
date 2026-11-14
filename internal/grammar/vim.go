@@ -90,7 +90,7 @@ func VimModSyntax() []byte {
 	return []byte(b.String())
 }
 
-// VimWords は下書きの字下げ (indent/fixmarge.vim) が使う、ブロックの語の正規表現を返す。清書は字下げしない。
+// VimWords は下書きの字下げ (autoload/fixmarge/indent.vim) が使う、ブロックの語の正規表現を返す。清書は字下げしない。
 func VimWords() []byte {
 	var b strings.Builder
 	b.WriteString(vimHeader)

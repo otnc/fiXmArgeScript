@@ -50,13 +50,13 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `cmd/fixmarge-wasm/` | WebAssembly 版の入口 |
 | `internal/` | 字句解析・構文解析・インタプリタ・標準パッケージ・言語サーバーなど |
 | `site/` | サイト (Astro + Starlight)。紹介 `/`、ドキュメント `/docs/`、プレイグラウンド `/playground/` |
-| `editors/vscode/` | VS Code 拡張 |
 | `packaging/npm/` | npm のパッケージ `fixmarge` (WebAssembly 版を包む) |
 | `packaging/installer/` | Windows のセットアップと `install.sh` |
 | `packaging/assets/` | ロゴとアイコンを描くスクリプト |
+| `packaging/vscode/` | VS Code 拡張 |
 | `examples/` | サンプル |
 | `spec/` | 言語の仕様 (章ごとのファイル。目次は README.md) と標準パッケージ (std/)。サイトの /docs/ にも出す |
-| `autoload/`・`doc/`・`ftdetect/`・`ftplugin/`・`indent/`・`lsp/`・`plugin/`・`syntax/` | Vim と Neovim のプラグイン。リポジトリの名前だけで入るように直下に置く (Vim はこの名前のフォルダしか読まない)。ヘルプは `doc/fixmarge.txt` |
+| `autoload/`・`plugin/`・`syntax/` | Vim と Neovim のプラグイン。リポジトリの名前だけで入るように直下に置く (Vim はこの名前のフォルダしか読まない)。ファイルタイプ・バッファの設定・インデント・言語サーバーへの接続は `plugin/fixmarge.vim` にまとめ、フォルダを増やさない。使い方は Vim のヘルプではなく、サイトのドキュメントの「エディタ」(`site/src/content/docs/docs/start/editors.mdx`) に書く |
 | `scripts/build/` | 配るものを作る手順 (Windows 向けの exe、THIRD_PARTY_LICENSES) |
 | `scripts/check/` | CI で確かめる手順 (セットアップを入れて消す、ファイル バージョン) |
 | `scripts/release/` | リリースの手順 (次の版を決める、npm・セットアップ・VS Code 拡張を出す) |
@@ -65,7 +65,7 @@ VS Code 拡張だけは workspace に入れず、npm で扱います。VSIX を�
 
 workflow (`.github/workflows/`) には、1行で書ける手順だけを書きます。何行もある手順は `scripts/` の用途のフォルダ (`build/`・`check/`・`release/`) にファイルとして置き (Linux では `.sh`、Windows では `.ps1`)、workflow からはそれを呼びます。
 
-エディタの色分けのファイル (`editors/vscode/syntaxes/`、`syntax/` など) は語の表から作っています。手で書き換えず、`pnpm update:grammar` で作り直します。ずれていると `pnpm test` が落ちます。
+エディタの色分けのファイル (`packaging/vscode/syntaxes/`、`syntax/` など) は語の表から作っています。手で書き換えず、`pnpm update:grammar` で作り直します。ずれていると `pnpm test` が落ちます。
 
 ## 公開
 

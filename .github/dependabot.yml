@@ -12,7 +12,7 @@ updates:
     directories:
       # / は pnpm の workspace (npm、site、assets) で、拡張だけ別
       - /
-      - /editors/vscode
+      - /packaging/vscode
     schedule:
       interval: weekly
     groups:

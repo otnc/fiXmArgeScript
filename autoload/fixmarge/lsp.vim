@@ -1,5 +1,5 @@
 " 言語サーバー fixmarge trench の起動に使う値と、Vim の LSP クライアントへの登録。
-" Neovim は lsp/fixmarge.lua と plugin/fixmarge.vim でつなぐ (ここの Command と Root も使う)。
+" Neovim 0.11 からは plugin/fixmarge.vim の vim.lsp.config でつなぐ (ここの Command と Root も使う)。
 scriptencoding utf-8
 
 " fixmarge#lsp#Command は fixmarge の実行ファイルの場所。見つからなければ ''。
@@ -67,6 +67,24 @@ function! fixmarge#lsp#NotFound() abort
 endfunction
 
 let s:filetypes = ['fixmarge', 'fixmargec']
+
+" fixmarge#lsp#Start は fixmarge のバッファを開いたときにつなぐ (Vim と Neovim 0.10。0.11 からは vim.lsp.enable が行う)。
+function! fixmarge#lsp#Start() abort
+  if has('nvim')
+    let command = fixmarge#lsp#Command()
+    if command ==# ''
+      call fixmarge#lsp#NotFound()
+      return
+    endif
+    call luaeval('vim.lsp.start(_A)', {'name': 'fixmarge', 'cmd': [command, 'trench'], 'root_dir': fixmarge#lsp#Root()})
+    return
+  endif
+  " 遅れて読み込まれたとき (ファイルタイプで読み込むプラグインマネージャーなど) は、ここで登録する
+  call fixmarge#lsp#Register()
+  if fixmarge#lsp#Client() ==# 'none'
+    call fixmarge#lsp#NotFound()
+  endif
+endfunction
 
 " fixmarge#lsp#Client は登録した Vim のクライアントの名前。まだなら ''。
 function! fixmarge#lsp#Client() abort

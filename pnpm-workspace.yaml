@@ -1,5 +1,5 @@
 # JavaScript のパッケージをまとめる。開発のコマンドはルートの package.json の scripts に並べてある。
-# editors/vscode は入れない。vsce (VSIX を作る道具) が pnpm の node_modules を読めないのと、
+# packaging/vscode は入れない。vsce (VSIX を作る道具) が pnpm の node_modules を読めないのと、
 # 拡張の名前が packaging/npm/ のパッケージと同じ fixmarge でぶつかるため。そこだけ npm を使う。
 packages:
   - packaging/npm

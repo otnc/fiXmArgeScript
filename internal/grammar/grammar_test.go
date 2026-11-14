@@ -17,18 +17,18 @@ func TestUpToDate(t *testing.T) {
 	mod, err := ModTextMate()
 	require.NoError(t, err)
 	files := map[string][]byte{
-		filepath.Join("autoload", "fixmarge", "words.vim"):      VimWords(),
-		filepath.Join("editors", "vscode", "syntaxes", ModFile): mod,
-		filepath.Join("syntax", VimModFiletype+".vim"):          VimModSyntax(),
+		filepath.Join("autoload", "fixmarge", "words.vim"):        VimWords(),
+		filepath.Join("packaging", "vscode", "syntaxes", ModFile): mod,
+		filepath.Join("syntax", VimModFiletype+".vim"):            VimModSyntax(),
 	}
 	for _, mode := range []lexer.Mode{lexer.Draft, lexer.Fair} {
 		textMate, err := TextMate(mode)
 		require.NoError(t, err)
-		files[filepath.Join("editors", "vscode", "syntaxes", File(mode))] = textMate
+		files[filepath.Join("packaging", "vscode", "syntaxes", File(mode))] = textMate
 		files[filepath.Join("syntax", VimFiletype(mode)+".vim")] = VimSyntax(mode)
 		config, err := LanguageConfiguration(mode)
 		require.NoError(t, err)
-		files[filepath.Join("editors", "vscode", LanguageConfigurationFile(mode))] = config
+		files[filepath.Join("packaging", "vscode", LanguageConfigurationFile(mode))] = config
 	}
 	for name, want := range files {
 		path := filepath.Join(root, name)

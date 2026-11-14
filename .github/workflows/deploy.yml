@@ -10,7 +10,7 @@ on:
       - site/**
       - spec/**
       - packaging/assets/**
-      - editors/vscode/syntaxes/**
+      - packaging/vscode/syntaxes/**
       - packaging/npm/**
       - packaging/installer/public/**
       - examples/**
