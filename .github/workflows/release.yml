@@ -8,7 +8,7 @@ on:
         required: true
         default: patch
       preid:
-        description: "プレリリースの識別子 (rc・beta など)。patch・minor・major と一緒なら 0.2.0-rc.0 のようにプレリリースにする"
+        description: "プレリリースの識別子 (alpha・beta・rc のどれか)。patch・minor・major と一緒なら 0.2.0-rc.0 のようにプレリリースにする"
         required: false
         default: ""
 

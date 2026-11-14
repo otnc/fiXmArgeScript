@@ -8,13 +8,33 @@
 #ifndef BinDir
   #define BinDir "..\dist\windows"
 #endif
-; Explorer の「ファイル バージョン」(VersionInfoVersion) は数字だけで、書かないと 0.0.0.0 になる。
-; そこには 0.2.0-rc.0 の -rc.0 を外して渡す。製品バージョンの文字列は AppVersion のまま (-rc.0 付き) になる
+; Explorer の「ファイル バージョン」(VersionInfoVersion) は数字4つだけなので、プレリリースかどうかを4つ目で表す。
+; 正式版は最大の 65535 にし、プレリリースは段階×1000+番号にする (alpha.N は 1000+N、beta.N は 2000+N、rc.N は 3000+N)。
+; こうすると 0.2.0-rc.1 (0.2.0.3001) が 0.2.0 (0.2.0.65535) より古く並ぶ。識別子は next-version.sh がこの3つに限っている。
+; それ以外 (CI の 0.0.0-ci) は 0。製品バージョンの文字列は AppVersion のまま (-rc.1 付き) になる
+#define BaseVersion AppVersion
+#define Stage "65535"
 #if Pos("-", AppVersion) > 0
-  #define NumericVersion Copy(AppVersion, 1, Pos("-", AppVersion) - 1)
-#else
-  #define NumericVersion AppVersion
+  #define BaseVersion Copy(AppVersion, 1, Pos("-", AppVersion) - 1)
+  #define Pre Copy(AppVersion, Pos("-", AppVersion) + 1, Len(AppVersion))
+  #if Pos(".", Pre) > 0
+    #define PreId Copy(Pre, 1, Pos(".", Pre) - 1)
+    #define PreNum Int(Copy(Pre, Pos(".", Pre) + 1, Len(Pre)), 0)
+  #else
+    #define PreId Pre
+    #define PreNum 0
+  #endif
+  #if PreId == "alpha"
+    #define Stage Str(1000 + PreNum)
+  #elif PreId == "beta"
+    #define Stage Str(2000 + PreNum)
+  #elif PreId == "rc"
+    #define Stage Str(3000 + PreNum)
+  #else
+    #define Stage "0"
+  #endif
 #endif
+#define NumericVersion BaseVersion + "." + Stage
 
 [Setup]
 ; 「設定 → アプリ」の登録キー (fiXmArgeScript_is1) になる。上書きとアンインストールがこれで見分けるので変えない

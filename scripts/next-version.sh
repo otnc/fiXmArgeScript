@@ -40,14 +40,26 @@ case "$VERSION" in
     ;;
 esac
 
-# 識別子は Releases と npm の dist-tag に使うので、0.1.1-0 のような数字だけの識別子は認めない
+# プレリリースは alpha・beta・rc の3つと、0〜999 の番号だけにする (rc.1 など)。
+# 識別子は npm の dist-tag に使い、段階と番号は Windows のセットアップのファイル バージョンの4つ目に入れるため
+# (installer/fixmarge.iss)
 case "$next" in
   *-*)
-    id=${next#*-}
-    id=${id%%.*}
+    pre=${next#*-}
+    id=${pre%%.*}
+    num=${pre#"$id"}
+    num=${num#.}
     case "$id" in
-      '' | *[!a-z]*)
-        echo "::error::プレリリースの識別子は英小文字にしてください: $next (preid で rc などを指定する)" >&2
+      alpha | beta | rc) ;;
+      *)
+        echo "::error::プレリリースの識別子は alpha・beta・rc のどれかにしてください: $next" >&2
+        exit 1
+        ;;
+    esac
+    case "$num" in
+      [0-9] | [1-9][0-9] | [1-9][0-9][0-9]) ;;
+      *)
+        echo "::error::プレリリースの番号は 0〜999 の1つだけにしてください (rc.1 のように): $next" >&2
         exit 1
         ;;
     esac
