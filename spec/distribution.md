@@ -61,7 +61,7 @@ CLIはGitHub ReleasesでOSごとの圧縮ファイルを配り、WebAssembly版�
 
 - **Releases**: `fixmarge_<版>_wasm.zip` に `fixmarge.wasm`、`wasm_exec.js`、`README.md`、ライセンス類を入れる。
 - **npm**: パッケージ `fixmarge` として公開し、JavaScriptから `run(source, { stdin, files, args, maxSteps })` と `build(source)` を呼べるようにする。`run` は `{ stdout, stderr, exitCode, files }` を返す。`maxSteps` は `--laikill` と同じ上限。`files` は名前と中身の組で、`werer` でも `:memoid` でも読め、実行した後のファイルも返す。エディタの色分けのために、下書きに書ける名前の一覧を返す `words()` も出す。Node.js (20.16以降) とブラウザの両方で動く。中身はリポジトリの `npm/` にある。
-- **プレイグラウンド**: https://fixmargescript.oto.im/playground に置き、ブラウザだけで書いて実行できるようにする。CodeMirror 6で作り、サイト (リポジトリの `site/`。Astro と Starlight で、紹介 `/` とドキュメント `/docs/` も同じ Cloudflare Workers に置く) の1ページにしている。ファイルを足して `werer` で読み込める。止まらないプログラムでタブが固まらないよう、文と繰り返しの数に500万の上限を付ける。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
+- **プレイグラウンド**: https://fixmargescript.oto.im/playground/ に置き、ブラウザだけで書いて実行できるようにする。CodeMirror 6で作り、サイト (リポジトリの `site/`。Astro と Starlight で、紹介 `/` とドキュメント `/docs/` も同じ Cloudflare Workers に置く) の1ページにしている。ファイルを足して `werer` で読み込める。止まらないプログラムでタブが固まらないよう、文と繰り返しの数に500万の上限を付ける。ボタンや欄の名前はコマンドと同じ語 (`keeon`、`sinruits`、`zanfession`、`redogh`) にし、非公式の表記とAI利用は日本語でページの頭に出す。
 
 ブラウザでは対話的な入力ができないため、`zanfession` で読む入力は実行前にまとめて渡します。これは巻き戻しの「入力を記録して使い回す」方式とも合います。実行ファイルが大きすぎる場合は、後でTinyGoでのビルドを検討します。
 

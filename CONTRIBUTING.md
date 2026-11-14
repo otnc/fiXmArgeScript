@@ -50,7 +50,7 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `cmd/fixmarge-wasm/` | WebAssembly 版の入口 |
 | `internal/` | 字句解析・構文解析・インタプリタ・標準パッケージ・言語サーバーなど |
 | `npm/` | npm のパッケージ `fixmarge` (WebAssembly 版を包む) |
-| `site/` | サイト (Astro + Starlight)。紹介 `/`、ドキュメント `/docs/`、プレイグラウンド `/playground` |
+| `site/` | サイト (Astro + Starlight)。紹介 `/`、ドキュメント `/docs/`、プレイグラウンド `/playground/` |
 | `editors/vscode/` | VS Code 拡張 |
 | `installer/` | Windows のセットアップと `install.sh` |
 | `assets/` | ロゴとアイコンを描くスクリプト |
