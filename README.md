@@ -1,9 +1,15 @@
-<h1>
+<h1 align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg" />
     <img src="assets/logo-light.svg" alt="fiXmArge Script" width="560" />
   </picture>
 </h1>
+
+<p align="center">
+  <a href="https://fixmargescript.oto.im/">📕 ホームページ</a> ·
+  <a href="https://fixmargescript.oto.im/docs/">📖 ドキュメント</a> ·
+  <a href="https://fixmargescript.oto.im/playground/">🎮 プレイグラウンド</a>
+</p>
 
 『魔法少女ノ魔女裁判』の架空言語「フィクスマージ語」の単語をキーワードにした、**非公式のファンメイド**のプログラミング言語です。略称は fxma です。
 
