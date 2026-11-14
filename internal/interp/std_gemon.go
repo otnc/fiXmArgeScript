@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// gemonPackage は :gemon (通信、JavaScript の fetch)。docs/std/gemon.md。
+// gemonPackage は :gemon (通信、JavaScript の fetch)。spec/std/gemon.md。
 func gemonPackage() *Module {
 	return newStd(map[string]stdDef{
 		"fineclowt": {fn: gemonFineclowt, abiryoku: true, itsver: true},

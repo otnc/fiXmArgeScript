@@ -15,7 +15,7 @@ type Process struct {
 	Args     []string // 実行するファイルより後ろのコマンドライン引数
 	Env      []string // "KEY=value" の並び
 	Pid      int
-	Platform string // dv no "wid"。docs/std/ieviljio.md の一覧の値
+	Platform string // dv no "wid"。spec/std/ieviljio.md の一覧の値
 	Version  string // dv no "neyar"
 	// Spawn は魔女を生む。nil なら生めない (ブラウザ版)。コマンドがなければ fs.ErrNotExist を包んだエラーを返す。
 	Spawn func(c Command) (Child, error)
@@ -63,7 +63,7 @@ type Exit struct{ Code int }
 
 func (e *Exit) Error() string { return "exit" }
 
-// ieviljioPackage は :ieviljio (プロセス、Node.js の process)。docs/std/ieviljio.md。
+// ieviljioPackage は :ieviljio (プロセス、Node.js の process)。spec/std/ieviljio.md。
 // 魔女を殺す murm は大魔女の辞書にだけ入れ、パッケージからは直接呼べない (権限を値として渡す)。
 func ieviljioPackage() *Module {
 	return newStd(map[string]stdDef{

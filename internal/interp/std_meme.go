@@ -7,7 +7,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// memePackage は :meme (数学)。docs/std/meme.md。
+// memePackage は :meme (数学)。spec/std/meme.md。
 func memePackage() *Module {
 	return newStd(map[string]stdDef{
 		"racdam":   {fn: floatFunc(math.Floor)},

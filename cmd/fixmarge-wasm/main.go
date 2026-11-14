@@ -134,7 +134,7 @@ func words(js.Value, []js.Value) any {
 	return list
 }
 
-// platform は dv no "wid" の値。docs/std/ieviljio.md の表のとおり、JavaScript の環境を見て決める。
+// platform は dv no "wid" の値。spec/std/ieviljio.md の表のとおり、JavaScript の環境を見て決める。
 func platform() string {
 	g := js.Global()
 	switch {

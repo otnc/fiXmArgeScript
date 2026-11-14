@@ -1,6 +1,6 @@
 #!/bin/sh
 # 最新のタグと入力 (VERSION・PREID) から次の版を決め、GitHub Actions の出力の形 (tag=v0.2.0 と retry=false) で書く。
-# 版の計算は npm の semver に任せる。決まりは docs/RFC.md の「版とリリース」。
+# 版の計算は npm の semver に任せる。決まりは spec/RFC.md の「版とリリース」。
 set -eu
 
 semver() {

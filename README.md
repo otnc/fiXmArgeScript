@@ -14,11 +14,11 @@
 
 - **AI利用**: この言語の実装は、生成AIを使って制作しています。
 - 準拠しているガイドライン: [「魔法少女ノ魔女裁判」配信・二次創作ガイドライン](https://manosaba.com/guidelines) (2026年10月21日更新版)
-- キーワードに使った語の出典は [docs/RFC.md](docs/RFC.md) の「出典」にあります。
+- キーワードに使った語の出典は [spec/RFC.md](spec/RFC.md) の「出典」にあります。
 
 ## 状態
 
-開発中です。仕様は [docs/RFC.md](docs/RFC.md)、標準パッケージは [docs/std/](docs/std/README.md) にあります。
+開発中です。仕様は [spec/RFC.md](spec/RFC.md)、標準パッケージは [spec/std/](spec/std/README.md) にあります。
 
 ## インストール
 
@@ -41,7 +41,7 @@ fixmarge sinruits examples/fizzbuzz.fxma
 
 `keeon` は下書き (`.fxma`) をそのまま実行し、`sinruits` は清書 (`.fxmac`) を書き出します。`fixmarge hak` で対話モード、`fixmarge nai` でコマンドの一覧が出ます。
 
-外部パッケージは Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs@1.2` で足し、`fixmarge unneyo github.com/alice/strs` で外します。取ってきたものは npm の `node_modules` と同じくプロジェクトの `.fixmarge` フォルダに置きます。`.fixmarge` はコミットしません (`fixmarge ado meif` が `.gitignore` に足します)。コミットするのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` でそろえます。版は npm と同じく `fixmarge.mod` と `fixmarge.sum` で決め、同じパッケージの違う版をいくつも入れて、`"github.com/alice/strs@1" aste strs werer` のように読み込むときに選べます。詳しくは [docs/RFC.md](docs/RFC.md) の「パッケージとモジュール」にあります。
+外部パッケージは Git のタグから取ってきます。`fixmarge ado meif github.com/you/app` で `fixmarge.mod` を作り、`fixmarge werer github.com/alice/strs@1.2` で足し、`fixmarge unneyo github.com/alice/strs` で外します。取ってきたものは npm の `node_modules` と同じくプロジェクトの `.fixmarge` フォルダに置きます。`.fixmarge` はコミットしません (`fixmarge ado meif` が `.gitignore` に足します)。コミットするのは `fixmarge.mod` と `fixmarge.sum` で、取ってきた人は引数なしの `fixmarge werer` でそろえます。版は npm と同じく `fixmarge.mod` と `fixmarge.sum` で決め、同じパッケージの違う版をいくつも入れて、`"github.com/alice/strs@1" aste strs werer` のように読み込むときに選べます。詳しくは [spec/RFC.md](spec/RFC.md) の「パッケージとモジュール」にあります。
 
 WebAssembly 版は [npm/](npm/README.md) (npm のパッケージ `fixmarge`) と [playground/](playground/) (ブラウザのプレイグラウンド) にあります。
 

@@ -1,7 +1,7 @@
 name: deploy
 
 # プレイグラウンドと install.sh を Cloudflare Workers (https://fixmargescript.oto.im/) に置く。
-# 出すものが変わる push のときだけ動かす (docs だけの変更では出し直さない)。手でも動かせる
+# 出すものが変わる push のときだけ動かす (仕様や README だけの変更では出し直さない)。手でも動かせる
 on:
   workflow_dispatch:
   push:

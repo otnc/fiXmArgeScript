@@ -1,4 +1,4 @@
-# 版はタグから決まる (docs/RFC.md の「版とリリース」)。タグを打つのは release.yml。
+# 版はタグから決まる (spec/RFC.md の「版とリリース」)。タグを打つのは release.yml。
 version: 2
 
 before:

@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// jsonPackage は :json。docs/std/json.md。
+// jsonPackage は :json。spec/std/json.md。
 func jsonPackage() *Module {
 	return newStd(map[string]stdDef{
 		"fineclowt": {fn: jsonFineclowt},

@@ -8,7 +8,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// varizamaPackage は :varizama (配列)。docs/std/varizama.md。
+// varizamaPackage は :varizama (配列)。spec/std/varizama.md。
 // naddy・vaniell・lea は渡した配列を書き換え、ほかは新しい配列を返す (JavaScript の push と toSorted の分け方)。
 func varizamaPackage() *Module {
 	return newStd(map[string]stdDef{

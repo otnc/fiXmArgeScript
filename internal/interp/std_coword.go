@@ -9,7 +9,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// cowordPackage は :coword (文字列)。docs/std/coword.md。
+// cowordPackage は :coword (文字列)。spec/std/coword.md。
 // 位置と長さは、配列の添字と同じく文字 (コードポイント) で数える。
 func cowordPackage() *Module {
 	return newStd(map[string]stdDef{

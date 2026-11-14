@@ -1,6 +1,6 @@
 # 開発の手引き
 
-fiXmArge Script を手元で作って試すための手順です。言語の仕様は [docs/RFC.md](docs/RFC.md)、標準パッケージは [docs/std/](docs/std/README.md) にあります。
+fiXmArge Script を手元で作って試すための手順です。言語の仕様は [spec/RFC.md](spec/RFC.md)、標準パッケージは [spec/std/](spec/std/README.md) にあります。
 
 ## 用意するもの
 
@@ -55,6 +55,8 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `installer/` | Windows のセットアップと `install.sh` |
 | `assets/` | ロゴとアイコンを描くスクリプト |
 | `examples/` | サンプル |
+| `spec/` | 言語の仕様 (RFC.md) と標準パッケージ (std/) |
+| `doc/` | Vim と Neovim のヘルプ (`:help fixmarge`)。Vim はこの名前のフォルダしか読まないので変えられない |
 | `scripts/build/` | 配るものを作る手順 (Windows 向けの exe、THIRD_PARTY_LICENSES) |
 | `scripts/check/` | CI で確かめる手順 (セットアップを入れて消す、ファイル バージョン) |
 | `scripts/release/` | リリースの手順 (次の版を決める、npm・セットアップ・VS Code 拡張を出す) |
@@ -68,5 +70,5 @@ workflow (`.github/workflows/`) には、1行で書ける手順だけを書き�
 ## 公開
 
 - **プレイグラウンド** (https://fixmargescript.oto.im/) と `install.sh`: `main` に push すると、関係するファイルが変わったときだけ GitHub Actions が出し直します ([.github/workflows/deploy.yml](.github/workflows/deploy.yml))。
-- **リリース**: GitHub Actions の release を手で動かします ([.github/workflows/release.yml](.github/workflows/release.yml))。次の版 (`patch`・`minor`・`major`・`prerelease` か、版そのもの) を選ぶと、タグを打ち、Releases、npm、VS Code Marketplace、Open VSX に出します。途中で失敗したときは、`version` に同じ版をそのまま書いて (`0.2.0`) もう一度動かすと、出せていないところだけ出し直せます。版の決まりとやり直しの細かい決まりは [docs/RFC.md](docs/RFC.md) の「版とリリース」にあります。
+- **リリース**: GitHub Actions の release を手で動かします ([.github/workflows/release.yml](.github/workflows/release.yml))。次の版 (`patch`・`minor`・`major`・`prerelease` か、版そのもの) を選ぶと、タグを打ち、Releases、npm、VS Code Marketplace、Open VSX に出します。途中で失敗したときは、`version` に同じ版をそのまま書いて (`0.2.0`) もう一度動かすと、出せていないところだけ出し直せます。版の決まりとやり直しの細かい決まりは [spec/RFC.md](spec/RFC.md) の「版とリリース」にあります。
 - 使うトークンは [.env.example](.env.example) に並べてあります。同じ名前で GitHub の Secrets にも入れます。

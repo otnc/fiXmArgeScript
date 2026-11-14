@@ -7,7 +7,7 @@ import (
 	"github.com/otnc/fiXmArgeScript/internal/diag"
 )
 
-// izanavitedPackage は :izanavited (パス、Node.js の path)。docs/std/izanavited.md。
+// izanavitedPackage は :izanavited (パス、Node.js の path)。spec/std/izanavited.md。
 // 受け取るときは / も \ も区切りとして読み、返すときはいつも / にする。ファイルには触らない。
 func izanavitedPackage() *Module {
 	return newStd(map[string]stdDef{
