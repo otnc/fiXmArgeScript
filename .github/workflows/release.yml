@@ -83,21 +83,7 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
       - run: node npm/build.mjs
-      - name: Publish
-        working-directory: npm
-        run: |
-          version=${TAG#v}
-          # dist-tag はプレリリースなら識別子 (0.2.0-rc.1 なら rc)、正式版なら latest
-          case "$version" in
-            *-*)
-              dist_tag=${version#*-}
-              dist_tag=${dist_tag%%.*}
-              ;;
-            *) dist_tag=latest ;;
-          esac
-          # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
-          npm pkg set version="$version"
-          npm publish --tag "$dist_tag"
+      - run: sh scripts/release-npm.sh
 
   # Inno Setup は Windows でしか動かないので、Releases の Windows 向けの zip からセットアップを作って足す
   installer:
@@ -110,24 +96,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.release.outputs.tag }}
-      - name: Build setup
-        run: |
-          $version = $env:TAG.Substring(1)
-          foreach ($arch in "amd64", "arm64") {
-            gh release download $env:TAG -p "fixmarge_${version}_windows_${arch}.zip" -D dist
-            Expand-Archive "dist\fixmarge_${version}_windows_${arch}.zip" "dist\windows\$arch"
-          }
-          Copy-Item dist\windows\amd64\THIRD_PARTY_LICENSES .
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" installer\fixmarge.iss
-          if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
-      - name: Upload
-        run: |
-          $setup = "fixmarge_$($env:TAG.Substring(1))_windows_setup.exe"
-          gh release download $env:TAG -p checksums.txt -D dist --clobber
-          $hash = (Get-FileHash "dist\$setup" -Algorithm SHA256).Hash.ToLower()
-          # GoReleaser と同じ形 (ハッシュ、空白2つ、名前) で、改行は LF
-          [IO.File]::AppendAllText("dist\checksums.txt", "$hash  $setup`n")
-          gh release upload $env:TAG "dist\$setup" dist\checksums.txt --clobber
+      - run: ./scripts/release-installer.ps1
 
   # VS Code 拡張の VSIX を Releases に足す。checksums.txt を書き換えるので、installer の後に動かす
   vscode:
@@ -144,17 +113,7 @@ jobs:
         with:
           node-version: 24
       - run: npm ci --prefix editors/vscode
-      - name: Package and upload
-        working-directory: editors/vscode
-        run: |
-          version=${TAG#v}
-          vsix="fixmarge_${version}_vscode.vsix"
-          # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
-          npm pkg set version="$version"
-          npx vsce package --out "$vsix"
-          gh release download "$TAG" -p checksums.txt --clobber
-          sha256sum "$vsix" >> checksums.txt
-          gh release upload "$TAG" "$vsix" checksums.txt --clobber
+      - run: sh scripts/release-vscode.sh
       # Marketplace は 0.2.0-rc.1 のようなプレリリースの版を受け付けないので、正式版だけ出す
       - name: Publish to Marketplace
         if: ${{ !contains(needs.release.outputs.tag, '-') }}

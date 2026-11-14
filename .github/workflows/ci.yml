@@ -61,40 +61,13 @@ jobs:
           go-version-file: go.mod
       - name: Build fixmarge.exe
         shell: bash
-        run: |
-          for arch in amd64 arm64; do
-            GOOS=windows GOARCH=$arch go build -trimpath -ldflags="-s -w" -o dist/windows/$arch/fixmarge.exe ./cmd/fixmarge
-          done
-          sh scripts/third-party-licenses.sh
+        run: sh scripts/build-windows.sh
       - name: Build setup
         run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.0.0-ci installer\fixmarge.iss'
       - name: Install and uninstall
-        run: |
-          $app = "$env:LOCALAPPDATA\Programs\fixmarge"
-          function UserPath { [Environment]::GetEnvironmentVariable("Path", "User") }
-          Start-Process dist\fixmarge_0.0.0-ci_windows_setup.exe -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/CURRENTUSER" -Wait
-          & "$app\fixmarge.exe" neyar
-          if ($LASTEXITCODE -ne 0) { throw "fixmarge neyar failed" }
-          if ((UserPath) -split ";" -notcontains $app) { throw "PATH does not contain $app" }
-          Start-Process "$app\unins000.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES" -Wait
-          Start-Sleep -Seconds 3
-          if ((UserPath) -split ";" -contains $app) { throw "PATH still contains $app" }
-          if (Test-Path "$app\fixmarge.exe") { throw "fixmarge.exe was not removed" }
-      # ファイル バージョンの4つ目が、プレリリースの段階と番号の決まり (installer/fixmarge.iss) どおりかを確かめる
+        run: ./scripts/check-installer.ps1
       - name: Check file versions
-        run: |
-          $want = [ordered]@{ "0.0.0-ci" = "0.0.0.0"; "1.2.3-alpha.0" = "1.2.3.1000"; "1.2.3-beta.12" = "1.2.3.2012"; "1.2.3-rc.4" = "1.2.3.3004"; "1.2.3" = "1.2.3.65535" }
-          foreach ($v in $want.Keys) {
-            if ($v -ne "0.0.0-ci") {
-              & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=$v" installer\fixmarge.iss
-              if ($LASTEXITCODE -ne 0) { throw "ISCC failed for $v" }
-            }
-            $info = (Get-Item "dist\fixmarge_${v}_windows_setup.exe").VersionInfo
-            $file = "$($info.FileMajorPart).$($info.FileMinorPart).$($info.FileBuildPart).$($info.FilePrivatePart)"
-            if ($file -ne $want[$v]) { throw "${v}: file version $file, want $($want[$v])" }
-            # Inno Setup は文字列の後ろを空白で埋めて書くので、外して比べる
-            if ($info.ProductVersion.Trim() -ne $v) { throw "${v}: product version '$($info.ProductVersion)', want $v" }
-          }
+        run: ./scripts/check-installer-versions.ps1
 
   # VS Code 拡張を VSIX にまとめられるか確かめる (文法が語の表と合っているかは go test が見る)
   vscode:

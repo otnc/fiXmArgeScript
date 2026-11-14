@@ -55,6 +55,7 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `installer/` | Windows のセットアップと `install.sh` |
 | `assets/` | ロゴとアイコンを描くスクリプト |
 | `examples/` | サンプル |
+| `scripts/` | CI とリリースの手順 (GitHub Actions の workflow から呼ぶ) |
 
 VS Code 拡張だけは workspace に入れず、npm で扱います。VSIX を作る vsce が pnpm の `node_modules` を読めないのと、拡張の名前が npm のパッケージと同じ `fixmarge` でぶつかるためです。`pnpm build:vscode` から呼べます。
 
