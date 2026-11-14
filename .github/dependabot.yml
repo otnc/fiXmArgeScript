@@ -10,7 +10,7 @@ updates:
         patterns: ["*"]
   - package-ecosystem: npm
     directories:
-      # / は pnpm の workspace (npm、playground、assets) で、拡張だけ別
+      # / は pnpm の workspace (npm、site、assets) で、拡張だけ別
       - /
       - /editors/vscode
     schedule:

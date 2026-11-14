@@ -186,7 +186,7 @@ write("assets/icon-small.svg", smallIconSvg);
 write("assets/logo-dark.svg", logo(color.bone));
 write("assets/logo-light.svg", logo(color.ink));
 write("editors/vscode/icon.png", png(iconSvg, 256));
-write("playground/src/favicon.svg", smallIconSvg);
+write("site/public/favicon.svg", smallIconSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256];
 write("installer/fixmarge.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
 

@@ -1,0 +1,92 @@
+@layer base, starlight, theme, components, utilities;
+@import "@astrojs/starlight-tailwind";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@fontsource/shippori-mincho/500.css";
+@import "@fontsource/shippori-mincho/700.css";
+@import "@fontsource/almendra-display/400.css";
+
+/* 色はロゴ (assets/build.mjs) と同じ黒・深紅・白。Starlight も Tailwind もこの1か所から色と文字を取る */
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --font-serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-display: "Almendra Display", "Shippori Mincho", serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+
+  --color-accent-50: #fdf2f3;
+  --color-accent-100: #fbe3e6;
+  --color-accent-200: #f6c4cb;
+  --color-accent-300: #ee95a2;
+  --color-accent-400: #e25a70;
+  --color-accent-500: #cf2c47;
+  --color-accent-600: #b0102a;
+  --color-accent-700: #8f0d23;
+  --color-accent-800: #6e0818;
+  --color-accent-900: #4f0612;
+  --color-accent-950: #3a0712;
+
+  --color-gray-50: #f2ecec;
+  --color-gray-100: #e6dfe0;
+  --color-gray-200: #cbc1c3;
+  --color-gray-300: #a99da0;
+  --color-gray-400: #857a7d;
+  --color-gray-500: #64595c;
+  --color-gray-600: #4a4044;
+  --color-gray-700: #352d31;
+  --color-gray-800: #241c20;
+  --color-gray-900: #1a1215;
+  --color-gray-950: #0d0a0c;
+}
+
+/* 暗い画面は黒地 (公式サイトに近い)。Starlight の既定より一段暗くする */
+:root[data-theme="dark"] {
+  --sl-color-black: var(--color-gray-950);
+  --sl-color-bg-nav: var(--color-gray-950);
+  --sl-color-bg-sidebar: var(--color-gray-950);
+}
+
+/* Starlight のカードは並びごとに色を変えるので、全部を深紅にそろえる */
+.card-grid > .card {
+  --sl-card-border: var(--sl-color-accent);
+  --sl-card-bg: var(--sl-color-accent-low);
+}
+
+/* 見出しは明朝。本文は読みやすさのため明朝にしない */
+.sl-markdown-content :is(h1, h2, h3, h4),
+h1#_top,
+.site-heading {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* 牢屋の格子。背景の飾りに使う (絵は使えないので CSS の線だけで描く) */
+.bars {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(var(--bars-gap, 72px) - 3px),
+    var(--bars-color, color-mix(in srgb, var(--color-gray-500) 22%, transparent)) calc(var(--bars-gap, 72px) - 3px)
+      var(--bars-gap, 72px)
+  );
+}
+
+/* ひし形を挟んだ区切り線 */
+.diamond-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-accent-600);
+}
+.diamond-rule::before,
+.diamond-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+}
+.diamond-rule > span {
+  width: 0.55rem;
+  height: 0.55rem;
+  transform: rotate(45deg);
+  border: 1px solid currentColor;
+}

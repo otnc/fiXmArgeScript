@@ -28,10 +28,10 @@ pnpm install
 | `pnpm test:wasm` | WebAssembly 版を作り、npm のパッケージをテストする |
 | `pnpm test:dict` | キーワードの綴りを辞書と照らし合わせる (辞書を GitHub から取ってくる) |
 | `pnpm fmt` | Go のコードを整形する |
-| `pnpm dev` | プレイグラウンドを手元で開く |
+| `pnpm dev` | サイト (紹介・ドキュメント・プレイグラウンド) を手元で開く |
 | `pnpm build` | fixmarge を `dist/` に作る |
 | `pnpm build:wasm` | WebAssembly 版 (`npm/fixmarge.wasm`) を作る |
-| `pnpm build:playground` | プレイグラウンドを Cloudflare に送る形まで作る |
+| `pnpm build:site` | サイトを Cloudflare に送る形まで作る |
 | `pnpm build:vscode` | VS Code 拡張の VSIX を作る |
 | `pnpm build:assets` | ロゴとアイコンを作り直す (fixmarge.exe に埋め込むアイコンを作るのに Go も使う) |
 | `pnpm update:grammar` | 語の表を変えた後に、エディタの色分けのファイルを作り直す |
@@ -50,7 +50,7 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `cmd/fixmarge-wasm/` | WebAssembly 版の入口 |
 | `internal/` | 字句解析・構文解析・インタプリタ・標準パッケージ・言語サーバーなど |
 | `npm/` | npm のパッケージ `fixmarge` (WebAssembly 版を包む) |
-| `playground/` | ブラウザのプレイグラウンド |
+| `site/` | サイト (Astro + Starlight)。紹介 `/`、ドキュメント `/docs/`、プレイグラウンド `/playground` |
 | `editors/vscode/` | VS Code 拡張 |
 | `installer/` | Windows のセットアップと `install.sh` |
 | `assets/` | ロゴとアイコンを描くスクリプト |
@@ -69,7 +69,7 @@ workflow (`.github/workflows/`) には、1行で書ける手順だけを書き�
 
 ## 公開
 
-- **プレイグラウンド** (https://fixmargescript.oto.im/) と `install.sh`: `main` に push すると、関係するファイルが変わったときだけ GitHub Actions が出し直します ([.github/workflows/deploy.yml](.github/workflows/deploy.yml))。
+- **サイト** (https://fixmargescript.oto.im/) と `install.sh`: `main` に push すると、関係するファイルが変わったときだけ GitHub Actions が出し直します ([.github/workflows/deploy.yml](.github/workflows/deploy.yml))。
 - **リリース**: GitHub Actions の release を手で動かします ([.github/workflows/release.yml](.github/workflows/release.yml))。次の版 (`patch`・`minor`・`major`・`prerelease` か、版そのもの) を選ぶと、タグを打ち、Releases、npm、VS Code Marketplace、Open VSX に出します。途中で失敗したときは、`version` に同じ版をそのまま書いて (`0.2.0`) もう一度動かすと、出せていないところだけ出し直せます。版の決まりとやり直しの細かい決まりは [spec/RFC.md](spec/RFC.md) の「版とリリース」にあります。
 - 使うトークンは [.env.example](.env.example) に並べてあります。同じ名前で GitHub の Secrets にも入れます。
 

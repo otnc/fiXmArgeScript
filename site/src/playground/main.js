@@ -4,7 +4,7 @@ import { EditorState } from "@codemirror/state";
 import { tags } from "@lezer/highlight";
 import { build, run, words } from "fixmarge";
 
-import sample from "../../examples/fizzbuzz.fxma?raw";
+import sample from "../../../examples/fizzbuzz.fxma?raw";
 import { fxmaLanguage } from "./language.js";
 
 const mainFile = "main.fxma";
@@ -25,7 +25,7 @@ const buildButton = document.getElementById("build");
 
 const language = fxmaLanguage(await words());
 
-// 色はページの CSS 変数から取り、明るい画面でも暗い画面でもページと合わせる
+// 色はページの CSS 変数 (style.css) から取り、明るい画面でも暗い画面でもページと合わせる
 const theme = EditorView.theme({
   "&": { backgroundColor: "var(--panel)", color: "var(--text)", height: "100%" },
   ".cm-gutters": { backgroundColor: "var(--panel)", color: "var(--muted)", borderRight: "1px solid var(--line)" },

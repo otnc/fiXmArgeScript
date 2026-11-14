@@ -3,11 +3,12 @@
 # 拡張の名前が npm/ のパッケージと同じ fixmarge でぶつかるため。そこだけ npm を使う。
 packages:
   - npm
-  - playground
+  - site
   - assets
 
-# インストールのときにスクリプトを動かしてよい依存。workerd はプレイグラウンドのビルド (cf build) が使う Cloudflare の実行環境
+# インストールのときにスクリプトを動かしてよい依存。workerd は wrangler が使う Cloudflare の実行環境、esbuild は Astro と wrangler のビルド
 allowBuilds:
+  esbuild: true
   workerd: true
 
 # scripts の FXMA_UPDATE=1 go test ... のような書き方を、Windows でもそのまま動かす

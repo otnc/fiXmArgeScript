@@ -1,0 +1,201 @@
+---
+// 言語の紹介。Node.js や Go の入り口のページと同じく、何の言語か・試し方・入れ方を1ページに並べる
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import { Card, CardGrid, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+
+import logoDark from "../../../assets/logo-dark.svg";
+import logoLight from "../../../assets/logo-light.svg";
+import fizzbuzz from "../../../examples/fizzbuzz.fxma?raw";
+import witch from "../../../examples/witch.fxma?raw";
+
+// 清書は fixmarge sinruits examples/witch.fxma の出力そのまま
+const witchFair = `# 容疑者は1〜3番。魔女は1人
+witch Iz'u 1 Owk 2 Owk 3 meKaMo
+# 証言A：魔女は1番ではない
+Nii witch SeNaji 1 ShouBeK
+# 証言B：魔女は奇数番
+witch % 2 SeNaji 1 ShouBeK
+witch ReDogh'`;
+
+const witchJs = `const witch = [1, 2, 3].find((w) => w !== 1 && w % 2 === 1);
+if (witch === undefined) {
+  throw new Error("Co-Jundic");
+}
+console.log(witch);`;
+
+const install = "curl -fsSL https://fixmargescript.oto.im/install.sh | sh";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "fiXmArge Script",
+    description: "「魔法少女ノ魔女裁判」のフィクスマージ語をキーワードにした、非公式のファンメイドのプログラミング言語です。",
+    template: "splash",
+    tableOfContents: false,
+    editUrl: false,
+    pagefind: false,
+  }}
+  hasSidebar={false}
+>
+  <section class="hero bars not-content">
+    <div class="hero-inner">
+      <h1 class="sr-only">fiXmArge Script</h1>
+      <img class="logo light:sl-hidden" src={logoDark.src} alt="fiXmArge Script" width="640" />
+      <img class="logo dark:sl-hidden" src={logoLight.src} alt="fiXmArge Script" width="640" />
+      <p class="lead">
+        架空言語「フィクスマージ語」の単語をキーワードにした、非公式のファンメイドのスクリプト言語です。バックトラック、副作用の宣言、テスト、例外処理を、独自のキーワードで書けます。
+      </p>
+      <div class="actions">
+        <a class="button primary" href="/docs/start/install/">インストール</a>
+        <a class="button" href="/playground">プレイグラウンド</a>
+        <a class="button" href="/docs/">ドキュメント</a>
+      </div>
+      <div class="install"><Code code={install} lang="sh" frame="none" /></div>
+    </div>
+  </section>
+
+  <div class="diamond-rule not-content"><span></span></div>
+
+  <section class="showcase">
+    <h2 class="site-heading">バックトラック</h2>
+    <p>
+      <code>mekamo</code> で候補を並べ、<code>shoubek</code> で条件を書きます。条件が偽になると直前の選択肢に戻り、次の候補で実行を続けます。ループや絞り込みは書きません。
+    </p>
+    <Tabs syncKey="witch">
+      <TabItem label="下書き (.fxma)"><Code code={witch} lang="fixmarge" title="witch.fxma" /></TabItem>
+      <TabItem label="清書 (.fxmac)"><Code code={witchFair} lang="fixmargec" title="witch.fxmac" /></TabItem>
+      <TabItem label="JavaScript"><Code code={witchJs} lang="js" title="witch.js" /></TabItem>
+    </Tabs>
+    <Code code={"$ fixmarge keeon witch.fxma\n3"} lang="sh" frame="terminal" />
+    <p class="note">
+      ふだんは記号なし・小文字の下書き (<code>.fxma</code>) を書き、<code>fixmarge sinruits</code> で辞書どおりの綴りの清書 (<code>.fxmac</code>) に変換します。どちらもそのまま実行できます。
+    </p>
+  </section>
+
+  <section class="features">
+    <h2 class="site-heading">言語の特徴</h2>
+    <CardGrid>
+      <Card title="バックトラック" icon="random">
+        <code>a owk b owk c mekamo</code> で選択肢を作ります。<code>shoubek</code> が偽になると、変数と出力を選択肢の時点まで戻します。パズルや探索を短く書けます。
+      </Card>
+      <Card title="副作用の宣言" icon="star">
+        入出力をする関数には <code>abiryoku</code> を付けます。付け忘れると、実行前に <code>kiNbOO</code> エラーになります。
+      </Card>
+      <Card title="テストとベンチマーク" icon="approve-check">
+        <code>_coatain.fxma</code> に <code>sentky</code> でテストを書き、<code>fixmarge coatain</code> で実行します。<code>persemon</code> でベンチマークも取れます。
+      </Card>
+      <Card title="開発ツール" icon="seti:config">
+        フォーマッター <code>beaukshi</code>、リンター <code>lavi</code>、言語サーバー <code>trench</code>、REPL <code>hak</code> があります。VS Code・Neovim・Vim でシンタックスハイライトと補完が使えます。
+      </Card>
+      <Card title="パッケージ管理" icon="puzzle">
+        Git のタグをバージョンとして使い、<code>fixmarge.mod</code> と <code>fixmarge.sum</code> で管理します。同じパッケージの複数のバージョンを同時に使えます。
+      </Card>
+      <Card title="クロスプラットフォーム" icon="laptop">
+        Windows・macOS・Linux の実行ファイルと、WebAssembly 版 (npm の <code>fixmarge</code>) があります。<code>sinruits --karady</code> で単体の実行ファイルにできます。
+      </Card>
+    </CardGrid>
+  </section>
+
+  <section class="install-section">
+    <h2 class="site-heading">インストール</h2>
+    <Tabs syncKey="os">
+      <TabItem label="macOS・Linux">
+        <Code code={install} lang="sh" frame="terminal" />
+        <p><code>~/.fixmarge/bin</code> にインストールし、シェルの設定ファイルに <code>PATH</code> を追加します。</p>
+      </TabItem>
+      <TabItem label="Windows">
+        <p>
+          <a href="https://github.com/otnc/fiXmArgeScript/releases">Releases</a> から <code>fixmarge_&lt;バージョン&gt;_windows_setup.exe</code> をダウンロードして実行します。コード署名がないため、初回は SmartScreen の警告が出ます。「詳細情報」を押してから「実行」を押してください。
+        </p>
+      </TabItem>
+      <TabItem label="npm (WebAssembly)">
+        <Code code="npm install fixmarge" lang="sh" frame="terminal" />
+        <p>Node.js やブラウザから <code>run</code> と <code>build</code> を呼び出せます。</p>
+      </TabItem>
+    </Tabs>
+    <p>インストールが済んだら、<a href="/docs/start/first-program/">はじめてのプログラム</a> に進んでください。</p>
+  </section>
+
+  <section class="showcase">
+    <h2 class="site-heading">FizzBuzz</h2>
+    <Code code={fizzbuzz} lang="fixmarge" title="fizzbuzz.fxma" />
+  </section>
+</StarlightPage>
+
+<style is:global>
+  /* ロゴが題を兼ねるので、Starlight の題の欄は出さない */
+  .content-panel:has(> .sl-container > h1#_top) {
+    display: none;
+  }
+</style>
+
+<style>
+  .hero {
+    --bars-gap: 88px;
+    margin-inline: calc(-1 * var(--sl-content-pad-x));
+    padding: 4rem var(--sl-content-pad-x) 3rem;
+    background-color: var(--sl-color-black);
+    text-align: center;
+  }
+  .hero-inner {
+    max-width: 46rem;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .logo {
+    width: min(100%, 36rem);
+    height: auto;
+  }
+  .lead {
+    color: var(--sl-color-gray-2);
+    line-height: 1.8;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .button {
+    padding: 0.6rem 1.4rem;
+    border: 1px solid var(--sl-color-accent);
+    color: var(--sl-color-white);
+    text-decoration: none;
+    font-family: var(--font-serif);
+    letter-spacing: 0.08em;
+    clip-path: polygon(0.6rem 0, calc(100% - 0.6rem) 0, 100% 50%, calc(100% - 0.6rem) 100%, 0.6rem 100%, 0 50%);
+    background: transparent;
+  }
+  .button.primary {
+    background: var(--sl-color-accent);
+    color: var(--sl-color-white);
+    border-color: var(--sl-color-accent);
+  }
+  .button:hover {
+    background: var(--sl-color-accent-high);
+    color: var(--sl-color-black);
+  }
+  .install {
+    width: min(100%, 34rem);
+    text-align: start;
+  }
+  .diamond-rule {
+    margin-block: 2rem;
+  }
+  section:not(.hero) {
+    max-width: 52rem;
+    margin-inline: auto;
+    margin-block: 3rem;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .note {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+</style>
