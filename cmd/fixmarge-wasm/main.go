@@ -1,6 +1,6 @@
 //go:build js && wasm
 
-// fixmarge-wasm は WebAssembly 版の入口。JavaScript に run・build・words を出す。npm の fixmarge パッケージ (npm/) がこれを包む。
+// fixmarge-wasm は WebAssembly 版の入口。JavaScript に run・build・words を出す。npm の fixmarge パッケージ (packaging/npm/) がこれを包む。
 // ブラウザでもNode.jsでも動くので、ファイルはメモリ上に置き、通信はホストの fetch を使う (Go の net/http が GOOS=js でそうする)。
 package main
 
@@ -29,7 +29,7 @@ func main() {
 	api.Set("build", js.FuncOf(buildSource))
 	api.Set("words", js.FuncOf(words))
 	js.Global().Set("__fxma", api)
-	// npm/index.js が、読み込み終わるのを待っている
+	// packaging/npm/index.js が、読み込み終わるのを待っている
 	if ready := js.Global().Get("__fxmaReady"); ready.Type() == js.TypeFunction {
 		ready.Invoke()
 	}

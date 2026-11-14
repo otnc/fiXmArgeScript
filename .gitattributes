@@ -6,7 +6,7 @@ syntax/*.vim linguist-generated
 autoload/fixmarge/words.vim linguist-generated
 editors/vscode/syntaxes/*.json linguist-generated
 editors/vscode/*.language-configuration.json linguist-generated
-# assets/build.mjs が作るファイル
-assets/*.svg linguist-generated
+# packaging/assets/build.mjs が作るファイル
+packaging/assets/*.svg linguist-generated
 site/public/favicon.svg linguist-generated
 editors/vscode/icons/* linguist-generated

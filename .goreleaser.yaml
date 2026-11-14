@@ -3,8 +3,8 @@ version: 2
 
 before:
   hooks:
-    # npm/ に wasm_exec.js を写すため。fixmarge.wasm もできるが、ここでは使わない
-    - node npm/build.mjs
+    # packaging/npm/ に wasm_exec.js を写すため。fixmarge.wasm もできるが、ここでは使わない
+    - node packaging/npm/build.mjs
     - sh scripts/build/third-party-licenses.sh
 
 builds:
@@ -54,7 +54,7 @@ archives:
       - LICENSE-MIT
       - LICENSE-APACHE
       - THIRD_PARTY_LICENSES
-      - src: npm/wasm_exec.js
+      - src: packaging/npm/wasm_exec.js
         strip_parent: true
 
 checksum:

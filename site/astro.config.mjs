@@ -16,7 +16,7 @@ export default defineConfig({
     starlight({
       title: "fiXmArge Script",
       description: "「魔法少女ノ魔女裁判」のフィクスマージ語をキーワードにした、非公式のファンメイドのプログラミング言語です。",
-      logo: { dark: "../assets/logo-dark.svg", light: "../assets/logo-light.svg", replacesTitle: true },
+      logo: { dark: "../packaging/assets/logo-dark.svg", light: "../packaging/assets/logo-light.svg", replacesTitle: true },
       favicon: "/favicon.svg",
       defaultLocale: "root",
       locales: { root: { label: "日本語", lang: "ja" } },

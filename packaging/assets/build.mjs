@@ -7,7 +7,7 @@ import { Resvg } from "@resvg/resvg-js";
 import opentype from "opentype.js";
 import pngToIco from "png-to-ico";
 
-const root = join(import.meta.dirname, "..");
+const root = join(import.meta.dirname, "..", "..");
 
 const color = {
   night: "#0d0a0c",
@@ -81,7 +81,7 @@ function icon(small = false) {
 }
 
 const font = (() => {
-  const file = join(root, "assets/node_modules/@fontsource/almendra-display/files/almendra-display-latin-400-normal.woff");
+  const file = join(root, "packaging/assets/node_modules/@fontsource/almendra-display/files/almendra-display-latin-400-normal.woff");
   const buf = readFileSync(file);
   return opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 })();
@@ -181,14 +181,14 @@ function write(path, data) {
 
 const iconSvg = icon();
 const smallIconSvg = icon(true);
-write("assets/icon.svg", iconSvg);
-write("assets/icon-small.svg", smallIconSvg);
-write("assets/logo-dark.svg", logo(color.bone));
-write("assets/logo-light.svg", logo(color.ink));
+write("packaging/assets/icon.svg", iconSvg);
+write("packaging/assets/icon-small.svg", smallIconSvg);
+write("packaging/assets/logo-dark.svg", logo(color.bone));
+write("packaging/assets/logo-light.svg", logo(color.ink));
 write("editors/vscode/icon.png", png(iconSvg, 256));
 write("site/public/favicon.svg", smallIconSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256];
-write("installer/fixmarge.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
+write("packaging/installer/fixmarge.ico", await pngToIco(sizes.map((size) => png(size <= 32 ? smallIconSvg : iconSvg, size))));
 
 // fixmarge.exe に埋め込むアイコン。go build が cmd/fixmarge の *_windows_<arch>.syso を拾う。
 // 版は入れない (fixmarge neyar は Go が埋め込む版を読むので、ここで入れるとリリースのたびに作り直すことになる)。
@@ -203,7 +203,7 @@ execFileSync(
     "--arch=amd64,arm64",
     "--out=cmd/fixmarge/rsrc",
     "--manifest=none",
-    "--icon=installer/fixmarge.ico",
+    "--icon=packaging/installer/fixmarge.ico",
   ],
   { cwd: root, stdio: "inherit" },
 );

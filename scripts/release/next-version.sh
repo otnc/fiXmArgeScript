@@ -67,7 +67,7 @@ esac
 
 # プレリリースは alpha・beta・rc の3つと、0〜999 の番号だけにする (rc.1 など)。
 # 識別子は npm の dist-tag に使い、段階と番号は Windows のセットアップのファイル バージョンの4つ目に入れるため
-# (installer/fixmarge.iss)
+# (packaging/installer/fixmarge.iss)
 case "$next" in
   *-*)
     pre=${next#*-}

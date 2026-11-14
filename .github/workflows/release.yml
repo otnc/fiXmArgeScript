@@ -57,8 +57,8 @@ jobs:
       - run: go test -race ./...
         env:
           FXMA_DICT_CHECK: "1"
-      - run: node npm/build.mjs
-      - run: node --test npm/test/fixmarge.test.js
+      - run: node packaging/npm/build.mjs
+      - run: node --test packaging/npm/test/fixmarge.test.js
 
       - name: Tag
         if: ${{ steps.next.outputs.retry != 'true' }}
@@ -96,9 +96,9 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      - run: node npm/build.mjs
+      - run: node packaging/npm/build.mjs
       # fixmarge.wasm と wasm_exec.js には Go のコードが入るので、その著作権表示も一緒に出す
-      - run: sh scripts/build/third-party-licenses.sh && mv THIRD_PARTY_LICENSES npm/
+      - run: sh scripts/build/third-party-licenses.sh && mv THIRD_PARTY_LICENSES packaging/npm/
       - run: sh scripts/release/npm.sh
 
   # Inno Setup は Windows でしか動かないので、Releases の Windows 向けの zip からセットアップを作って足す

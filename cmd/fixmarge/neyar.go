@@ -68,7 +68,7 @@ func (s streams) neyar(_ context.Context, cmd *cli.Command) error {
 
 // replaceExecutable は exe を next の中身に入れ替える。書きかけの exe を残さないよう、隣に書いてから名前を変える。
 // Windows は動いている exe を上書きも削除もできないが名前は変えられるので、.old に退かしてから置く。
-// 退かした .old は次に入れ替えるときに消す (アンインストールでも消す。installer/fixmarge.iss)。
+// 退かした .old は次に入れ替えるときに消す (アンインストールでも消す。packaging/installer/fixmarge.iss)。
 func replaceExecutable(exe, next string) error {
 	data, err := os.ReadFile(next)
 	if err != nil {

@@ -4,7 +4,7 @@ import { copyFileSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const here = import.meta.dirname;
-const root = join(here, "..");
+const root = join(here, "..", "..");
 
 execFileSync("go", ["build", "-trimpath", "-ldflags=-s -w", "-o", join(here, "fixmarge.wasm"), "./cmd/fixmarge-wasm"], {
   cwd: root,

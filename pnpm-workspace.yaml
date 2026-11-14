@@ -1,10 +1,10 @@
 # JavaScript のパッケージをまとめる。開発のコマンドはルートの package.json の scripts に並べてある。
 # editors/vscode は入れない。vsce (VSIX を作る道具) が pnpm の node_modules を読めないのと、
-# 拡張の名前が npm/ のパッケージと同じ fixmarge でぶつかるため。そこだけ npm を使う。
+# 拡張の名前が packaging/npm/ のパッケージと同じ fixmarge でぶつかるため。そこだけ npm を使う。
 packages:
-  - npm
+  - packaging/npm
+  - packaging/assets
   - site
-  - assets
 
 # インストールのときにスクリプトを動かしてよい依存。workerd は wrangler が使う Cloudflare の実行環境、esbuild は Astro と wrangler のビルド
 allowBuilds:
