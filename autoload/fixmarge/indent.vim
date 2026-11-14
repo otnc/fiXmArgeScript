@@ -1,5 +1,6 @@
 " fixmarge beaukshi と同じ字下げを、前の行だけを見て決める。
 " ブロックを開く語が多ければ1段深く、finend が多ければ1段浅くする。区切りと終わりの語で始まる行は1段浅く書く。
+scriptencoding utf-8
 function! fixmarge#indent#Expr() abort
   let words = fixmarge#words#Block()
   if s:InString(v:lnum)

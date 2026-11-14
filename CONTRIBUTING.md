@@ -56,7 +56,7 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `packaging/assets/` | ロゴとアイコンを描くスクリプト |
 | `examples/` | サンプル |
 | `spec/` | 言語の仕様 (章ごとのファイル。目次は README.md) と標準パッケージ (std/)。サイトの /docs/ にも出す |
-| `doc/` | Vim と Neovim のヘルプ (`:help fixmarge`)。Vim はこの名前のフォルダしか読まないので変えられない |
+| `autoload/`・`doc/`・`ftdetect/`・`ftplugin/`・`indent/`・`lsp/`・`plugin/`・`syntax/` | Vim と Neovim のプラグイン。リポジトリの名前だけで入るように直下に置く (Vim はこの名前のフォルダしか読まない)。ヘルプは `doc/fixmarge.txt` |
 | `scripts/build/` | 配るものを作る手順 (Windows 向けの exe、THIRD_PARTY_LICENSES) |
 | `scripts/check/` | CI で確かめる手順 (セットアップを入れて消す、ファイル バージョン) |
 | `scripts/release/` | リリースの手順 (次の版を決める、npm・セットアップ・VS Code 拡張を出す) |

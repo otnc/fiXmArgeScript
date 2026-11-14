@@ -83,3 +83,47 @@ jobs:
         working-directory: editors/vscode
       - run: npx vsce package --skip-license --out fixmarge.vsix
         working-directory: editors/vscode
+
+  # Vim と Neovim のプラグイン (リポジトリの直下) を lint する
+  vim-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: sudo apt-get update && sudo apt-get install -y lua-check
+      # vint は setuptools の pkg_resources を使うが、新しい setuptools には入っていないので版を抑える
+      - run: |
+          python3 -m venv /tmp/vint
+          /tmp/vint/bin/pip install "setuptools<81" vim-vint==0.3.21
+      - run: /tmp/vint/bin/vint autoload plugin ftdetect ftplugin indent syntax scripts/check/vim.vim
+      - run: luacheck --globals vim --no-max-line-length lsp scripts/check/nvim.lua
+
+  # プラグインを実際の Vim と Neovim で読み込む。Neovim は本物の fixmarge trench につないで診断が届くまで見る
+  vim:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { neovim: false, version: stable }
+          - { neovim: true, version: stable }
+          - { neovim: true, version: v0.10.4 }
+    steps:
+      - uses: actions/checkout@v7
+      # Vim を入れると PATH が変わり、ランナーにもとからある古い Go が先に見つかるので、Go は後に入れる
+      - uses: rhysd/action-setup-vim@v1
+        id: vim
+        with:
+          neovim: ${{ matrix.neovim }}
+          version: ${{ matrix.version }}
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go build -o dist/vimtest/ ./cmd/fixmarge
+      - if: ${{ !matrix.neovim }}
+        run: ${{ steps.vim.outputs.executable }} -u NONE -N -Es -S scripts/check/vim.vim
+        env:
+          FIXMARGE: dist/vimtest/fixmarge
+      - if: ${{ matrix.neovim }}
+        run: ${{ steps.vim.outputs.executable }} --headless -u NONE -l scripts/check/nvim.lua
+        env:
+          FIXMARGE: dist/vimtest/fixmarge
