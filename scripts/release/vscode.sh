@@ -10,7 +10,7 @@ vsix="fixmarge_${version}_vscode.vsix"
 cd editors/vscode
 # package.json の version は 0.0.0 のままにし、リリースのときだけ書き換える (コミットはしない)
 npm pkg set version="$version"
-npx vsce package --out "$vsix"
+npx vsce package --skip-license --out "$vsix"
 gh release download "$TAG" -p checksums.txt --clobber
 # やり直しで前の行が残っていれば外してから足す
 grep -vF "  $vsix" checksums.txt >checksums.new || true

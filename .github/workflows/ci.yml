@@ -81,5 +81,5 @@ jobs:
       - run: npm ci --prefix editors/vscode
       - run: node --test
         working-directory: editors/vscode
-      - run: npx vsce package --out fixmarge.vsix
+      - run: npx vsce package --skip-license --out fixmarge.vsix
         working-directory: editors/vscode

@@ -50,4 +50,6 @@ console.log(b.output); // x Iz'u TadACt
 
 ## ライセンス
 
-コードは MIT と Apache-2.0 のどちらかを選べる二重ライセンスです。ただし、作品の権利まで許諾するものではありません。`wasm_exec.js` と `fixmarge.wasm` には Go のコード (BSD 3条項ライセンス) が含まれます。
+コードのライセンスは MIT と Apache-2.0 のデュアルライセンス (`MIT OR Apache-2.0`) で、使う人がどちらかを選べます。全文は `LICENSE-MIT` と `LICENSE-APACHE` にあります。このライセンスで許諾するのはこのリポジトリのコードだけで、「魔法少女ノ魔女裁判」の権利は含みません。
+
+`fixmarge.wasm` と `wasm_exec.js` には、Go と依存ライブラリのコードが含まれます。それらのライセンスは `THIRD_PARTY_LICENSES` にあります。
