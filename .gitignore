@@ -13,5 +13,3 @@ node_modules/
 .env
 .env.bak.*
 
-# Vim のヘルプの索引は、プラグインを入れたときに作られる
-/doc/tags

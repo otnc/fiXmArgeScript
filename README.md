@@ -55,21 +55,7 @@ WebAssembly 版は [packaging/npm/](packaging/npm/README.md) (npm のパッケ�
 
 VS Code 拡張は [packaging/vscode/](packaging/vscode/README.md) にあります。色分け、診断、補完、整形などは、言語サーバー `fixmarge trench` が行います。
 
-Vim と Neovim では、このリポジトリがそのままプラグインです。どのプラグインマネージャーでも、リポジトリの名前を書くだけで入ります。
-
-| プラグインマネージャー | エディタ | 書き方 |
-| --- | --- | --- |
-| [lazy.nvim](https://github.com/folke/lazy.nvim) | Neovim | `{ 'otnc/fiXmArgeScript' }` |
-| vim.pack | Neovim 0.12 から | `vim.pack.add({ 'https://github.com/otnc/fiXmArgeScript' })` |
-| [mini.deps](https://github.com/echasnovski/mini.deps) | Neovim | `MiniDeps.add('otnc/fiXmArgeScript')` |
-| [packer.nvim](https://github.com/wbthomason/packer.nvim) | Neovim | `use('otnc/fiXmArgeScript')` |
-| [paq-nvim](https://github.com/savq/paq-nvim) | Neovim | `'otnc/fiXmArgeScript',` |
-| [vim-plug](https://github.com/junegunn/vim-plug) | Vim・Neovim | `Plug 'otnc/fiXmArgeScript'` |
-| [dein.vim](https://github.com/Shougo/dein.vim) | Vim・Neovim | `call dein#add('otnc/fiXmArgeScript')` |
-| [vim-jetpack](https://github.com/tani/vim-jetpack) | Vim・Neovim | `Jetpack 'otnc/fiXmArgeScript'` |
-| パッケージ (`:help packages`) | Vim・Neovim | `pack/*/start/` に `git clone` する |
-
-`fixmarge` のファイルを開くと、言語サーバー (`fixmarge trench`) に自動でつながります。Neovim は組み込みの LSP (0.11 からは `vim.lsp.enable`)、Vim は入っている yegappan/lsp・vim-lsp・coc.nvim・ALE のどれか1つを使います。Vim 8.2 以降と Neovim 0.10 以降に対応しています。詳しくは [doc/fixmarge.txt](doc/fixmarge.txt) (`:help fixmarge`) にあります。
+Vim と Neovim では、このリポジトリがそのままプラグインです。どのプラグインマネージャーでも、リポジトリの名前を書くだけで入ります (lazy.nvim なら `{ 'otnc/fiXmArgeScript' }`)。`fixmarge` のファイルを開くと、言語サーバー (`fixmarge trench`) に自動でつながります。ほかのプラグインマネージャーでの書き方と設定は、[ドキュメントの「エディタ」](https://fixmargescript.oto.im/docs/start/editors/) にあります。
 
 ## 開発
 

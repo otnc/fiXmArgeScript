@@ -139,7 +139,7 @@ fixmarge sinruits --karady --os linux-arm64 main.fxma
 
 VS Code 拡張 (`packaging/vscode`) は、色分けの土台に TextMate 文法を持ち、ほかは言語サーバーに任せます。TextMate 文法は語の表から生成するので、`fixmarge` を入れていなくても色は付きます。下書きと清書は語の書き方が違うので、別の言語 (`fixmarge` と `fixmargec`) と別の文法にします。言語サーバーは `PATH` の `fixmarge` を動かし、設定 `fixmarge.path` で場所を変えられます。見つからなければ `Nii eXi' fixmarge` と出します。
 
-Neovim と Vim のプラグインは、リポジトリの直下に置き (`autoload/`・`doc/`・`plugin/`・`syntax/`)、リポジトリそのものをプラグインとして入れられるようにします。直下のフォルダを増やさないよう、ファイルタイプ・バッファの設定・インデント・言語サーバーへの接続は `plugin/fixmarge.vim` にまとめます。中身は VS Code 拡張と同じく、ファイルタイプ (`fixmarge` と `fixmargec`)、語の表から生成する色分け、`fixmarge beaukshi` と同じインデントです。
+Neovim と Vim のプラグインは、リポジトリの直下に置き (`autoload/`・`plugin/`・`syntax/`)、リポジトリそのものをプラグインとして入れられるようにします。直下のフォルダを増やさないよう、ファイルタイプ・バッファの設定・インデント・言語サーバーへの接続は `plugin/fixmarge.vim` にまとめます。Vim のヘルプ (`doc/`) は置かず、使い方はサイトのドキュメントの「エディタ」に書きます。中身は VS Code 拡張と同じく、ファイルタイプ (`fixmarge` と `fixmargec`)、語の表から生成する色分け、`fixmarge beaukshi` と同じインデントです。
 
 言語サーバーには、`fixmarge` のファイルを開くと自動でつなぎます (`g:fixmarge_lsp` を 0 にすると止まる)。`fixmarge` は VS Code 拡張と同じく、`PATH` で見つからなければインストール先も探し、どこにもなければ `Nii eXi' fixmarge` と1度だけ出します。
 

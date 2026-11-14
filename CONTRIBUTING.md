@@ -56,7 +56,7 @@ JavaScript のパッケージは pnpm の workspace にまとめてあります 
 | `packaging/vscode/` | VS Code 拡張 |
 | `examples/` | サンプル |
 | `spec/` | 言語の仕様 (章ごとのファイル。目次は README.md) と標準パッケージ (std/)。サイトの /docs/ にも出す |
-| `autoload/`・`doc/`・`plugin/`・`syntax/` | Vim と Neovim のプラグイン。リポジトリの名前だけで入るように直下に置く (Vim はこの名前のフォルダしか読まない)。ファイルタイプ・バッファの設定・インデント・言語サーバーへの接続は `plugin/fixmarge.vim` にまとめ、フォルダを増やさない。ヘルプは `doc/fixmarge.txt` |
+| `autoload/`・`plugin/`・`syntax/` | Vim と Neovim のプラグイン。リポジトリの名前だけで入るように直下に置く (Vim はこの名前のフォルダしか読まない)。ファイルタイプ・バッファの設定・インデント・言語サーバーへの接続は `plugin/fixmarge.vim` にまとめ、フォルダを増やさない。使い方は Vim のヘルプではなく、サイトのドキュメントの「エディタ」(`site/src/content/docs/docs/start/editors.mdx`) に書く |
 | `scripts/build/` | 配るものを作る手順 (Windows 向けの exe、THIRD_PARTY_LICENSES) |
 | `scripts/check/` | CI で確かめる手順 (セットアップを入れて消す、ファイル バージョン) |
 | `scripts/release/` | リリースの手順 (次の版を決める、npm・セットアップ・VS Code 拡張を出す) |
