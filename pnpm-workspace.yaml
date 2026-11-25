@@ -11,5 +11,9 @@ allowBuilds:
   esbuild: true
   workerd: true
 
+# 公開から日の浅い版を入れない決まり (minimumReleaseAge) から外す。migenv は自作なので出してすぐ使う
+minimumReleaseAgeExclude:
+  - migenv
+
 # scripts の FXMA_UPDATE=1 go test ... のような書き方を、Windows でもそのまま動かす
 shellEmulator: true
