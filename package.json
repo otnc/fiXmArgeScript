@@ -25,10 +25,10 @@
     "test:dict": "FXMA_DICT_CHECK=1 go test ./internal/lexicon/",
     "test:wasm": "pnpm build:wasm && pnpm --filter fixmarge test",
     "update:grammar": "FXMA_UPDATE=1 go test ./internal/grammar/",
-    "setup:env": "migenv align --create",
+    "setup:env": "migenv init",
     "check:env": "migenv check"
   },
   "devDependencies": {
-    "migenv": "^0.2.2"
+    "migenv": "^0.3.0"
   }
 }

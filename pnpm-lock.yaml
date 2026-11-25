@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       migenv:
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.3.0
+        version: 0.3.0
 
   packaging/assets:
     devDependencies:
@@ -1801,8 +1801,8 @@ packages:
   micromark@4.0.3:
     resolution: {integrity: sha512-oGYfQzHSG5dOMovQcJ3fyTmZlWAWpi0XA0sJwJs+i6OT88o1+Jtw/8z0CmdowSLxGhhFK89rQ/oXph/wN02PNw==}
 
-  migenv@0.2.2:
-    resolution: {integrity: sha512-knb6vtfUDdVIWJq8d3IO5ng6jpETpXameiU/5PnN03fPvLV/W1J7F5UomMFieAmMCbxLNy7PqfF3uUIDWljKlw==}
+  migenv@0.3.0:
+    resolution: {integrity: sha512-VcwTShXq2R00uya2365ei4xgi+S2NL3pK4EcO0r+myvQbg53r0uRmfM/KiAfYbgKNfpYVJGVin7wIEJzRXpxbA==}
     engines: {node: '>=18.3'}
     hasBin: true
 
@@ -4092,7 +4092,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  migenv@0.2.2:
+  migenv@0.3.0:
     dependencies:
       '@kiritan/runtime': 0.3.0
       citty: 0.2.2
